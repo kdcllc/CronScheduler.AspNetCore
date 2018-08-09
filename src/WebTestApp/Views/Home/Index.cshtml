@@ -1,0 +1,20 @@
+﻿
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="jumbotron">
+            <h1 class="display-4">Torah Quote:</h1>
+            <p class="lead"><blockquote>@ViewBag.Text</blockquote></p>
+            <hr class="my-4">
+            <p> (@ViewBag.BookName @ViewBag.Chapter:@ViewBag.Verses)</p>
+            <p class="lead">
+                <a class="btn btn-primary btn-lg" href="@ViewBag.Url" role="button">Learn more</a>
+            </p>
+        </div>
+
+    </div>
+</div>

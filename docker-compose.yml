@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  webtestapp:
+    image: ${DOCKER_REGISTRY}webtestapp
+    build:
+      context: .
+      dockerfile: src/WebTestApp/Dockerfile
+
+  webtestapp.sql:
+    image: microsoft/mssql-server-linux:2017-latest
