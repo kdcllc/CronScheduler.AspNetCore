@@ -9,7 +9,7 @@
     <RepositoryUrl>https://github.com/kdcllc/CronScheduler.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseUrl>https://github.com/kdcllc/CronScheduler.AspNetCoreblob/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/img/logo64x64.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/kdcllc/CronScheduler.AspNetCore/master/img/logo64x64.png</PackageIconUrl>
     <PackageTags>Cron,Quatz,AspNetCore,DotNet,CronNET,Scheduler</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
