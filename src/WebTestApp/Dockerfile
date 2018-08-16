@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 57989
 EXPOSE 44369
 
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM microsoft/dotnet:2.1.302-sdk AS build
 WORKDIR /src
 COPY src/WebTestApp/WebTestApp.csproj src/WebTestApp/
 RUN dotnet restore src/WebTestApp/WebTestApp.csproj
