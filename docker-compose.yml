@@ -1,11 +1,11 @@
 version: '3.4'
 
 services:
-  webtestapp:
-    image: ${DOCKER_REGISTRY}webtestapp
+  cronschedulewebapp:
+    image: ${DOCKER_REGISTRY}cronschedulewebapp
     build:
       context: .
       dockerfile: src/WebTestApp/Dockerfile
 
-  webtestapp.sql:
+  cronschedulewebapp.sql:
     image: microsoft/mssql-server-linux:2017-latest
