@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace CronScheduler.AspNetCore
 {
+    /// <summary>
+    /// The implementation for <see cref="HostedServiceBase"/> service.
+    /// </summary>
     public class SchedulerHostedService : HostedServiceBase
     {
         public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
@@ -15,6 +18,11 @@ namespace CronScheduler.AspNetCore
         private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
         private readonly TaskFactory _taskFactory = new TaskFactory(TaskScheduler.Current);
 
+        /// <summary>
+        /// Constructor for <see cref="SchedulerHostedService"/>
+        /// </summary>
+        /// <param name="scheduledTasks"></param>
+        /// <param name="loggerFactory"></param>
         public SchedulerHostedService(IEnumerable<IScheduledJob> scheduledTasks, ILoggerFactory loggerFactory)
         {
             var logger = loggerFactory.CreateLogger<SchedulerHostedService>();
@@ -85,6 +93,5 @@ namespace CronScheduler.AspNetCore
                     cancellationToken);
             }
         }
-
     }
 }

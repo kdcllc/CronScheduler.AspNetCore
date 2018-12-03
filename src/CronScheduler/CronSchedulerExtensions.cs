@@ -37,6 +37,24 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
+        /// <summary>
+        /// Adds <see cref="SchedulerHostedService"/> service with ability to register all of the cron job inside the context.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddScheduler(
+            this IServiceCollection services,
+            Action<SchedulerBuilder> config
+            )
+        {
+            var builder = new SchedulerBuilder(services);
+            config(builder);
+
+            CreateInstance(services, builder.UnobservedTaskExceptionHandler);
+            return services;
+        }
+
         private static void CreateInstance(
             IServiceCollection services,
             EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler=null)

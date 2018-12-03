@@ -21,11 +21,7 @@ namespace CronScheduler.UnitTest
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScheduler((sender, args) =>
-            {
-                _logger.LogError(args.Exception.Message);
-                args.SetObserved();
-            });
+
         }
 
         public void Configure(

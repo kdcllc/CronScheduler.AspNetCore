@@ -28,17 +28,21 @@ namespace CronScheduler.UnitTest
 
             var builder = new TestServer(
                     new WebHostBuilder()
-                    .ConfigureTestServices(x =>
+                    .ConfigureTestServices(services =>
                     {
-                        x.AddSingleton<IScheduledJob, TestJob>(factory => {
-                            var job = new TestJob(mockLogger.Object)
-                            {
-                                RunImmediately = true,
-                                CronSchedule= "* * * * *"
-                            };
-                            return job;
+
+                        services.AddScheduler(ctx =>
+                        {
+                            ctx.Services.AddSingleton<IScheduledJob, TestJob>(_ => {
+                                return new TestJob(mockLogger.Object)
+                                {
+                                    RunImmediately = true,
+                                    CronSchedule = "* * * * *"
+                                };
+                            });
                         });
-                        x.AddLogging();
+
+                        services.AddLogging();
                     })
 
                     .UseStartup<TestStartup>()
@@ -67,17 +71,20 @@ namespace CronScheduler.UnitTest
 
             var builder = new TestServer(
                     new WebHostBuilder()
-                    .ConfigureTestServices(x =>
+                    .ConfigureTestServices(services =>
                     {
-                        x.AddSingleton<IScheduledJob, TestJob>(factory => {
-                            var job = new TestJob(mockLogger.Object)
-                            {
-                                RunImmediately = false,
-                                CronSchedule = "* * * * *"
-                            };
-                            return job;
+                        services.AddScheduler(ctx =>
+                        {
+                            ctx.Services.AddSingleton<IScheduledJob, TestJob>(_ => {
+                                return new TestJob(mockLogger.Object)
+                                {
+                                    RunImmediately = false,
+                                    CronSchedule = "* * * * *"
+                                };
+                            });
                         });
-                        x.AddLogging();
+
+                        services.AddLogging();
                     })
 
                     .UseStartup<TestStartup>()
@@ -98,6 +105,47 @@ namespace CronScheduler.UnitTest
                 It.IsAny<Exception>(),
                 It.IsAny<Func<object, Exception, string>>()
                 ));
+        }
+
+        [Fact]
+        public async Task Run_And_Raise_UnobservedTaskException()
+        {
+            var mockLogger = new Mock<ILogger<TestJob>>();
+
+            var builder = new TestServer(
+                    new WebHostBuilder()
+                    .ConfigureTestServices(services =>
+                    {
+                        services.AddScheduler(ctx =>
+                        {
+                            ctx.UnobservedTaskExceptionHandler = unobservedTaskExceptionHandler;
+                            ctx.Services.AddSingleton<IScheduledJob, TestJob>(_ => {
+                                return new TestJob(mockLogger.Object, true)
+                                {
+                                    RunImmediately = true,
+                                    CronSchedule = "* * * * *"
+                                };
+                            });
+                        });
+                        services.AddLogging();
+                    })
+
+                    .UseStartup<TestStartup>()
+                );
+
+            var client = builder.CreateClient();
+
+            var response = await client.GetAsync("/hc");
+            response.EnsureSuccessStatusCode();
+
+            Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        }
+
+        private void unobservedTaskExceptionHandler(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            output.WriteLine(e.Exception.InnerException.Message);
+            // if not set exception is thrown from the tasks management context
+            e.SetObserved();
         }
     }
 }

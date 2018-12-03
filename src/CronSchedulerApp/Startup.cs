@@ -13,6 +13,8 @@ using Polly;
 using CronSchedulerApp.Data;
 using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Services;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CronSchedulerApp
 {
@@ -54,15 +56,28 @@ namespace CronSchedulerApp
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSingleton<IScheduledJob, TorahQuoteJob>();
+           // services.AddSingleton<IScheduledJob, TorahQuoteJob>();
 
-            services.AddScheduler((sender, args) =>
+            services.AddScheduler(builder =>
             {
-                _logger.LogError(args.Exception.Message);
-                args.SetObserved();
+                // recommended to use TryAddSingleton
+                builder.Services.TryAddSingleton<IScheduledJob, TorahQuoteJob>();
+                builder.UnobservedTaskExceptionHandler = UnobservedHandler;
             });
 
+            //services.AddScheduler((sender, args) =>
+            //{
+            //    _logger.LogError(args.Exception.Message);
+            //    args.SetObserved();
+            //});
+
             _logger.LogDebug("Configuration completed");
+        }
+
+        private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
+        {
+            _logger.LogError(args.Exception.Message);
+            args.SetObserved();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

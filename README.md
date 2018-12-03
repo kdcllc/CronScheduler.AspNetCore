@@ -21,7 +21,7 @@ The following crontab format is supported:
 └───────────────────────── min (0 - 59)
 ```
 
-```
+```txt
   `* * * * *`        Every minute.
   `0 * * * *`        Top of every hour.
   `0,1,2 * * * *`    Every hour at minutes 0, 1, and 2.
@@ -33,7 +33,7 @@ The following crontab format is supported:
 The sample website provides with use-case scenario for this library.
 
 Includes the following sample service:
-```
+```c#
  public class TorahQuoteJob : IScheduledJob
     {
         public string CronSchedule { get; }
@@ -59,6 +59,16 @@ Includes the following sample service:
             TorahVerses.Current = result;
         }
     }
+```
+
+Then register this service within the `Startup.cs`
+```c#
+    services.AddScheduler(builder =>
+    {
+        // recommended to use TryAddSingleton
+        builder.Services.TryAddSingleton<IScheduledJob, TorahQuoteJob>();
+        builder.UnobservedTaskExceptionHandler = UnobservedHandler;
+    });
 ```
 - Sample uses Microsoft.Extensions.Http.Polly extension library to make http calls every minute.
 
