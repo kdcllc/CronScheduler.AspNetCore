@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebTestApp.Data
+namespace CronSchedulerApp.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

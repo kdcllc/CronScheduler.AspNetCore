@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WebTestApp.Services
+namespace CronSchedulerApp.Services
 {
     public class TorahVerses
     {

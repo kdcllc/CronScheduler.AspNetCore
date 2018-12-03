@@ -13,7 +13,6 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class CronSchedulerExtensions
     {
-
         /// <summary>
         /// Adds <see cref="SchedulerHostedService"/> service without global error handler.
         /// </summary>
@@ -43,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             IServiceCollection services,
             EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler=null)
         {
-            services.TryAddTransient(typeof(SchedulerHostedService), serviceProvider =>
+            services.AddTransient<IHostedService,SchedulerHostedService>(serviceProvider =>
             {
                 var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
                 var scheduledJobs = serviceProvider.GetServices<IScheduledJob>();

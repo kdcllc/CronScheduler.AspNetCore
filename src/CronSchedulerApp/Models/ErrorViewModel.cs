@@ -1,6 +1,6 @@
 using System;
 
-namespace WebTestApp.Models
+namespace CronSchedulerApp.Models
 {
     public class ErrorViewModel
     {

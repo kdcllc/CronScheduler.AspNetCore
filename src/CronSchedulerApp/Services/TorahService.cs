@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace WebTestApp.Services
+namespace CronSchedulerApp.Services
 {
     /// <summary>
     /// <see cref="HttpClient"/> typed version of the service to access http://labs.bible.org/api_web_service.

@@ -10,11 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
-using WebTestApp.Data;
-using WebTestApp.Jobs;
-using WebTestApp.Services;
+using CronSchedulerApp.Data;
+using CronSchedulerApp.Jobs;
+using CronSchedulerApp.Services;
 
-namespace WebTestApp
+namespace CronSchedulerApp
 {
     public class Startup
     {
@@ -27,7 +27,7 @@ namespace WebTestApp
             Configuration = configuration;
             _logger = logger;
         }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -63,7 +63,6 @@ namespace WebTestApp
             });
 
             _logger.LogDebug("Configuration completed");
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

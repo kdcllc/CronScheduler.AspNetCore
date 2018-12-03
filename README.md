@@ -29,7 +29,7 @@ The following crontab format is supported:
   `1-55 * * * *`     Every minute through the 55th minute.
   `* 1,10,20 * * *`  Every 1st, 10th, and 20th hours.
 ```
-## Example WebTestApp
+## Example CronSchedulerApp
 The sample website provides with use-case scenario for this library.
 
 Includes the following sample service:

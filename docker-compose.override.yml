@@ -6,7 +6,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_HTTPS_PORT=44369
-      - ConnectionStrings:DefaultConnection=Server=cronschedulewebapp.sql;Database=WebTestApp;User Id=sa;Password=Pass@word
+      - ConnectionStrings:DefaultConnection=Server=cronschedulewebapp.sql;Database=CronSchedulerApp;User Id=sa;Password=Pass@word
     ports:
       - "57989:80"
       - "44369:443"

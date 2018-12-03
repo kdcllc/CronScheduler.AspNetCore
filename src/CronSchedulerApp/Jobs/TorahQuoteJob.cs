@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using CronScheduler.AspNetCore;
 using Microsoft.Extensions.Options;
-using WebTestApp.Services;
+using CronSchedulerApp.Services;
 
-namespace WebTestApp.Jobs
+namespace CronSchedulerApp.Jobs
 {
     public class TorahQuoteJob : IScheduledJob
     {

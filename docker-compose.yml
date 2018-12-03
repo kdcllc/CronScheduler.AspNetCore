@@ -5,7 +5,7 @@ services:
     image: ${DOCKER_REGISTRY}cronschedulewebapp
     build:
       context: .
-      dockerfile: src/WebTestApp/Dockerfile
+      dockerfile: src/CronSchedulerApp/Dockerfile
 
   cronschedulewebapp.sql:
     image: microsoft/mssql-server-linux:2017-latest

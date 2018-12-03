@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WebTestApp.Data.Migrations
+namespace CronSchedulerApp.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

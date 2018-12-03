@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using WebTestApp.Models;
-using WebTestApp.Services;
+using CronSchedulerApp.Models;
+using CronSchedulerApp.Services;
 
-namespace WebTestApp.Controllers
+namespace CronSchedulerApp.Controllers
 {
     public class HomeController : Controller
     {

@@ -1,4 +1,4 @@
-﻿namespace WebTestApp.Services
+﻿namespace CronSchedulerApp.Services
 {
     public class TorahSettings
     {
