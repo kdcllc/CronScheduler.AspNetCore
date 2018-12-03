@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using CronScheduler.AspNetCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -13,22 +14,46 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class CronSchedulerExtensions
     {
 
+        /// <summary>
+        /// Adds <see cref="SchedulerHostedService"/> service without global error handler.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddScheduler(this IServiceCollection services)
         {
-            return services.AddTransient<IHostedService,SchedulerHostedService>();
+            CreateInstance(services);
+            return services;
         }
 
-        public static IServiceCollection AddScheduler(this IServiceCollection services,
+        /// <summary>
+        /// Adds <see cref="SchedulerHostedService"/> service with global error handler.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="unobservedTaskExceptionHandler"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddScheduler(
+            this IServiceCollection services,
             EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler)
         {
-            return services.AddTransient<IHostedService,SchedulerHostedService>(serviceProvider =>
+            CreateInstance(services, unobservedTaskExceptionHandler);
+            return services;
+        }
+
+        private static void CreateInstance(
+            IServiceCollection services,
+            EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler=null)
+        {
+            services.TryAddTransient(typeof(SchedulerHostedService), serviceProvider =>
             {
                 var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
                 var scheduledJobs = serviceProvider.GetServices<IScheduledJob>();
 
                 var instance = new SchedulerHostedService(scheduledJobs, loggerFactory);
-                instance.UnobservedTaskException += unobservedTaskExceptionHandler;
 
+                if (unobservedTaskExceptionHandler != null)
+                {
+                    instance.UnobservedTaskException += unobservedTaskExceptionHandler;
+                }
                 return instance;
             });
         }
