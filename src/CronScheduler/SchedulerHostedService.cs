@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CronScheduler.AspNetCore.Cron;
+using Microsoft.Extensions.Logging;
 
 namespace CronScheduler.AspNetCore
 {
@@ -12,18 +13,31 @@ namespace CronScheduler.AspNetCore
         public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
 
         private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
+        private readonly TaskFactory _taskFactory = new TaskFactory(TaskScheduler.Current);
 
-        public SchedulerHostedService(IEnumerable<IScheduledJob> scheduledTasks)
+        public SchedulerHostedService(IEnumerable<IScheduledJob> scheduledTasks, ILoggerFactory loggerFactory)
         {
-            var referenceTime = DateTime.UtcNow;
+            var logger = loggerFactory.CreateLogger<SchedulerHostedService>();
+
+            var currentTimeUtc = DateTime.UtcNow;
 
             foreach (var scheduledTask in scheduledTasks)
             {
+                if (string.IsNullOrEmpty(scheduledTask.CronSchedule))
+                {
+                    var taskName = scheduledTask.GetType().Name;
+                    logger.LogWarning("Task {taskName} does not have CRON. Task will not run.", taskName);
+
+                    continue;
+                }
+
+                var crontabSchedule = CrontabSchedule.Parse(scheduledTask.CronSchedule);
+
                 _scheduledTasks.Add(new SchedulerTaskWrapper
                 {
-                    Schedule = CrontabSchedule.Parse(scheduledTask.CronSchedule),
+                    Schedule = crontabSchedule,
                     Task = scheduledTask,
-                    NextRunTime = referenceTime
+                    NextRunTime = scheduledTask.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc)
                 });
             }
         }
@@ -40,7 +54,6 @@ namespace CronScheduler.AspNetCore
 
         private async Task ExecuteOnceAsync(CancellationToken cancellationToken)
         {
-            var taskFactory = new TaskFactory(TaskScheduler.Current);
             var referenceTime = DateTime.UtcNow;
 
             var tasksThatShouldRun = _scheduledTasks.Where(t => t.ShouldRun(referenceTime)).ToList();
@@ -49,7 +62,7 @@ namespace CronScheduler.AspNetCore
             {
                 taskThatShouldRun.Increment();
 
-                await taskFactory.StartNew(
+                await _taskFactory.StartNew(
                     async () =>
                     {
                         try

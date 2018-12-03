@@ -14,6 +14,11 @@ namespace CronScheduler.AspNetCore
         string CronSchedule { get; }
 
         /// <summary>
+        /// Should be run on application start.
+        /// </summary>
+        bool RunImmediately { get; }
+
+        /// <summary>
         /// Job that will be executing on this schedule.
         /// </summary>
         /// <param name="cancellationToken"></param>

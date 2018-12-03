@@ -10,6 +10,7 @@ namespace WebTestApp.Jobs
     public class TorahQuoteJob : IScheduledJob
     {
         public string CronSchedule { get; }
+        public bool RunImmediately { get; }
 
         private readonly TorahService _service;
         private readonly TorahSettings _options;
@@ -18,9 +19,9 @@ namespace WebTestApp.Jobs
         {
             _options = options.Value;
             CronSchedule = _options.CronSchedule; //set to 1 min in appsettings.json
+            RunImmediately = true;
             _service = service;
         }
-        
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
@@ -32,5 +33,4 @@ namespace WebTestApp.Jobs
             TorahVerses.Current = result;
         }
     }
-
 }

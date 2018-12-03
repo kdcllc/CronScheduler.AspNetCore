@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CronScheduler.AspNetCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -17,14 +18,17 @@ namespace Microsoft.Extensions.DependencyInjection
             return services.AddTransient<IHostedService,SchedulerHostedService>();
         }
 
-
         public static IServiceCollection AddScheduler(this IServiceCollection services,
             EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler)
         {
             return services.AddTransient<IHostedService,SchedulerHostedService>(serviceProvider =>
             {
-                var instance = new SchedulerHostedService(serviceProvider.GetServices<IScheduledJob>());
+                var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                var scheduledJobs = serviceProvider.GetServices<IScheduledJob>();
+
+                var instance = new SchedulerHostedService(scheduledJobs, loggerFactory);
                 instance.UnobservedTaskException += unobservedTaskExceptionHandler;
+
                 return instance;
             });
         }
