@@ -1,9 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using CronScheduler.AspNetCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using CronScheduler.AspNetCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
