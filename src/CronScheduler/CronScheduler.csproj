@@ -4,14 +4,20 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>CronScheduler.AspNetCore</AssemblyName>
     <RootNamespace>CronScheduler.AspNetCore</RootNamespace>
-    <Description>Asp.Net Core 2.1 Hosted or .Net 2.1 Self-hosted Cron Scheduler</Description>
+    <Description>Asp.Net Core 2.x Hosted or .Net 2.x Self-hosted Cron Scheduler</Description>
     <PackageProjectUrl>https://github.com/kdcllc/CronScheduler.AspNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kdcllc/CronScheduler.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseUrl>https://github.com/kdcllc/CronScheduler.AspNetCoreblob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicense>https://github.com/kdcllc/CronScheduler.AspNetCoreblob/master/LICENSE</PackageLicense>
     <PackageIconUrl>https://raw.githubusercontent.com/kdcllc/CronScheduler.AspNetCore/master/img/logo64x64.png</PackageIconUrl>
     <PackageTags>Cron,Quatz,AspNetCore,DotNet,CronNET,Scheduler</PackageTags>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,9 +30,10 @@
 		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
-	
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

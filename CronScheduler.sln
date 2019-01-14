@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CronScheduler", "src\CronScheduler\CronScheduler.csproj", "{B94D454F-814E-4933-B584-982004347F1C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CronScheduler.UnitTest", "tests\CronScheduler.UnitTest\CronScheduler.UnitTest.csproj", "{7A3DC64D-5684-47AF-8501-B23A955CBF59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CronScheduler.UnitTest", "test\CronScheduler.UnitTest\CronScheduler.UnitTest.csproj", "{7A3DC64D-5684-47AF-8501-B23A955CBF59}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{452CDE01-5BD5-47B1-8AE6-9542836B5537}"
 EndProject
@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solutions Items", "Solution
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		appveyor.yml = appveyor.yml
+		CHANGELOG.md = CHANGELOG.md
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md

@@ -1,9 +1,45 @@
 <Project>
-  <PropertyGroup>
+<PropertyGroup>
+    <NetCoreToTarget></NetCoreToTarget>
+  </PropertyGroup>
+  <Choose>
+     <When Condition=" '$(NetCoreVersion)' == 'netcore30'">
+      <PropertyGroup>
+        <NetCoreToTarget>net30</NetCoreToTarget>
+      </PropertyGroup>
+    </When>
+
+    <When Condition=" '$(NetCoreVersion)' == 'netcore22'  Or '$(NetCoreVersion)' == '' ">
+      <PropertyGroup>
+        <NetCoreToTarget>net22</NetCoreToTarget>
+      </PropertyGroup>
+    </When>
+
+    <When Condition=" '$(NetCoreVersion)' == 'netcore21' ">
+      <PropertyGroup>
+        <NetCoreToTarget>net21</NetCoreToTarget>
+      </PropertyGroup>
+     </When>
+  </Choose>
+
+  <Import Project="build\dependencies.props" />
+  <Import Project="build\sources.props" />
+
+  <PropertyGroup Label="Gloabl csproj settings">
     <Company>King David Consulting LLC</Company>
     <Copyright>King David Consulting LLC</Copyright>
     <Authors>kdcllc</Authors>
-    <LangVersion>latest</LangVersion>
     <VersionPrefix>1.0.0</VersionPrefix>
+
+    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- https://github.com/aspnet/BuildTools/issues/592 -->
+    <EnableApiCheck>false</EnableApiCheck>
+    <SuppressNETCoreSdkPreviewMessage>false</SuppressNETCoreSdkPreviewMessage>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AspNetCoreHostingModel>inprocess</AspNetCoreHostingModel>
+
   </PropertyGroup>
 </Project>

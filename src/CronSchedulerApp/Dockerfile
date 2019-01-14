@@ -1,23 +1,17 @@
-# BUILD IMAGE: docker build . -f "src\\CronSchedulerApp\Dockerfile" -t "cronschedulewebapp:latest"
-# RUNNING THE IMAGE docker run --rm -it -p 5000:80 cronschedulewebapp:latest
+ARG sdkImage=kdcllc/dotnet
+ARG sdkTag=2.1-sdk
+ARG runtimeImage=microsoft/dotnet
+ARG runtimeTag=2.1-aspnetcore-runtime
+ARG coreversion=netcore21
 
-FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
+# Build image
+FROM ${sdkImage}:${sdkTag} as builder
+RUN dotnet publish "./src/CronSchedulerApp/CronSchedulerApp.csproj" -c Release -p:NetCoreVersion=${coreversion} -o /app
+#RUN npm -v
+
+# App image
+FROM ${runtimeImage}:${runtimeTag} AS final
 WORKDIR /app
-EXPOSE 57989
-EXPOSE 44369
-
-FROM microsoft/dotnet:2.1-sdk AS build
-WORKDIR /src
-COPY src/CronSchedulerApp/CronSchedulerApp.csproj src/CronSchedulerApp/
-RUN dotnet restore src/CronSchedulerApp/CronSchedulerApp.csproj
-COPY . .
-WORKDIR /src/src/CronSchedulerApp
-RUN dotnet build CronSchedulerApp.csproj -c Release -o /app
-
-FROM build AS publish
-RUN dotnet publish CronSchedulerApp.csproj -c Release -o /app
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
+COPY --from=builder /app .
 ENTRYPOINT ["dotnet", "CronSchedulerApp.dll"]
+

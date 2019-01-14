@@ -1,11 +1,17 @@
 version: '3.4'
 
 services:
-  cronschedulewebapp:
+  cronscheduler.app:
     image: ${DOCKER_REGISTRY}cronschedulewebapp
     build:
       context: .
       dockerfile: src/CronSchedulerApp/Dockerfile
+      args:
+       sdkImage: kdcllc/dotnet
+       sdkTag: 2.2-sdk
+       runtimeImage: microsoft/dotnet
+       runtimeTag: 2.2-aspnetcore-runtime
+       coreversion: netcore22
 
-  cronschedulewebapp.sql:
+  cronscheduler.sql:
     image: microsoft/mssql-server-linux:2017-latest

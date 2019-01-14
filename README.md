@@ -76,3 +76,11 @@ Then register this service within the `Startup.cs`
 - [Maarten Balliauw](https://blog.maartenballiauw.be/post/2017/08/01/building-a-scheduled-cache-updater-in-aspnet-core-2.html) for the Asp.Net Core idea for the background hosted implementation.
 - [NCrontab](https://github.com/atifaziz/NCrontab)
 - [3 ways to use HTTPClientFactory in ASP.NET Core 2.1](http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/)
+
+## Docker build
+Utilizes [King David Consulting LLC DotNet Docker Image](https://github.com/kdcllc/docker/tree/master/dotnet)
+
+```bash
+
+    docker-compose -f "docker-compose.yml" -f "docker-compose.override.yml" up -d --build
+```
