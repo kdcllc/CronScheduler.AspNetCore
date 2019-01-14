@@ -9,7 +9,5 @@
         public string CronSchedule { get; set; }
 
         public string[] Verses { get; set; }
-
     }
-
 }

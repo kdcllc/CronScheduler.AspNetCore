@@ -12,6 +12,8 @@ namespace CronSchedulerApp.Jobs
         public string CronSchedule { get; }
         public bool RunImmediately { get; }
 
+        public string CronTimeZone { get; }
+
         private readonly TorahService _service;
         private readonly TorahSettings _options;
 

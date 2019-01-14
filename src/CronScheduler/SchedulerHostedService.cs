@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CronScheduler.AspNetCore.Cron;
+using Cronos;
 using Microsoft.Extensions.Logging;
 
 namespace CronScheduler.AspNetCore
@@ -17,6 +17,7 @@ namespace CronScheduler.AspNetCore
 
         private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
         private readonly TaskFactory _taskFactory = new TaskFactory(TaskScheduler.Current);
+        private readonly bool _hasSecondsCron;
 
         /// <summary>
         /// Constructor for <see cref="SchedulerHostedService"/>
@@ -28,25 +29,54 @@ namespace CronScheduler.AspNetCore
             var logger = loggerFactory.CreateLogger<SchedulerHostedService>();
 
             var currentTimeUtc = DateTime.UtcNow;
+            var timeZone = TimeZoneInfo.Local;
 
             foreach (var scheduledTask in scheduledTasks)
             {
+                var taskName = scheduledTask.GetType().Name;
+
                 if (string.IsNullOrEmpty(scheduledTask.CronSchedule))
                 {
-                    var taskName = scheduledTask.GetType().Name;
                     logger.LogWarning("Task {taskName} does not have CRON. Task will not run.", taskName);
 
                     continue;
                 }
 
-                var crontabSchedule = CrontabSchedule.Parse(scheduledTask.CronSchedule);
-
-                _scheduledTasks.Add(new SchedulerTaskWrapper
+                if (string.IsNullOrEmpty(scheduledTask.CronTimeZone))
                 {
-                    Schedule = crontabSchedule,
-                    Task = scheduledTask,
-                    NextRunTime = scheduledTask.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc)
-                });
+                    logger.LogInformation("Task {taskName} is running under local time zone", taskName, timeZone.Id);
+                }
+                else
+                {
+                    try
+                    {
+                        timeZone = TimeZoneInfo.FindSystemTimeZoneById(scheduledTask.CronTimeZone);
+                        logger.LogInformation("Task {taskName} is running under local time zone {zoneId}", taskName, timeZone.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError("Task {taskName} tried parse {zone} but failed with {ex} running under local time zone", taskName, scheduledTask.CronTimeZone, ex.Message);
+                        timeZone = TimeZoneInfo.Local;
+                    }
+                }
+
+                CronExpression crontabSchedule = null;
+
+                if (scheduledTask.CronSchedule.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length == 6)
+                {
+                    crontabSchedule = CronExpression.Parse(scheduledTask.CronSchedule, CronFormat.IncludeSeconds);
+                    _hasSecondsCron = true;
+                }
+                else
+                {
+                    crontabSchedule = CronExpression.Parse(scheduledTask.CronSchedule, CronFormat.Standard);
+                }
+
+                var nextRunTime = (scheduledTask.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc, timeZone).Value);
+                _scheduledTasks.Add(new SchedulerTaskWrapper(
+                    crontabSchedule,
+                    scheduledTask,
+                    nextRunTime));
             }
         }
 
@@ -56,7 +86,14 @@ namespace CronScheduler.AspNetCore
             {
                 await ExecuteOnceAsync(cancellationToken);
 
-                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                if (_hasSecondsCron)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                }
+                else
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                }
             }
         }
 
@@ -75,7 +112,7 @@ namespace CronScheduler.AspNetCore
                     {
                         try
                         {
-                            await taskThatShouldRun.Task.ExecuteAsync(cancellationToken);
+                            await taskThatShouldRun.ScheduledJob.ExecuteAsync(cancellationToken);
                         }
                         catch (Exception ex)
                         {

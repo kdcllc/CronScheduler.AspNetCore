@@ -20,7 +20,6 @@ namespace CronSchedulerApp.Controllers
 
         public IActionResult Index()
         {
-
             var text = TorahVerses.Current.Select(x => x.Text).Aggregate((i,j)=> i + Environment.NewLine + j);
             var bookName = TorahVerses.Current.Select(x => x.Bookname).Distinct().FirstOrDefault();
             var chapter = TorahVerses.Current.Select(x => x.Chapter).Distinct().FirstOrDefault();

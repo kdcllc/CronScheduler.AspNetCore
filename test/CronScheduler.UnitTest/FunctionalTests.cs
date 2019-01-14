@@ -30,14 +30,13 @@ namespace CronScheduler.UnitTest
                     new WebHostBuilder()
                     .ConfigureTestServices(services =>
                     {
-
                         services.AddScheduler(ctx =>
                         {
                             ctx.Services.AddSingleton<IScheduledJob, TestJob>(_ => {
                                 return new TestJob(mockLogger.Object)
                                 {
                                     RunImmediately = true,
-                                    CronSchedule = "* * * * *"
+                                    CronSchedule = "*/10 * * * * *"
                                 };
                             });
                         });
@@ -52,6 +51,7 @@ namespace CronScheduler.UnitTest
 
             var response = await client.GetAsync("/hc");
             response.EnsureSuccessStatusCode();
+            await Task.Delay(TimeSpan.FromSeconds(15));
 
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
 
@@ -79,7 +79,7 @@ namespace CronScheduler.UnitTest
                                 return new TestJob(mockLogger.Object)
                                 {
                                     RunImmediately = false,
-                                    CronSchedule = "* * * * *"
+                                    CronSchedule = "*/10 * * * * *"
                                 };
                             });
                         });
@@ -91,10 +91,10 @@ namespace CronScheduler.UnitTest
                 );
 
             var client = builder.CreateClient();
-            await Task.Delay(TimeSpan.FromSeconds(65));
 
             var response = await client.GetAsync("/hc");
             response.EnsureSuccessStatusCode();
+            await Task.Delay(TimeSpan.FromSeconds(15));
 
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
 
@@ -123,7 +123,7 @@ namespace CronScheduler.UnitTest
                                 return new TestJob(mockLogger.Object, true)
                                 {
                                     RunImmediately = true,
-                                    CronSchedule = "* * * * *"
+                                    CronSchedule = "*/10 * * * * *"
                                 };
                             });
                         });
@@ -137,8 +137,17 @@ namespace CronScheduler.UnitTest
 
             var response = await client.GetAsync("/hc");
             response.EnsureSuccessStatusCode();
+            await Task.Delay(TimeSpan.FromSeconds(15));
 
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+
+            mockLogger.Verify(l => l.Log(
+                        LogLevel.Error,
+                        It.IsAny<EventId>(),
+                        It.Is<FormattedLogValues>(v => v.ToString().Contains("Unhandle Exception")),
+                        It.IsAny<Exception>(),
+                        It.IsAny<Func<object, Exception, string>>()
+                        ));
         }
 
         private void unobservedTaskExceptionHandler(object sender, UnobservedTaskExceptionEventArgs e)

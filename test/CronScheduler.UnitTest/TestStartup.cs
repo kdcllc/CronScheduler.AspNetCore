@@ -21,7 +21,6 @@ namespace CronScheduler.UnitTest
 
         public void ConfigureServices(IServiceCollection services)
         {
-
         }
 
         public void Configure(

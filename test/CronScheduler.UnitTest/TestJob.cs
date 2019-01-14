@@ -23,11 +23,15 @@ namespace CronScheduler.UnitTest
 
         public bool RunImmediately { get; set; }
 
+        public string CronTimeZone { get; set; }
+
         public Task ExecuteAsync(CancellationToken cancellationToken)
         {
             if (_raiseException)
             {
-                throw new Exception("Unhandle Exception");
+                var message = "Unhandle Exception";
+                _logger.LogError(message);
+                throw new Exception(message);
             }
             _logger.LogInformation("Running {name}", nameof(TestJob));
             return Task.CompletedTask;

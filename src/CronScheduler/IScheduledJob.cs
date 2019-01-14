@@ -14,6 +14,11 @@ namespace CronScheduler.AspNetCore
         string CronSchedule { get; }
 
         /// <summary>
+        /// When not specified the CronScheduler will use Local Time.
+        /// </summary>
+        string CronTimeZone { get; }
+
+        /// <summary>
         /// Should be run on application start.
         /// </summary>
         bool RunImmediately { get; }

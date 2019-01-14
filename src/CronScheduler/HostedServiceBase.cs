@@ -49,7 +49,6 @@ namespace CronScheduler.AspNetCore
             cancellationToken.ThrowIfCancellationRequested();
         }
 
-        
         /// <summary>
         /// Derived classes should override this and execute a long running method until
         /// cancellation is requested
