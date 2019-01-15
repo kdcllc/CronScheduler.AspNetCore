@@ -10,6 +10,8 @@ Version 1.0.6 (2018-01-14)
 
 * Resolved issue #4 "Add support for seconds with Cron"
 
+* Resolved issue #7 "Add support for async Statup.cs job"
+
 ```c#
    public string CronTimeZone { get; };
 

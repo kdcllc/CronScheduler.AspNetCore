@@ -15,6 +15,7 @@ namespace CronSchedulerApp
         {
             var host = CreateWebHostBuilder(args).Build();
 
+            // process any async jobs required to get the site up and running
             await host.ProcessStartUpJobs();
 
             host.Run();

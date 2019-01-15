@@ -1,8 +1,8 @@
 # CronScheduler.AspNetCore 
 [![Build status](https://ci.appveyor.com/api/projects/status/wrme1wr6kgjp3a0o?svg=true)](https://ci.appveyor.com/project/kdcllc/cronscheduler-aspnetcore)
 
-The goal of this library was to utilize IHostedService interface for Asp.Net Core 2.1 for scheduled jobs/tasks.
-It is lighter than Quartz schedular and operates inside of any GenericHost.
+The goal of this library was to utilize IHostedService interface for Asp.Net Core 2.x for scheduled jobs/tasks.
+It is lighter than Quartz schedular and operates inside of any GenericHost thus makes it simpler to setup and configure. 
 
 ## Uses Crontab format for Jobs/Tasks schedules
 This library does not include implementations for seconds in the Crontab format.
@@ -65,7 +65,32 @@ Then register this service within the `Startup.cs`
         builder.UnobservedTaskExceptionHandler = UnobservedHandler;
     });
 ```
+
 - Sample uses Microsoft.Extensions.Http.Polly extension library to make http calls every minute.
+
+## Startup.cs Async Initialization Jobs
+There are many case scenarios to use StartupJobs for the IWebHost interface or IGenericHost. Most common case scenario is to make sure that database is created and updated.
+This library makes it possible by simply doing the following:
+
+- In the Program.cs file add the following:
+
+```csharp
+        public static async Task Main(string[] args)
+        {
+            var host = CreateWebHostBuilder(args).Build();
+
+            // process any async jobs required to get the site up and running
+            await host.ProcessStartUpJobs();
+
+            host.Run();
+        }
+```
+
+- Make sure that the following services are registered as such:
+
+```csharp
+   services.AddStartupJob<SeedDatabaseJob>();
+```
 
 ## Special Thanks to
 - [Maarten Balliauw](https://blog.maartenballiauw.be/post/2017/08/01/building-a-scheduled-cache-updater-in-aspnet-core-2.html) for the Asp.Net Core idea for the background hosted implementation.
