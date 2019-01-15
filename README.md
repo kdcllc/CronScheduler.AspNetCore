@@ -9,26 +9,21 @@ This library does not include implementations for seconds in the Crontab format.
 You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
 The following crontab format is supported:
 
-```
-*    *    *    *    *  
-┬    ┬    ┬    ┬    ┬
-│    │    │    │    │
-│    │    │    │    │
-│    │    │    │    └───── day of week (0 - 6) (Sunday=0 )
-│    │    │    └────────── month (1 - 12)
-│    │    └─────────────── day of month (1 - 31)
-│    └──────────────────── hour (0 - 23)
-└───────────────────────── min (0 - 59)
-```
+- [Now Supports HangfireIO/Cronos](https://github.com/HangfireIO/Cronos)
 
-```txt
-  `* * * * *`        Every minute.
-  `0 * * * *`        Top of every hour.
-  `0,1,2 * * * *`    Every hour at minutes 0, 1, and 2.
-  `*/2 * * * *`      Every two minutes.
-  `1-55 * * * *`     Every minute through the 55th minute.
-  `* 1,10,20 * * *`  Every 1st, 10th, and 20th hours.
-```
+Cron expression is a mask to define fixed times, dates and intervals. The mask consists of second (optional), minute, hour, day-of-month, month and day-of-week fields. All of the fields allow you to specify multiple values, and any given date/time will satisfy the specified Cron expression, if all the fields contain a matching value.
+
+                                           Allowed values    Allowed special characters   Comment
+
+    ┌───────────── second (optional)       0-59              * , - /                      
+    │ ┌───────────── minute                0-59              * , - /                      
+    │ │ ┌───────────── hour                0-23              * , - /                      
+    │ │ │ ┌───────────── day of month      1-31              * , - / L W ?                
+    │ │ │ │ ┌───────────── month           1-12 or JAN-DEC   * , - /                      
+    │ │ │ │ │ ┌───────────── day of week   0-6  or SUN-SAT   * , - / # L ?                Both 0 and 7 means SUN
+    │ │ │ │ │ │
+    * * * * * *
+
 ## Example CronSchedulerApp
 The sample website provides with use-case scenario for this library.
 
@@ -74,13 +69,11 @@ Then register this service within the `Startup.cs`
 
 ## Special Thanks to
 - [Maarten Balliauw](https://blog.maartenballiauw.be/post/2017/08/01/building-a-scheduled-cache-updater-in-aspnet-core-2.html) for the Asp.Net Core idea for the background hosted implementation.
-- [NCrontab](https://github.com/atifaziz/NCrontab)
 - [3 ways to use HTTPClientFactory in ASP.NET Core 2.1](http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/)
 
 ## Docker build
 Utilizes [King David Consulting LLC DotNet Docker Image](https://github.com/kdcllc/docker/tree/master/dotnet)
 
 ```bash
-
     docker-compose -f "docker-compose.yml" -f "docker-compose.override.yml" up -d --build
 ```

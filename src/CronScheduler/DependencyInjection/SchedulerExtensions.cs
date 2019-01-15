@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// An Extension method to register <see cref="SchedulerHostedService"/>.
     /// https://github.com/aspnet/Hosting/blob/a3dd609ae667adcb6eb062125d76f9a76a82f7b4/src/Microsoft.Extensions.Hosting.Abstractions/ServiceCollectionHostedServiceExtensions.cs#L17
     /// </summary>
-    public static class CronSchedulerExtensions
+    public static class SchedulerExtensions
     {
         /// <summary>
         /// Adds <see cref="SchedulerHostedService"/> service without global error handler.

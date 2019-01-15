@@ -33,6 +33,8 @@ namespace CronSchedulerApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddStartupJob<SeedDatabaseJob>();
+
             services.AddOptions();
             services.Configure<TorahSettings>(Configuration.GetSection("TorahService"));
 
@@ -54,7 +56,9 @@ namespace CronSchedulerApp
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
            // services.AddSingleton<IScheduledJob, TorahQuoteJob>();
 

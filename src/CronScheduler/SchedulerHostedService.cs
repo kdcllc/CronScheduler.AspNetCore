@@ -18,15 +18,18 @@ namespace CronScheduler.AspNetCore
         private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
         private readonly TaskFactory _taskFactory = new TaskFactory(TaskScheduler.Current);
         private readonly bool _hasSecondsCron;
+        private readonly ILogger<SchedulerHostedService> _logger;
 
         /// <summary>
         /// Constructor for <see cref="SchedulerHostedService"/>
         /// </summary>
         /// <param name="scheduledTasks"></param>
         /// <param name="loggerFactory"></param>
-        public SchedulerHostedService(IEnumerable<IScheduledJob> scheduledTasks, ILoggerFactory loggerFactory)
+        public SchedulerHostedService(
+            IEnumerable<IScheduledJob> scheduledTasks,
+            ILoggerFactory loggerFactory)
         {
-            var logger = loggerFactory.CreateLogger<SchedulerHostedService>();
+            _logger = loggerFactory.CreateLogger<SchedulerHostedService>();
 
             var currentTimeUtc = DateTime.UtcNow;
             var timeZone = TimeZoneInfo.Local;
@@ -37,25 +40,25 @@ namespace CronScheduler.AspNetCore
 
                 if (string.IsNullOrEmpty(scheduledTask.CronSchedule))
                 {
-                    logger.LogWarning("Task {taskName} does not have CRON. Task will not run.", taskName);
+                    _logger.LogWarning("Task {taskName} does not have CRON. Task will not run.", taskName);
 
                     continue;
                 }
 
                 if (string.IsNullOrEmpty(scheduledTask.CronTimeZone))
                 {
-                    logger.LogInformation("Task {taskName} is running under local time zone", taskName, timeZone.Id);
+                    _logger.LogInformation("Task {taskName} is running under local time zone", taskName, timeZone.Id);
                 }
                 else
                 {
                     try
                     {
                         timeZone = TimeZoneInfo.FindSystemTimeZoneById(scheduledTask.CronTimeZone);
-                        logger.LogInformation("Task {taskName} is running under local time zone {zoneId}", taskName, timeZone.Id);
+                        _logger.LogInformation("Task {taskName} is running under local time zone {zoneId}", taskName, timeZone.Id);
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError("Task {taskName} tried parse {zone} but failed with {ex} running under local time zone", taskName, scheduledTask.CronTimeZone, ex.Message);
+                        _logger.LogError("Task {taskName} tried parse {zone} but failed with {ex} running under local time zone", taskName, scheduledTask.CronTimeZone, ex.Message);
                         timeZone = TimeZoneInfo.Local;
                     }
                 }
