@@ -17,7 +17,8 @@ namespace CronSchedulerApp
         public async Task StartAsync()
         {
             // await for docker container to come up.
-            await Task.Delay(TimeSpan.FromSeconds(40));
+            // await Task.Delay(TimeSpan.FromSeconds(40));
+
             await _dbContext.Database.EnsureCreatedAsync();
         }
     }

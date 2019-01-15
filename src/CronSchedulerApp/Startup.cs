@@ -1,6 +1,4 @@
-﻿using System;
-using CronScheduler.AspNetCore;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +12,6 @@ using CronSchedulerApp.Data;
 using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Services;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CronSchedulerApp
 {
@@ -33,10 +30,7 @@ namespace CronSchedulerApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddStartupJob<SeedDatabaseJob>();
-
-            services.AddOptions();
-            services.Configure<TorahSettings>(Configuration.GetSection("TorahService"));
+            // services.AddStartupJob<SeedDatabaseJob>();
 
             services.AddHttpClient();
             services.AddHttpClient<TorahService>()
@@ -60,12 +54,9 @@ namespace CronSchedulerApp
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-           // services.AddSingleton<IScheduledJob, TorahQuoteJob>();
-
             services.AddScheduler(builder =>
             {
-                // recommended to use TryAddSingleton
-                builder.Services.TryAddSingleton<IScheduledJob, TorahQuoteJob>();
+                builder.AddJob<TorahQuoteJob,TorahSettings>();
                 builder.UnobservedTaskExceptionHandler = UnobservedHandler;
             });
 

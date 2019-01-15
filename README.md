@@ -1,15 +1,15 @@
 # CronScheduler.AspNetCore 
 [![Build status](https://ci.appveyor.com/api/projects/status/wrme1wr6kgjp3a0o?svg=true)](https://ci.appveyor.com/project/kdcllc/cronscheduler-aspnetcore)
 
-The goal of this library was to utilize IHostedService interface for Asp.Net Core 2.x for scheduled jobs/tasks.
-It is lighter than Quartz schedular and operates inside of any GenericHost thus makes it simpler to setup and configure. 
+The goal of this library was to design a simple Cron Scheduling engine that is based on build-in Asp.Net Core  IHostedService interface.
+It is much lighter than Quartz schedular and operates inside of any .NET Core GenericHost thus makes it simpler to setup and configure.
+In addition `IStartupJob` was added to support async initialization before the IWebHost is ready to start. Sample project includes support for
+making sure that Database is created before the application starts.
 
 ## Uses Crontab format for Jobs/Tasks schedules
-This library does not include implementations for seconds in the Crontab format.
-You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
-The following crontab format is supported:
+This library supports up to 5 seconds job intervals in the Crontab format thank to [HangfireIO/Cronos](https://github.com/HangfireIO/Cronos)] library.
 
-- [Now Supports HangfireIO/Cronos](https://github.com/HangfireIO/Cronos)
+You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
 
 Cron expression is a mask to define fixed times, dates and intervals. The mask consists of second (optional), minute, hour, day-of-month, month and day-of-week fields. All of the fields allow you to specify multiple values, and any given date/time will satisfy the specified Cron expression, if all the fields contain a matching value.
 
@@ -28,21 +28,28 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
 The sample website provides with use-case scenario for this library.
 
 Includes the following sample service:
-```c#
- public class TorahQuoteJob : IScheduledJob
+```csharp
+    public class TorahQuoteJob : IScheduledJob
     {
         public string CronSchedule { get; }
+
+        public bool RunImmediately { get; }
+
+        public string CronTimeZone { get; }
 
         private readonly TorahService _service;
         private readonly TorahSettings _options;
 
-        public TorahQuoteJob(IOptions<TorahSettings> options, TorahService service)
+        public TorahQuoteJob(
+            IOptions<TorahSettings> options,
+            TorahService service)
         {
             _options = options.Value;
-            CronSchedule = _options.CronSchedule; //set to 1 min in appsettings.json "* * * * *"
+            CronSchedule = _options.CronSchedule; //set to 10 seconds in appsettings.json
+            RunImmediately = _options.RunImmediately;
+            CronTimeZone = _options.CronTimeZone;
             _service = service;
         }
-        
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
@@ -57,18 +64,18 @@ Includes the following sample service:
 ```
 
 Then register this service within the `Startup.cs`
-```c#
+```csharp
     services.AddScheduler(builder =>
     {
-        // recommended to use TryAddSingleton
-        builder.Services.TryAddSingleton<IScheduledJob, TorahQuoteJob>();
+        builder.AddJob<TorahQuoteJob,TorahSettings>();
         builder.UnobservedTaskExceptionHandler = UnobservedHandler;
     });
 ```
 
-- Sample uses Microsoft.Extensions.Http.Polly extension library to make http calls every minute.
+- Sample uses Microsoft.Extensions.Http.Polly extension library to make http calls every 10 seconds.
 
-## Startup.cs Async Initialization Jobs
+## `IStartupJobs` to assist with async jobs initialization before the application starts
+
 There are many case scenarios to use StartupJobs for the IWebHost interface or IGenericHost. Most common case scenario is to make sure that database is created and updated.
 This library makes it possible by simply doing the following:
 
@@ -80,16 +87,30 @@ This library makes it possible by simply doing the following:
             var host = CreateWebHostBuilder(args).Build();
 
             // process any async jobs required to get the site up and running
-            await host.ProcessStartUpJobs();
+            await host.RunStartupJobsAync();
 
             host.Run();
         }
 ```
 
-- Make sure that the following services are registered as such:
+- Register the startup job in `Program.cs` or in `Startup.cs` file.
 
 ```csharp
-   services.AddStartupJob<SeedDatabaseJob>();
+   public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                    .ConfigureServices(services =>
+                    {
+                        services.AddStartupJob<SeedDatabaseJob>();
+                    })
+                    .ConfigureLogging((context, logger) =>
+                    {
+                        logger.AddConsole();
+                        logger.AddDebug();
+                        logger.AddConfiguration(context.Configuration.GetSection("Logging"));
+                    })
+                    .UseStartup<Startup>();
+        }
 ```
 
 ## Special Thanks to

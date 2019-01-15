@@ -1,13 +1,18 @@
 ﻿using CronScheduler.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class StartupJobExtensions
     {
-        public static async Task ProcessStartUpJobs(this IWebHost host)
+        /// <summary>
+        /// Runs async all of the registered <see cref="IStartupJob"/> jobs.
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public static async Task RunStartupJobsAync(this IWebHost host)
         {
             using (var scope = host.Services.CreateScope())
             {
@@ -16,13 +21,25 @@ namespace Microsoft.Extensions.DependencyInjection
             }
         }
 
+        /// <summary>
+        /// Adds <see cref="StartupJobInitializer"/> to DI registration.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <returns></returns>
         public static IServiceCollection AddStartupJobInitializer(this IServiceCollection services)
         {
-            services.AddTransient<StartupJobInitializer>();
+            services.TryAddTransient<StartupJobInitializer>();
             return services;
         }
 
-        public static IServiceCollection AddStartupJob<TStartupJob>(this IServiceCollection services) where TStartupJob: class, IStartupJob
+        /// <summary>
+        /// Adds <see cref="IStartupJob"/> job to the DI registration.
+        /// </summary>
+        /// <typeparam name="TStartupJob"></typeparam>
+        /// <param name="services"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddStartupJob<TStartupJob>(this IServiceCollection services)
+            where TStartupJob: class, IStartupJob
         {
             return services
                 .AddStartupJobInitializer()

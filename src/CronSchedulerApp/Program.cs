@@ -16,7 +16,7 @@ namespace CronSchedulerApp
             var host = CreateWebHostBuilder(args).Build();
 
             // process any async jobs required to get the site up and running
-            await host.ProcessStartUpJobs();
+            await host.RunStartupJobsAync();
 
             host.Run();
         }
@@ -24,6 +24,10 @@ namespace CronSchedulerApp
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
+                    .ConfigureServices(services =>
+                    {
+                        services.AddStartupJob<SeedDatabaseJob>();
+                    })
                     .ConfigureLogging((context, logger) =>
                     {
                         logger.AddConsole();

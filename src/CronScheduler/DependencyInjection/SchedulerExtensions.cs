@@ -1,6 +1,9 @@
 ﻿using CronScheduler.AspNetCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -13,7 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class SchedulerExtensions
     {
         /// <summary>
-        /// Adds <see cref="SchedulerHostedService"/> service without global error handler.
+        /// Adds <see cref="SchedulerHostedService"/> service without global error handler <see cref="UnobservedTaskExceptionEventArgs"/>.
+        /// Manually register jobs.
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
@@ -24,7 +28,8 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds <see cref="SchedulerHostedService"/> service with global error handler.
+        /// Adds <see cref="SchedulerHostedService"/> service with global error handler <see cref="UnobservedTaskExceptionEventArgs"/>.
+        /// Manually register jobs.
         /// </summary>
         /// <param name="services"></param>
         /// <param name="unobservedTaskExceptionHandler"></param>
@@ -38,28 +43,54 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds <see cref="SchedulerHostedService"/> service with ability to register all of the cron job inside the context.
+        /// Adds <see cref="SchedulerHostedService"/> service with ability to register all of the cron job inside the context with
+        /// global error handler <see cref="UnobservedTaskExceptionEventArgs"/>
         /// </summary>
         /// <param name="services"></param>
         /// <param name="config"></param>
         /// <returns></returns>
         public static IServiceCollection AddScheduler(
             this IServiceCollection services,
-            Action<SchedulerBuilder> config
-            )
+            Action<SchedulerBuilder> config)
         {
             var builder = new SchedulerBuilder(services);
             config(builder);
 
-            CreateInstance(services, builder.UnobservedTaskExceptionHandler);
-            return services;
+            CreateInstance(builder.Services, builder.UnobservedTaskExceptionHandler);
+
+            return builder.Services;
+        }
+
+        /// <summary>
+        /// Adds <see cref="IScheduledJob"/> job to DI without support for <see cref="UnobservedTaskExceptionEventArgs"/> delegate.
+        /// </summary>
+        /// <typeparam name="TJob"></typeparam>
+        /// <typeparam name="TJobOptions"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="sectionName"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddSchedulerJob<TJob, TJobOptions>(
+            this IServiceCollection services,
+            string sectionName = "SchedulerJobs")
+            where TJob: class, IScheduledJob
+            where TJobOptions: SchedulerOptions, new()
+        {
+            var builder = new SchedulerBuilder(services);
+
+            // add job with configuration settings
+            builder.AddJob<TJob, TJobOptions>(sectionName);
+
+            CreateInstance(builder.Services);
+
+            return builder.Services;
         }
 
         private static void CreateInstance(
             IServiceCollection services,
             EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler=null)
         {
-            services.AddTransient<IHostedService,SchedulerHostedService>(serviceProvider =>
+            // should prevent from double registrations.
+            services.TryAddTransient(typeof(IHostedService), serviceProvider =>
             {
                 var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
                 var scheduledJobs = serviceProvider.GetServices<IScheduledJob>();

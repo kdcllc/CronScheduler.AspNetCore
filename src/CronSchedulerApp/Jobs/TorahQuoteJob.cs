@@ -10,6 +10,7 @@ namespace CronSchedulerApp.Jobs
     public class TorahQuoteJob : IScheduledJob
     {
         public string CronSchedule { get; }
+
         public bool RunImmediately { get; }
 
         public string CronTimeZone { get; }
@@ -17,11 +18,14 @@ namespace CronSchedulerApp.Jobs
         private readonly TorahService _service;
         private readonly TorahSettings _options;
 
-        public TorahQuoteJob(IOptions<TorahSettings> options, TorahService service)
+        public TorahQuoteJob(
+            IOptions<TorahSettings> options,
+            TorahService service)
         {
             _options = options.Value;
-            CronSchedule = _options.CronSchedule; //set to 1 min in appsettings.json
-            RunImmediately = true;
+            CronSchedule = _options.CronSchedule; //set to 10 seconds in appsettings.json
+            RunImmediately = _options.RunImmediately;
+            CronTimeZone = _options.CronTimeZone;
             _service = service;
         }
 
