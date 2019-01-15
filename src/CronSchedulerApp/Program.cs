@@ -27,6 +27,7 @@ namespace CronSchedulerApp
                     .ConfigureServices(services =>
                     {
                         services.AddStartupJob<SeedDatabaseJob>();
+                        services.AddStartupJob<TestStartupJob>();
                     })
                     .ConfigureLogging((context, logger) =>
                     {
