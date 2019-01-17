@@ -13,7 +13,9 @@ namespace CronScheduler.UnitTest
 
         private readonly ILogger<TestStartup> _logger;
 
-        public TestStartup(IConfiguration configuration, ILogger<TestStartup> logger)
+        public TestStartup(
+            IConfiguration configuration,
+            ILogger<TestStartup> logger)
         {
             Configuration = configuration;
             _logger = logger;

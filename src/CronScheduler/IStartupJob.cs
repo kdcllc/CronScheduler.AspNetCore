@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CronScheduler.AspNetCore
@@ -11,7 +12,8 @@ namespace CronScheduler.AspNetCore
         /// <summary>
         /// Starts async job for <see cref="IHost"/>.
         /// </summary>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task StartAsync();
+        Task ExecuteAsync(CancellationToken cancellationToken = default);
     }
 }

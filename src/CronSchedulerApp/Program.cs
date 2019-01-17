@@ -13,9 +13,9 @@ namespace CronSchedulerApp
     {
         public static async Task Main(string[] args)
         {
+            // run async jobs before the IWebHost run
             var host = CreateWebHostBuilder(args).Build();
 
-            // process any async jobs required to get the site up and running
             await host.RunStartupJobsAync();
 
             host.Run();

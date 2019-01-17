@@ -7,7 +7,7 @@ pull_requests:
 image: Visual Studio 2017
 ## temporary until 2.1 sdk is installed
 install:
-  - ps: $urlCurrent = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/2.1.300/dotnet-sdk-2.1.300-win-x64.zip"
+  - ps: $urlCurrent = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/2.2.102/dotnet-sdk-2.2.102-win-x64.zip"
   - ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
   - ps: mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
   - ps: $tempFileCurrent = [System.IO.Path]::GetTempFileName()
@@ -36,3 +36,4 @@ deploy:
     secure: btoBG0IlGqSMBtVLUjeXmVtFT7B9Lw6CNf85ryr8Urf3982Vlz1LDkmIewZ/1tF7
   on:
     branch: master
+    appveyor_repo_tag: true

@@ -1,5 +1,3 @@
-using System;
-
 namespace CronSchedulerApp.Models
 {
     public class ErrorViewModel

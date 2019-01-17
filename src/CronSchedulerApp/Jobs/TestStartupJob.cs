@@ -1,6 +1,7 @@
 ﻿using CronScheduler.AspNetCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CronSchedulerApp
@@ -14,11 +15,11 @@ namespace CronSchedulerApp
             _logger = logger;
         }
 
-        public async Task StartAsync()
+        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("{job} started", nameof(TestStartupJob));
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(10));
 
             _logger.LogInformation("{job} ended", nameof(TestStartupJob));
         }

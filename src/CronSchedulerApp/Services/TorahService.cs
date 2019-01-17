@@ -34,7 +34,7 @@ namespace CronSchedulerApp.Services
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public async Task<IList<TorahVerses>> GetVerses(string exp, CancellationToken token)
+        public async Task<IList<TorahVerses>> GetVerses(string exp, CancellationToken cancellationToken)
         {
             // create query parameters
             var args = new Dictionary<string, string>
@@ -46,7 +46,7 @@ namespace CronSchedulerApp.Services
             var url = QueryHelpers.AddQueryString(_options.ApiUrl, args);
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
-            var response = await Client.SendAsync(request, token).ConfigureAwait(false);
+            var response = await Client.SendAsync(request, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadAsStringAsync();

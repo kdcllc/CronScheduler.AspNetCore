@@ -221,7 +221,6 @@ namespace CronScheduler.UnitTest
                     }
 
                     config.AddEnvironmentVariables();
-
                 })
                 .UseStartup<TestStartup>()
                 .ConfigureTestServices(services =>

@@ -15,7 +15,7 @@ namespace CronScheduler.AspNetCore
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            // Create a linked token so we can trigger cancellation outside of this token's cancellation
+            // Create a linked cancellationToken so we can trigger cancellation outside of this cancellationToken's cancellation
             _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
             // Store the task we're executing
@@ -42,7 +42,7 @@ namespace CronScheduler.AspNetCore
             // Signal cancellation to the executing method
             _cts.Cancel();
 
-            // Wait until the task completes or the stop token triggers
+            // Wait until the task completes or the stop cancellationToken triggers
             await Task.WhenAny(_executingTask, Task.Delay(-1, cancellationToken));
 
             // Throw if cancellation triggered

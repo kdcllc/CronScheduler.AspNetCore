@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>$(NetCoreTargetVersion)</TargetFramework>
     <UserSecretsId>b790ca5d-c09d-4e9c-af99-c7b8c6b6210a</UserSecretsId>
+    <AspNetCoreHostingModel>$(AspNetCoreHostingModel)</AspNetCoreHostingModel>
+    <DockerDefaultTargetOS>$(DockerDefaultTargetOS)</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
