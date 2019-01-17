@@ -2,7 +2,7 @@
 Change Log
 ===============================================================================
 
-Version 1.0.6 (2018-01-14)
+Version 1.0.7 (2018-01-16)
 * Resolved issue #5 "Add support for SourceLink", to make use of this feature in Visual Studio.NET please deselect `Enable Just My Code` and select `Enable Source Link support` as shown per this image:
 ![enable](img/source_link_enable.JPG)
 
