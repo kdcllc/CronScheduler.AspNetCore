@@ -6,16 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using CronSchedulerApp.Models;
 using CronSchedulerApp.Services;
+using CronScheduler.AspNetCore;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace CronSchedulerApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly TorahSettings _options;
+        private readonly IBackgroundTaskQueue _taskQueue;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IOptions<TorahSettings> options)
+        public HomeController(
+            IOptions<TorahSettings> options,
+            IBackgroundTaskQueue taskQueue,
+            ILogger<HomeController> logger)
         {
             _options = options.Value;
+            _taskQueue = taskQueue;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -67,6 +77,41 @@ namespace CronSchedulerApp.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Queue()
+        {
+            ViewData["Message"] = "Background Queue Hosted Service Test";
+
+            _taskQueue.QueueBackgroundWorkItem(async (token) =>
+            {
+                var guid = Guid.NewGuid().ToString();
+
+                var repeat = 4;
+                var idx = 0;
+
+                for (var delayLoop=0; delayLoop < repeat; delayLoop++)
+                {
+                    ++idx;
+
+                    if (idx == new Random().Next(0,repeat))
+                    {
+                        throw new AggregateException("Something went wrong");
+                    }
+
+                    _logger.LogInformation($"Queued Background Task {guid} is running. {delayLoop}/{idx}");
+                    await Task.Delay(TimeSpan.FromSeconds(10), token);
+                }
+
+                _logger.LogInformation($"Queued Background Task {guid} is complete. {repeat}/{idx}");
+            }
+            ,"Loop Test"
+            , ex=>
+            {
+                _logger.LogError(ex.ToString());
+            });
+
+            return View();
         }
     }
 }

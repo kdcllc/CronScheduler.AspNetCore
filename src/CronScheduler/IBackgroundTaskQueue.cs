@@ -1,0 +1,30 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace CronScheduler.AspNetCore
+{
+    /// <summary>
+    /// Background Task Queue.
+    /// </summary>
+    public interface IBackgroundTaskQueue
+    {
+        /// <summary>
+        /// Adds Task into the queue.
+        /// </summary>
+        /// <param name="workItem">The Task item to queue.</param>
+        /// <param name="workItemName">The name for the executing task.</param>
+        /// <param name="onException">The delegate for exception handling of the task.</param>
+        void QueueBackgroundWorkItem(
+            Func<CancellationToken, Task> workItem,
+            string workItemName = default,
+            Action<Exception> onException = default);
+
+        /// <summary>
+        /// Dequeues Task from the queue.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)> DequeueAsync(CancellationToken cancellationToken);
+    }
+}

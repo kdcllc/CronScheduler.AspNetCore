@@ -32,7 +32,6 @@ namespace CronSchedulerApp
         {
             // services.AddStartupJob<SeedDatabaseJob>();
 
-            services.AddHttpClient();
             services.AddHttpClient<TorahService>()
                 // Build a policy that will handle exceptions, 408s, and 500s from the remote server
                 .AddTransientHttpErrorPolicy(p => p.RetryAsync());
@@ -56,7 +55,7 @@ namespace CronSchedulerApp
 
             services.AddScheduler(builder =>
             {
-                builder.AddJob<TorahQuoteJob,TorahSettings>();
+                builder.AddJob<TorahQuoteJob, TorahSettings>();
                 builder.UnobservedTaskExceptionHandler = UnobservedHandler;
             });
 
@@ -65,6 +64,8 @@ namespace CronSchedulerApp
             //    _logger.LogError(args.Exception.Message);
             //    args.SetObserved();
             //});
+
+            services.AddQueuedService();
 
             _logger.LogDebug("Configuration completed");
         }

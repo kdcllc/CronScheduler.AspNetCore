@@ -19,7 +19,7 @@ namespace CronSchedulerApp
         {
             _logger.LogInformation("{job} started", nameof(TestStartupJob));
 
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(3));
 
             _logger.LogInformation("{job} ended", nameof(TestStartupJob));
         }
