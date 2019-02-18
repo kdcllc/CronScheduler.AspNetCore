@@ -112,6 +112,36 @@ This library makes it possible by simply doing the following:
                     .UseStartup<Startup>();
         }
 ```
+## Background Queues
+In some instances of the application the need for queueing of the tasks is required. In order to enable this add the following in `Startup.cs`.
+
+```csharp
+    services.AddQueuedService();
+```
+Then add sample async task to be executed by the Queued Hosted Service.
+
+```csharp
+    
+    public class MyService
+    {
+        private readonly IBackgroundTaskQueue _taskQueue;
+
+        public MyService(IBackgroundTaskQueue taskQueue)
+        {
+            _taskQueue = taskQueue;
+        }
+        
+        public void RunTask()
+        {
+            _taskQueue.QueueBackgroundWorkItem(async (token)=>
+            {
+                // run some task
+                await Task.Delay(TimeSpan.FromSeconds(10), token);
+            }});
+        }
+    }
+```
+
 
 ## Special Thanks to
 - [Maarten Balliauw](https://blog.maartenballiauw.be/post/2017/08/01/building-a-scheduled-cache-updater-in-aspnet-core-2.html) for the Asp.Net Core idea for the background hosted implementation.
