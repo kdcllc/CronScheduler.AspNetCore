@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Cronos;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace CronScheduler.AspNetCore
 {
     /// <summary>
-    /// The implementation for <see cref="HostedServiceBase"/> service.
+    /// The implementation for <see cref="BackgroundService"/> service.
     /// </summary>
-    public class SchedulerHostedService : HostedServiceBase
+    public class SchedulerHostedService : BackgroundService
     {
         public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
 
@@ -83,24 +84,24 @@ namespace CronScheduler.AspNetCore
             }
         }
 
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                await ExecuteOnceAsync(cancellationToken);
+                await ExecuteOnceAsync(stoppingToken);
 
                 if (_hasSecondsCron)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
                 }
                 else
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+                    await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
                 }
             }
         }
 
-        private async Task ExecuteOnceAsync(CancellationToken cancellationToken)
+        private async Task ExecuteOnceAsync(CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
@@ -115,7 +116,7 @@ namespace CronScheduler.AspNetCore
                     {
                         try
                         {
-                            await taskThatShouldRun.ScheduledJob.ExecuteAsync(cancellationToken);
+                            await taskThatShouldRun.ScheduledJob.ExecuteAsync(stoppingToken);
                         }
                         catch (Exception ex)
                         {
@@ -130,7 +131,7 @@ namespace CronScheduler.AspNetCore
                             }
                         }
                     },
-                    cancellationToken);
+                    stoppingToken);
             }
         }
     }
