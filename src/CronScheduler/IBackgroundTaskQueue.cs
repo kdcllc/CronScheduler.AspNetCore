@@ -21,10 +21,14 @@ namespace CronScheduler.AspNetCore
             Action<Exception> onException = default);
 
         /// <summary>
-        /// Dequeues Task from the queue.
+        /// <summary>
+        /// Dequeues Task from the Queue and adds wait lock from the thread of the <see cref="QueuedHostedService"/> based on the
+        /// <see cref="CancellationToken"/>.
+        /// </summary>
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)> DequeueAsync(CancellationToken cancellationToken);
+        Task<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>
+            DequeueAsync(CancellationToken cancellationToken);
     }
 }

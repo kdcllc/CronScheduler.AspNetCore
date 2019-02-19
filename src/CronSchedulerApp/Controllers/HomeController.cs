@@ -30,27 +30,31 @@ namespace CronSchedulerApp.Controllers
 
         public IActionResult Index()
         {
-            var text = TorahVerses.Current.Select(x => x.Text).Aggregate((i,j)=> i + Environment.NewLine + j);
-            var bookName = TorahVerses.Current.Select(x => x.Bookname).Distinct().FirstOrDefault();
-            var chapter = TorahVerses.Current.Select(x => x.Chapter).Distinct().FirstOrDefault();
-            var versesArray = TorahVerses.Current.Select(x => x.Verse).Aggregate((i, j) => $"{i};{j}").Split(';');
-
-            var verses = string.Empty;
-
-            if (versesArray.Length > 1)
+            if (TorahVerses.Current != null)
             {
-                verses = $"{versesArray.FirstOrDefault()}-{versesArray.Reverse().FirstOrDefault()}";
-            }
-            else
-            {
-                verses = versesArray.FirstOrDefault();
+                var text = TorahVerses.Current.Select(x => x.Text).Aggregate((i, j) => i + Environment.NewLine + j);
+                var bookName = TorahVerses.Current.Select(x => x.Bookname).Distinct().FirstOrDefault();
+                var chapter = TorahVerses.Current.Select(x => x.Chapter).Distinct().FirstOrDefault();
+                var versesArray = TorahVerses.Current.Select(x => x.Verse).Aggregate((i, j) => $"{i};{j}").Split(';');
+
+                var verses = string.Empty;
+
+                if (versesArray.Length > 1)
+                {
+                    verses = $"{versesArray.FirstOrDefault()}-{versesArray.Reverse().FirstOrDefault()}";
+                }
+                else
+                {
+                    verses = versesArray.FirstOrDefault();
+                }
+
+                ViewBag.Text = text;
+                ViewBag.BookName = bookName;
+                ViewBag.Chapter = chapter;
+                ViewBag.Verses = verses;
+                ViewBag.Url = $"https://studybible.info/KJV_Strongs/{Uri.EscapeDataString($"{bookName} {chapter}:{verses}")}";
             }
 
-            ViewBag.Text = text;
-            ViewBag.BookName = bookName;
-            ViewBag.Chapter = chapter;
-            ViewBag.Verses = verses;
-            ViewBag.Url = $"https://studybible.info/KJV_Strongs/{Uri.EscapeDataString($"{bookName} {chapter}:{verses}")}";
             return View();
         }
 
@@ -82,19 +86,29 @@ namespace CronSchedulerApp.Controllers
         public IActionResult Queue()
         {
             ViewData["Message"] = "Background Queue Hosted Service Test";
+            var processId = $" Queued-Task-{Guid.NewGuid().ToString()} ";
+
+            ViewData["Process"] = processId;
 
             _taskQueue.QueueBackgroundWorkItem(async (token) =>
             {
+                token.Register(() =>
+                {
+                    _logger.LogInformation("{Task}  canceled.", processId);
+                });
+
+                token.ThrowIfCancellationRequested();
+
                 var guid = Guid.NewGuid().ToString();
 
                 var repeat = 4;
                 var idx = 0;
 
-                for (var delayLoop=0; delayLoop < repeat; delayLoop++)
+                for (var delayLoop = 0; delayLoop < repeat; delayLoop++)
                 {
                     ++idx;
 
-                    if (idx == new Random().Next(0,repeat))
+                    if (idx == new Random().Next(0, repeat))
                     {
                         throw new AggregateException("Something went wrong");
                     }
@@ -105,7 +119,7 @@ namespace CronSchedulerApp.Controllers
 
                 _logger.LogInformation($"Queued Background Task {guid} is complete. {repeat}/{idx}");
             }
-            ,"Loop Test"
+            , processId
             , ex=>
             {
                 _logger.LogError(ex.ToString());

@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddQueuedService(this IServiceCollection services)
+        public static IServiceCollection AddBackgroundQueuedService(this IServiceCollection services)
         {
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();

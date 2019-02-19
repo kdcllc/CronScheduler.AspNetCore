@@ -21,7 +21,7 @@ namespace CronSchedulerApp.Services
         public TorahService(HttpClient httpClient, IOptions<TorahSettings> options )
         {
             _options = options.Value;
-                        
+
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("User-Agent", nameof(TorahService));
 
@@ -34,7 +34,7 @@ namespace CronSchedulerApp.Services
         /// </summary>
         /// <param name="exp"></param>
         /// <returns></returns>
-        public async Task<IList<TorahVerses>> GetVerses(string exp, CancellationToken cancellationToken)
+        public async Task<IList<TorahVerses>> GetVersesAsync(string exp, CancellationToken cancellationToken)
         {
             // create query parameters
             var args = new Dictionary<string, string>

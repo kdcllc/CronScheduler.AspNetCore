@@ -12,6 +12,7 @@ using CronSchedulerApp.Data;
 using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Services;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace CronSchedulerApp
 {
@@ -65,7 +66,7 @@ namespace CronSchedulerApp
             //    args.SetObserved();
             //});
 
-            services.AddQueuedService();
+            services.AddBackgroundQueuedService();
 
             _logger.LogDebug("Configuration completed");
         }

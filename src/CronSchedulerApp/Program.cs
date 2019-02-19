@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace CronSchedulerApp
@@ -18,6 +19,7 @@ namespace CronSchedulerApp
 
             await host.RunStartupJobsAync();
 
+            //await host.RunAsync();
             host.Run();
         }
 
@@ -35,6 +37,7 @@ namespace CronSchedulerApp
                         logger.AddDebug();
                         logger.AddConfiguration(context.Configuration.GetSection("Logging"));
                     })
+                    .UseShutdownTimeout(TimeSpan.FromSeconds(10)) // default is 5 seconds.
                     .UseStartup<Startup>();
         }
     }

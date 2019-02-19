@@ -22,14 +22,14 @@ namespace CronScheduler.AspNetCore
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogDebug($"{nameof(QueuedHostedService)} is starting.");
+            _logger.LogDebug("{ServiceName} is starting.", nameof(QueuedHostedService));
 
             return base.StartAsync(cancellationToken);
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogDebug($"{nameof(QueuedHostedService)} is stopping.");
+            _logger.LogDebug("{ServiceName} is stopping.", nameof(QueuedHostedService));
             return base.StopAsync(cancellationToken);
         }
 
@@ -41,11 +41,11 @@ namespace CronScheduler.AspNetCore
 
                 try
                 {
-                    await workItem(stoppingToken);
+                   await workItem(stoppingToken).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    var message = $"Error occured executing {workItemName}";
+                    var message = $"{nameof(QueuedHostedService)} encountered error while executing {workItemName} task.";
 
                     onException(new Exception(message, ex));
 

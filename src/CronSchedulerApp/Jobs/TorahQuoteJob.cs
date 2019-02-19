@@ -34,7 +34,7 @@ namespace CronSchedulerApp.Jobs
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];
 
-            var result = await _service.GetVerses(exp, cancellationToken);
+            var result = await _service.GetVersesAsync(exp, cancellationToken);
 
             TorahVerses.Current = result;
         }
