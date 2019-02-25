@@ -11,6 +11,12 @@ namespace CronScheduler.AspNetCore
                     _workItems = new ConcurrentQueue<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>();
 
         private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
+        private readonly BackgroundTaskContext _context;
+
+        public BackgroundTaskQueue(BackgroundTaskContext context)
+        {
+            _context = context;
+        }
 
         /// <inheritdoc/>
         public async Task<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>
@@ -18,7 +24,6 @@ namespace CronScheduler.AspNetCore
         {
             await _signal.WaitAsync(cancellationToken);
             _workItems.TryDequeue(out var workItem);
-
             return workItem;
         }
 
@@ -26,7 +31,7 @@ namespace CronScheduler.AspNetCore
         public void QueueBackgroundWorkItem(
             Func<CancellationToken, Task> workItem,
             string workItemName = default,
-            Action<Exception> onException= default)
+            Action<Exception> onException = default)
         {
             if (workItem == null)
             {
@@ -35,6 +40,7 @@ namespace CronScheduler.AspNetCore
 
             _workItems.Enqueue((workItem,workItemName,onException));
             _signal.Release();
+            _context.RegisterTask();
         }
     }
 }

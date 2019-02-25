@@ -1,8 +1,4 @@
 ﻿using CronScheduler.AspNetCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,8 +11,9 @@ namespace CronScheduler.UnitTest
         public async Task Dequeue_With_Susseful_WorkItemName()
         {
             var workItemName = "TestItem";
+            var context = new BackgroundTaskContext();
 
-            var service = new BackgroundTaskQueue();
+            var service = new BackgroundTaskQueue(context);
 
             service.QueueBackgroundWorkItem(async token =>
             {

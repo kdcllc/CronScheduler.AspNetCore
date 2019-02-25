@@ -68,7 +68,7 @@ namespace CronSchedulerApp
             //    args.SetObserved();
             //});
 
-            services.AddBackgroundQueuedService();
+            services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete:true);
 
             _logger.LogDebug("Configuration completed");
         }

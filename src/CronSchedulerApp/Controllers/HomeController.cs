@@ -111,10 +111,10 @@ namespace CronSchedulerApp.Controllers
                 {
                     ++idx;
 
-                    if (idx == new Random().Next(0, repeat))
-                    {
-                        throw new AggregateException("Something went wrong");
-                    }
+                    //if (idx == new Random().Next(0, repeat))
+                    //{
+                    //    throw new AggregateException("Something went wrong");
+                    //}
 
                     _logger.LogInformation($"Queued Background Task {guid} is running. {delayLoop}/{idx}");
                     await Task.Delay(TimeSpan.FromSeconds(10), token);

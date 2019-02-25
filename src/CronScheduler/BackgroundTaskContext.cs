@@ -17,5 +17,7 @@ namespace CronScheduler.AspNetCore
         }
 
         public bool IsComplete => _outstandingTaskCount == 0;
+
+        public int Count => _outstandingTaskCount;
     }
 }
