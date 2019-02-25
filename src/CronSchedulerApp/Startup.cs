@@ -54,6 +54,8 @@ namespace CronSchedulerApp
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
+            services.AddSingleton<TorahVerses>();
+
             services.AddScheduler(builder =>
             {
                 builder.AddJob<TorahQuoteJob, TorahSettings>();

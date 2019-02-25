@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 
@@ -49,11 +47,8 @@ namespace CronScheduler.AspNetCore
             where TJob: class, IScheduledJob
             where TJobOptions: SchedulerOptions, new()
         {
-            var provider = Services.BuildServiceProvider();
-            var config = provider.GetRequiredService<IConfiguration>();
+            Services.Configure<TJob, TJobOptions>(sectionName);
 
-            Services.Configure<TJobOptions>(config.GetSection(sectionName).GetSection(typeof(TJob).Name));
-            Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TJobOptions>>().Value);
             AddJob<TJob>();
 
             return Services;

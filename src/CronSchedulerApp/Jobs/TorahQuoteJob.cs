@@ -17,16 +17,19 @@ namespace CronSchedulerApp.Jobs
 
         private readonly TorahService _service;
         private readonly TorahSettings _options;
+        private readonly TorahVerses _torahVerses;
 
         public TorahQuoteJob(
-            IOptions<TorahSettings> options,
-            TorahService service)
+            IOptionsMonitor<TorahSettings> options,
+            TorahService service,
+            TorahVerses torahVerses)
         {
-            _options = options.Value;
+            _options = options.CurrentValue;
             CronSchedule = _options.CronSchedule; //set to 10 seconds in appsettings.json
             RunImmediately = _options.RunImmediately;
             CronTimeZone = _options.CronTimeZone;
             _service = service;
+            _torahVerses = torahVerses;
         }
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -34,9 +37,7 @@ namespace CronSchedulerApp.Jobs
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];
 
-            var result = await _service.GetVersesAsync(exp, cancellationToken);
-
-            TorahVerses.Current = result;
+            _torahVerses.Current = await _service.GetVersesAsync(exp, cancellationToken);
         }
     }
 }

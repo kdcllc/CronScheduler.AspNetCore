@@ -17,25 +17,28 @@ namespace CronSchedulerApp.Controllers
         private readonly TorahSettings _options;
         private readonly IBackgroundTaskQueue _taskQueue;
         private readonly ILogger<HomeController> _logger;
+        private readonly TorahVerses _torahVerses;
 
         public HomeController(
             IOptions<TorahSettings> options,
             IBackgroundTaskQueue taskQueue,
-            ILogger<HomeController> logger)
+            ILogger<HomeController> logger,
+            TorahVerses torahVerses)
         {
             _options = options.Value;
             _taskQueue = taskQueue;
             _logger = logger;
+            _torahVerses = torahVerses;
         }
 
         public IActionResult Index()
         {
-            if (TorahVerses.Current != null)
+            if (_torahVerses.Current != null)
             {
-                var text = TorahVerses.Current.Select(x => x.Text).Aggregate((i, j) => i + Environment.NewLine + j);
-                var bookName = TorahVerses.Current.Select(x => x.Bookname).Distinct().FirstOrDefault();
-                var chapter = TorahVerses.Current.Select(x => x.Chapter).Distinct().FirstOrDefault();
-                var versesArray = TorahVerses.Current.Select(x => x.Verse).Aggregate((i, j) => $"{i};{j}").Split(';');
+                var text = _torahVerses.Current.Select(x => x.Text).Aggregate((i, j) => i + Environment.NewLine + j);
+                var bookName = _torahVerses.Current.Select(x => x.Bookname).Distinct().FirstOrDefault();
+                var chapter = _torahVerses.Current.Select(x => x.Chapter).Distinct().FirstOrDefault();
+                var versesArray = _torahVerses.Current.Select(x => x.Verse).Aggregate((i, j) => $"{i};{j}").Split(';');
 
                 var verses = string.Empty;
 

@@ -4,7 +4,7 @@ namespace CronSchedulerApp.Services
 {
     public class TorahVerses
     {
-        public static IList<TorahVerses> Current { get; set; }
+        public IList<TorahVerses> Current { get; set; }
 
         public string Bookname { get; set; }
         public string Chapter { get; set; }
