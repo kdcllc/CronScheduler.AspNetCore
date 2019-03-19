@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace CronSchedulerApp.Services
 {
