@@ -7,7 +7,7 @@ In addition `IStartupJob` was added to support async initialization before the I
 making sure that Database is created before the application starts.
 
 ## Uses Crontab format for Jobs/Tasks schedules
-This library supports up to 5 seconds job intervals in the Crontab format thank to [HangfireIO/Cronos](https://github.com/HangfireIO/Cronos)] library.
+This library supports up to 5 seconds job intervals in the Crontab format thank to [HangfireIO/Cronos](https://github.com/HangfireIO/Cronos) library.
 
 You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
 
