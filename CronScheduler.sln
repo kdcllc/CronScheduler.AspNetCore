@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{663DF9C2
 		build\sources.props = build\sources.props
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CronSchedulerWorker", "src\CronSchedulerWorker\CronSchedulerWorker.csproj", "{C31428BE-C8EE-48C6-84B3-3E8C8D0B044A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{CFB990F3-58B7-4C9A-AF62-CC13454162B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFB990F3-58B7-4C9A-AF62-CC13454162B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFB990F3-58B7-4C9A-AF62-CC13454162B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C31428BE-C8EE-48C6-84B3-3E8C8D0B044A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C31428BE-C8EE-48C6-84B3-3E8C8D0B044A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C31428BE-C8EE-48C6-84B3-3E8C8D0B044A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C31428BE-C8EE-48C6-84B3-3E8C8D0B044A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +69,7 @@ Global
 		{B94D454F-814E-4933-B584-982004347F1C} = {452CDE01-5BD5-47B1-8AE6-9542836B5537}
 		{7A3DC64D-5684-47AF-8501-B23A955CBF59} = {8C00CEBF-3DE8-427B-8E69-EA16D68ADA92}
 		{71B7EDED-F26D-4545-9E9B-1F6500AA589C} = {452CDE01-5BD5-47B1-8AE6-9542836B5537}
+		{C31428BE-C8EE-48C6-84B3-3E8C8D0B044A} = {452CDE01-5BD5-47B1-8AE6-9542836B5537}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED9365FF-7ECC-4971-B0FF-324C619F4691}
