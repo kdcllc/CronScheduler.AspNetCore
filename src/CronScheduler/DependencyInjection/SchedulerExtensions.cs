@@ -88,10 +88,10 @@ namespace Microsoft.Extensions.DependencyInjection
             EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler=null)
         {
             // should prevent from double registrations.
-            services.TryAddTransient(typeof(IHostedService), serviceProvider =>
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, SchedulerHostedService>(sp=>
             {
-                var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-                var scheduledJobs = serviceProvider.GetServices<IScheduledJob>();
+                var loggerFactory = sp.GetService<ILoggerFactory>();
+                var scheduledJobs = sp.GetServices<IScheduledJob>();
 
                 var instance = new SchedulerHostedService(scheduledJobs, loggerFactory);
 
@@ -100,7 +100,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     instance.UnobservedTaskException += unobservedTaskExceptionHandler;
                 }
                 return instance;
-            });
+            }));
+
+
         }
     }
 }
