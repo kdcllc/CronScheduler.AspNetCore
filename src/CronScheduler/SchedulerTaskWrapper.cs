@@ -1,5 +1,5 @@
-﻿using System;
-using Cronos;
+﻿using Cronos;
+using System;
 
 namespace CronScheduler.AspNetCore
 {

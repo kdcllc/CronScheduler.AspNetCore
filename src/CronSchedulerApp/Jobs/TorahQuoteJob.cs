@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CronScheduler.AspNetCore;
+using CronSchedulerApp.Services;
+using Microsoft.Extensions.Options;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CronScheduler.AspNetCore;
-using Microsoft.Extensions.Options;
-using CronSchedulerApp.Services;
 
 namespace CronSchedulerApp.Jobs
 {

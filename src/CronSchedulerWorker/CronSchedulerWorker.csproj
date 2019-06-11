@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UserSecretsId>dotnet-CronScheduler-16DA7ECC-2C2F-42B2-943E-6F8486D62575</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0-preview5.19227.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CronScheduler\CronScheduler.csproj" />
+  </ItemGroup>
+</Project>

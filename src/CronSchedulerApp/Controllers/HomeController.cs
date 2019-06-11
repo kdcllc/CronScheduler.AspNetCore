@@ -1,13 +1,13 @@
-﻿using System;
+﻿using CronScheduler.AspNetCore;
+using CronSchedulerApp.Models;
+using CronSchedulerApp.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using CronSchedulerApp.Models;
-using CronSchedulerApp.Services;
-using CronScheduler.AspNetCore;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace CronSchedulerApp.Controllers
