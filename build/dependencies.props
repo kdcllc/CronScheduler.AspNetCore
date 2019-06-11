@@ -11,21 +11,21 @@
     <When Condition=" '$(NetCoreToTarget)' == 'net30' ">
       <PropertyGroup Label="Netcore Versions">
           <NetCoreTargetVersion>netcoreapp3.0</NetCoreTargetVersion>
-          <NetCoreCommonVersion>3.0.0-preview.18572.1</NetCoreCommonVersion>
-          <MicrosoftNETCoreApp>3.0.0-preview-18579-0056</MicrosoftNETCoreApp>
+          <NetCoreCommonVersion>3.0.0-preview*</NetCoreCommonVersion>
+          <MicrosoftNETCoreApp>3.0.0-preview*</MicrosoftNETCoreApp>
       </PropertyGroup>
     </When>
     <When Condition=" '$(NetCoreToTarget)' == 'net22' ">
       <PropertyGroup Label="Netcore Versions">
           <NetCoreTargetVersion>netcoreapp2.2</NetCoreTargetVersion>
           <NetCoreCommonVersion>2.2.0</NetCoreCommonVersion>
-          <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.1</MicrosoftVisualStudioWebCodeGenerationDesign>
+          <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.*</MicrosoftVisualStudioWebCodeGenerationDesign>
       </PropertyGroup>
     </When>
     <When Condition=" '$(NetCoreToTarget)' == 'net21' ">
       <PropertyGroup Label="Netcore Versions">
           <NetCoreTargetVersion>netcoreapp2.1</NetCoreTargetVersion>
-          <NetCoreCommonVersion>2.1.1</NetCoreCommonVersion>
+          <NetCoreCommonVersion>2.1.*</NetCoreCommonVersion>
           <MicrosoftAspNetCoreRazorDesign>$(NetCoreCommonVersion)</MicrosoftAspNetCoreRazorDesign>
           <MicrosoftVisualStudioWebCodeGenerationDesign>2.1.7</MicrosoftVisualStudioWebCodeGenerationDesign>
       </PropertyGroup>
