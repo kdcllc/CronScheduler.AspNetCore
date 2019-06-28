@@ -14,13 +14,13 @@ namespace CronSchedulerApp.Services
     /// </summary>
     public class TorahService
     {
-        private readonly TorahSettings _options;
+        private readonly TorahSettings options;
 
         public HttpClient Client { get; }
 
         public TorahService(HttpClient httpClient, IOptions<TorahSettings> options )
         {
-            _options = options.Value;
+            this.options = options.Value;
 
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("User-Agent", nameof(TorahService));
@@ -33,6 +33,7 @@ namespace CronSchedulerApp.Services
         ///  Utilizes QqueryHelpers: https://rehansaeed.com/asp-net-core-hidden-gem-queryhelpers/
         /// </summary>
         /// <param name="exp"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public async Task<IList<TorahVerses>> GetVersesAsync(string exp, CancellationToken cancellationToken)
         {
@@ -43,7 +44,7 @@ namespace CronSchedulerApp.Services
                 { "passage", Uri.EscapeDataString(exp)}
             };
 
-            var url = QueryHelpers.AddQueryString(_options.ApiUrl, args);
+            var url = QueryHelpers.AddQueryString(options.ApiUrl, args);
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await Client.SendAsync(request, cancellationToken).ConfigureAwait(false);

@@ -4,6 +4,5 @@ namespace CronScheduler
 {
     public class TestJobOptions : SchedulerOptions
     {
-
     }
 }

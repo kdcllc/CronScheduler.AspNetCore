@@ -11,24 +11,37 @@ namespace CronScheduler.AspNetCore
     {
         private readonly ILogger<QueuedHostedService> _logger;
         private readonly BackgroundTaskContext _context;
+        // https://github.com/aspnet/AspNetCore/issues/7749
+#if NETCOREAPP3_0
+        private readonly IHostApplicationLifetime _applicationLifetime;
+#else
         private readonly IApplicationLifetime _applicationLifetime;
+#endif
         private readonly QueuedHostedServiceOptions _options;
 
         public QueuedHostedService(
             IBackgroundTaskQueue taskQueued,
             ILoggerFactory loggerFactory,
             BackgroundTaskContext context,
-            IApplicationLifetime applicationLifetime,
+#if NETCOREAPP3_0
+            IHostApplicationLifetime applicationLifetime,
+#else
+         IApplicationLifetime applicationLifetime,
+#endif
             IOptionsMonitor<QueuedHostedServiceOptions> options)
         {
             TaskQueued = taskQueued;
             _logger = loggerFactory.CreateLogger<QueuedHostedService>();
             _context = context;
-            _applicationLifetime = applicationLifetime;
-
             _options = options.CurrentValue;
 
+#if NETCOREAPP3_0
+            _applicationLifetime = applicationLifetime;
             _applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);
+#else
+            _applicationLifetime = applicationLifetime;
+            _applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);
+#endif
         }
 
         public IBackgroundTaskQueue TaskQueued { get; }

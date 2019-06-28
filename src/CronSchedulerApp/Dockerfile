@@ -1,13 +1,20 @@
-ARG sdkImage=kdcllc/dotnet
-ARG sdkTag=2.1-sdk
-ARG runtimeImage=microsoft/dotnet
-ARG runtimeTag=2.1-aspnetcore-runtime
-ARG coreversion=netcore21
+ARG sdkImage
+ARG sdkTag
+ARG runtimeImage
+ARG runtimeTag
+
+ARG RUNTESTS="false"
+ARG VERBOSE="false"
+# ARG PROJECT_PATH=/src/CronSchedulerApp/CronSchedulerApp.csproj
 
 # Build image
 FROM ${sdkImage}:${sdkTag} as builder
-RUN dotnet publish "./src/CronSchedulerApp/CronSchedulerApp.csproj" -c Release -p:NetCoreVersion=${coreversion} -o /app
-#RUN npm -v
+WORKDIR ./src/CronSchedulerApp
+RUN dotnet publish  -c Release  -o /app
+
+#WORKDIR ./src/CronSchedulerApp
+#RUN dotnet build --no-restore -c Release -v d
+#RUN dotnet publish --no-build -c Release -o /app
 
 # App image
 FROM ${runtimeImage}:${runtimeTag} AS final

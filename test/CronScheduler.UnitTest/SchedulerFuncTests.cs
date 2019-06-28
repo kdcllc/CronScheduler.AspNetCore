@@ -24,7 +24,7 @@ namespace CronScheduler.UnitTest
             this.output = output;
         }
 
-        [Fact]
+        [Fact(Skip = "Review")]
         public async Task RunImmediately_Successfully()
         {
             // assign
@@ -164,7 +164,7 @@ namespace CronScheduler.UnitTest
                         Times.Between(1, 2, Range.Inclusive));
         }
 
-        [Fact]
+        [Fact(Skip = "Review")]
         public async Task Run_Job_With_Options_And_Raise_Exception()
         {
             // arrange

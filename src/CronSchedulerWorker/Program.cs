@@ -30,7 +30,6 @@ namespace CronScheduler
                     builder.AddJob<TestJob, TestJobOptions>();
                     builder.UnobservedTaskExceptionHandler = UnobservedHandler;
                 });
-
             });
         }
 
