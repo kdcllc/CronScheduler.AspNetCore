@@ -7,11 +7,13 @@ services:
       context: .
       dockerfile: src/CronSchedulerApp/Dockerfile
       args:
-       sdkImage: kdcllc/dotnet
-       sdkTag: 2.2-sdk
-       runtimeImage: microsoft/dotnet
-       runtimeTag: 2.2-aspnetcore-runtime
-       coreversion: netcore22
+        sdkImage: kdcllc/dotnet
+        sdkTag: 3.0-sdk
+        runtimeImage: mcr.microsoft.com/dotnet/core/aspnet
+        runtimeTag: 2.2
+        RUNTESTS: "false"
+        VERBOSE: "false"
+        #PROJECT_PATH: "/src/CronSchedulerApp/CronSchedulerApp.csproj"
 
   cronscheduler.sql:
     image: microsoft/mssql-server-linux:2017-latest

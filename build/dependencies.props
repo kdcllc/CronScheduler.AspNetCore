@@ -1,45 +1,55 @@
 <Project>
-  <PropertyGroup Label="SDK Versions">
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <NetStandardTargetVersion>netstandard2.0</NetStandardTargetVersion>
-    <NetCoreCommonVersion></NetCoreCommonVersion>
-    <MicrosoftNETCoreApp></MicrosoftNETCoreApp>
-    <MicrosoftAspNetCoreRazorDesign></MicrosoftAspNetCoreRazorDesign>
+
+<PropertyGroup>
+    <AspNetCoreVersion>2.1.1</AspNetCoreVersion>
+    <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
+    <ExtensionsVersion>2.1.1</ExtensionsVersion>
   </PropertyGroup>
 
-   <Choose>
-    <When Condition=" '$(NetCoreToTarget)' == 'net30' ">
-      <PropertyGroup Label="Netcore Versions">
-          <NetCoreTargetVersion>netcoreapp3.0</NetCoreTargetVersion>
-          <NetCoreCommonVersion>3.0.0-preview*</NetCoreCommonVersion>
-          <MicrosoftNETCoreApp>3.0.0-preview*</MicrosoftNETCoreApp>
-      </PropertyGroup>
-    </When>
-    <When Condition=" '$(NetCoreToTarget)' == 'net22' ">
-      <PropertyGroup Label="Netcore Versions">
-          <NetCoreTargetVersion>netcoreapp2.2</NetCoreTargetVersion>
-          <NetCoreCommonVersion>2.2.0</NetCoreCommonVersion>
-          <MicrosoftVisualStudioWebCodeGenerationDesign>2.2.*</MicrosoftVisualStudioWebCodeGenerationDesign>
-      </PropertyGroup>
-    </When>
-    <When Condition=" '$(NetCoreToTarget)' == 'net21' ">
-      <PropertyGroup Label="Netcore Versions">
-          <NetCoreTargetVersion>netcoreapp2.1</NetCoreTargetVersion>
-          <NetCoreCommonVersion>2.1.*</NetCoreCommonVersion>
-          <MicrosoftAspNetCoreRazorDesign>$(NetCoreCommonVersion)</MicrosoftAspNetCoreRazorDesign>
-          <MicrosoftVisualStudioWebCodeGenerationDesign>2.1.7</MicrosoftVisualStudioWebCodeGenerationDesign>
-      </PropertyGroup>
-     </When>
-  </Choose>
-
-  <PropertyGroup Label="Other Packages Versions">
-    <MoqVersion>4.10.1</MoqVersion>
-    <xunitVersion>2.4.1</xunitVersion>
-    <xunitrunnervisualstudio>2.4.1</xunitrunnervisualstudio>
-    <MicrosoftNETTestSdk>15.9.0</MicrosoftNETTestSdk>
-    <MicrosoftVisualStudioTestPlatform>14.0.0.1</MicrosoftVisualStudioTestPlatform>
-    <MicrosoftAspNetCoreTestHost>$(NetCoreCommonVersion)</MicrosoftAspNetCoreTestHost>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1' Or '$(TargetFramework)' == 'netstandard2.0'">
+    <AspNetCoreVersion>2.1.1</AspNetCoreVersion>
+    <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
+    <AspNetCoreVersion>2.2.*</AspNetCoreVersion>
+    <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
+    <ExtensionsVersion>2.2.*</ExtensionsVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+    <AspNetCoreVersion>3.0.0-preview6.*</AspNetCoreVersion>
+    <AspNetCoreLowerVersion>3.0.0-preview4-19121-14</AspNetCoreLowerVersion>
+    <ExtensionsVersion>3.0.0-preview6.*</ExtensionsVersion>
+  </PropertyGroup>
+
+  <ItemGroup Label="CronScheduler">
+    <PackageReference Update="Cronos" Version="0.7.0" />
+    <PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreLowerVersion)" />
+    <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
+    <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
+    <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Label="Websiste">
+    <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(ExtensionsVersion)" />
+    <PackageReference Update="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(AspNetCoreVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Worker">
+    <PackageReference Update="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Label="Unit Tests">
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+    <PackageReference Update="Moq" Version="4.10.1" />
+    <PackageReference Update="xunit" Version="2.4.1" />
+    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.1" />
+  </ItemGroup>
+
+  <ItemGroup Label="SourceLink">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19270-01" PrivateAssets="All" />
+  </ItemGroup>
 
 </Project>

@@ -19,12 +19,12 @@ namespace CronSchedulerApp
     {
         public IConfiguration Configuration { get; }
 
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger<Startup> logger;
 
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
-            _logger = logger;
+            this.logger = logger;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -69,12 +69,12 @@ namespace CronSchedulerApp
 
             services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete:true);
 
-            _logger.LogDebug("Configuration completed");
+            logger.LogDebug("Configuration completed");
         }
 
         private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
         {
-            _logger.LogError(args.Exception.Message);
+            logger.LogError(args.Exception.Message);
             args.SetObserved();
         }
 

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UserSecretsId>dotnet-CronScheduler-16DA7ECC-2C2F-42B2-943E-6F8486D62575</UserSecretsId>
+     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
