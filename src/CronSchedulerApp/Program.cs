@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using CronSchedulerApp.Jobs.Startup;
+
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +29,7 @@ namespace CronSchedulerApp
             return WebHost.CreateDefaultBuilder(args)
                     .ConfigureServices(services =>
                     {
-                        services.AddStartupJob<SeedDatabaseJob>();
+                        services.AddStartupJob<SeedDatabaseStartupJob>();
                         services.AddStartupJob<TestStartupJob>();
                     })
                     .ConfigureLogging((context, logger) =>

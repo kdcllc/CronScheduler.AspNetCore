@@ -6,7 +6,7 @@ using CronScheduler.AspNetCore;
 
 using Microsoft.Extensions.Logging;
 
-namespace CronSchedulerApp
+namespace CronSchedulerApp.Jobs.Startup
 {
     public class TestStartupJob : IStartupJob
     {

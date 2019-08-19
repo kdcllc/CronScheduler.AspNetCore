@@ -4,6 +4,7 @@
     <AspNetCoreVersion>2.1.1</AspNetCoreVersion>
     <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
     <ExtensionsVersion>2.1.1</ExtensionsVersion>
+    <BetCommon>1.2.2</BetCommon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1' Or '$(TargetFramework)' == 'netstandard2.0'">
@@ -12,15 +13,17 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
-    <AspNetCoreVersion>2.2.*</AspNetCoreVersion>
+    <AspNetCoreVersion>[2.2.*, )</AspNetCoreVersion>
     <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
-    <ExtensionsVersion>2.2.*</ExtensionsVersion>
+    <EFCommonVersion>[2.2.*, )</EFCommonVersion>
+    <ExtensionsVersion>[2.2.*, )</ExtensionsVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-    <AspNetCoreVersion>3.0.0-preview6.*</AspNetCoreVersion>
-    <AspNetCoreLowerVersion>3.0.0-preview4-19121-14</AspNetCoreLowerVersion>
-    <ExtensionsVersion>3.0.0-preview6.*</ExtensionsVersion>
+    <AspNetCoreVersion>3.0.0-preview8.*</AspNetCoreVersion>
+    <AspNetCoreLowerVersion>3.0.0-*</AspNetCoreLowerVersion>
+    <EFCommonVersion>3.0.0-preview8.*</EFCommonVersion>
+    <ExtensionsVersion>3.0.0-preview8.*</ExtensionsVersion>
   </PropertyGroup>
 
   <ItemGroup Label="CronScheduler">
@@ -34,6 +37,18 @@
   <ItemGroup Label="Websiste">
     <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(ExtensionsVersion)" />
     <PackageReference Update="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(AspNetCoreVersion)"/>
+    <PackageReference Update="Bet.AspNetCore" Version="$(BetCommon)"/>
+  </ItemGroup>
+
+  <ItemGroup Label="EF">
+    <PackageReference Update="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(EFCommonVersion)" />
+    <PackageReference Update="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(EFCommonVersion)" />
+    <PackageReference Update="Microsoft.AspNetCore.Identity.UI" Version="$(EFCommonVersion)" />
+
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCommonVersion)" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCommonVersion)" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCommonVersion)" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Tools" Version="$(EFCommonVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Worker">
@@ -45,7 +60,7 @@
     <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
     <PackageReference Update="Moq" Version="4.12.0" />
     <PackageReference Update="xunit" Version="2.4.1" />
-    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.1" />
+    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.1"  PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Label="SourceLink">

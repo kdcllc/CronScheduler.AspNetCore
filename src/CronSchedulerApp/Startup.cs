@@ -18,7 +18,9 @@ using Polly;
 
 namespace CronSchedulerApp
 {
+#pragma warning disable CA1724 // Type names should not match namespaces
     public class Startup
+#pragma warning restore CA1724 // Type names should not match namespaces
     {
         private readonly ILogger<Startup> _logger;
 
@@ -45,8 +47,17 @@ namespace CronSchedulerApp
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+            {
+                if (Configuration["DatabaseProvider:Type"] == "Sqlite")
+                {
+                    options.UseSqlite(Configuration.GetConnectionString("SqliteConnection"));
+                }
+
+                if (Configuration["DatabaseProvider:Type"] == "SqlServer")
+                {
+                    options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
+                }
+            });
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -73,7 +84,15 @@ namespace CronSchedulerApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(
+            IApplicationBuilder app
+#if NETCOREAPP2_2
+           , IHostingEnvironment env)
+#elif NETCOREAPP3_0
+           , IWebHostEnvironment env)
+#else
+           )
+#endif
         {
             if (env.IsDevelopment())
             {
@@ -91,6 +110,7 @@ namespace CronSchedulerApp
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+#if NETCOREAPP2_2
 
             app.UseMvc(routes =>
             {
@@ -98,6 +118,17 @@ namespace CronSchedulerApp
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+#elif NETCOREAPP3_0
+            app.UseRouting();
+
+            // https://devblogs.microsoft.com/aspnet/blazor-now-in-official-preview/
+            app.UseEndpoints(routes =>
+            {
+                routes.MapControllers();
+                routes.MapDefaultControllerRoute();
+                routes.MapRazorPages();
+            });
+#endif
         }
 
         private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
