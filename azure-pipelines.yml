@@ -20,10 +20,8 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
-    - task: Docker@2
-      displayName: Build an image
-      inputs:
-        command: build
-        dockerfile: '**/Dockerfile'
-        tags: |
-          $(tag)
+     - task: DockerCompose@0
+       inputs:
+        containerregistrytype: 'Azure Container Registry'
+        dockerComposeFile: '**/docker-compose.build.yml'
+        action: 'Run a Docker Compose command'
