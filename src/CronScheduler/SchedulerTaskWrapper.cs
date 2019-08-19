@@ -1,16 +1,17 @@
-﻿using Cronos;
-using System;
+﻿using System;
+
+using Cronos;
 
 namespace CronScheduler.AspNetCore
 {
     internal class SchedulerTaskWrapper
     {
-        public CronExpression Schedule { get; set; }
-        public IScheduledJob ScheduledJob { get; set; }
-
-        public DateTime LastRunTime { get; set; }
-        public DateTime NextRunTime { get; set; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SchedulerTaskWrapper"/> class.
+        /// </summary>
+        /// <param name="cronExpression"></param>
+        /// <param name="scheduledJob"></param>
+        /// <param name="nextRunTime"></param>
         public SchedulerTaskWrapper(
             CronExpression cronExpression,
             IScheduledJob scheduledJob,
@@ -20,6 +21,14 @@ namespace CronScheduler.AspNetCore
             ScheduledJob = scheduledJob;
             NextRunTime = nextRunTime;
         }
+
+        public CronExpression Schedule { get; set; }
+
+        public IScheduledJob ScheduledJob { get; set; }
+
+        public DateTime LastRunTime { get; set; }
+
+        public DateTime NextRunTime { get; set; }
 
         public void Increment()
         {

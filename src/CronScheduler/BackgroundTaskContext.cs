@@ -6,6 +6,10 @@ namespace CronScheduler.AspNetCore
     {
         private int _outstandingTaskCount = 0;
 
+        public bool IsComplete => _outstandingTaskCount == 0;
+
+        public int Count => _outstandingTaskCount;
+
         public void RegisterTask()
         {
             Interlocked.Increment(ref _outstandingTaskCount);
@@ -15,9 +19,5 @@ namespace CronScheduler.AspNetCore
         {
             Interlocked.Decrement(ref _outstandingTaskCount);
         }
-
-        public bool IsComplete => _outstandingTaskCount == 0;
-
-        public int Count => _outstandingTaskCount;
     }
 }

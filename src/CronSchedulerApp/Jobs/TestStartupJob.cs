@@ -1,8 +1,10 @@
-﻿using CronScheduler.AspNetCore;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using CronScheduler.AspNetCore;
+
+using Microsoft.Extensions.Logging;
 
 namespace CronSchedulerApp
 {

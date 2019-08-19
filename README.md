@@ -1,12 +1,21 @@
-# CronScheduler.AspNetCore 
+# CronScheduler.AspNetCore
+
 [![Build status](https://ci.appveyor.com/api/projects/status/wrme1wr6kgjp3a0o?svg=true)](https://ci.appveyor.com/project/kdcllc/cronscheduler-aspnetcore)
+[![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
 
 The goal of this library was to design a simple Cron Scheduling engine that is based on build-in Asp.Net Core  IHostedService interface.
 It is much lighter than Quartz schedular and operates inside of any .NET Core GenericHost thus makes it simpler to setup and configure.
 In addition `IStartupJob` was added to support async initialization before the IWebHost is ready to start. Sample project includes support for
 making sure that Database is created before the application starts.
 
+## .NET CLI
+
+```bash
+    dotnet add package CronScheduler.AspNetCore --version 1.1.0
+```
+
 ## Uses Crontab format for Jobs/Tasks schedules
+
 This library supports up to 5 seconds job intervals in the Crontab format thank to [HangfireIO/Cronos](https://github.com/HangfireIO/Cronos) library.
 
 You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
@@ -25,9 +34,11 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
     * * * * * *
 
 ## Example CronSchedulerApp
+
 The sample website provides with use-case scenario for this library.
 
 Includes the following sample service:
+
 ```csharp
     public class TorahQuoteJob : IScheduledJob
     {
@@ -64,6 +75,7 @@ Includes the following sample service:
 ```
 
 Then register this service within the `Startup.cs`
+
 ```csharp
     services.AddScheduler(builder =>
     {
@@ -96,32 +108,35 @@ This library makes it possible by simply doing the following:
 - Register the startup job in `Program.cs` or in `Startup.cs` file.
 
 ```csharp
-   public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            return WebHost.CreateDefaultBuilder(args)
-                    .ConfigureServices(services =>
-                    {
-                        services.AddStartupJob<SeedDatabaseJob>();
-                    })
-                    .ConfigureLogging((context, logger) =>
-                    {
-                        logger.AddConsole();
-                        logger.AddDebug();
-                        logger.AddConfiguration(context.Configuration.GetSection("Logging"));
-                    })
-                    .UseStartup<Startup>();
-        }
+public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+{
+    return WebHost.CreateDefaultBuilder(args)
+            .ConfigureServices(services =>
+            {
+                services.AddStartupJob<SeedDatabaseJob>();
+            })
+            .ConfigureLogging((context, logger) =>
+            {
+                logger.AddConsole();
+                logger.AddDebug();
+                logger.AddConfiguration(context.Configuration.GetSection("Logging"));
+            })
+            .UseStartup<Startup>();
+}
 ```
+
 ## Background Queues
-In some instances of the application the need for queueing of the tasks is required. In order to enable this add the following in `Startup.cs`.
+
+In some instances of the application the need for queuing of the tasks is required. In order to enable this add the following in `Startup.cs`.
 
 ```csharp
     services.AddQueuedService();
 ```
+
 Then add sample async task to be executed by the Queued Hosted Service.
 
 ```csharp
-    
+
     public class MyService
     {
         private readonly IBackgroundTaskQueue _taskQueue;
@@ -130,7 +145,7 @@ Then add sample async task to be executed by the Queued Hosted Service.
         {
             _taskQueue = taskQueue;
         }
-        
+
         public void RunTask()
         {
             _taskQueue.QueueBackgroundWorkItem(async (token)=>
@@ -142,14 +157,23 @@ Then add sample async task to be executed by the Queued Hosted Service.
     }
 ```
 
-
 ## Special Thanks to
+
 - [Maarten Balliauw](https://blog.maartenballiauw.be/post/2017/08/01/building-a-scheduled-cache-updater-in-aspnet-core-2.html) for the Asp.Net Core idea for the background hosted implementation.
 - [3 ways to use HTTPClientFactory in ASP.NET Core 2.1](http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/)
 
 ## Docker build
+
 Utilizes [King David Consulting LLC DotNet Docker Image](https://github.com/kdcllc/docker/tree/master/dotnet)
 
 ```bash
     docker-compose -f "docker-compose.yml" -f "docker-compose.override.yml" up -d --build
+```
+
+### Note
+
+Workaround for  `Retrying 'FindPackagesByIdAsync' for source` in Docker containers restore.
+
+```bash
+ dotnet restore --disable-parallel
 ```

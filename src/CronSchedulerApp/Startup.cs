@@ -1,6 +1,9 @@
-﻿using CronSchedulerApp.Data;
+﻿using System.Threading.Tasks;
+
+using CronSchedulerApp.Data;
 using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Services;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -10,30 +13,28 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using Polly;
-using System.Threading.Tasks;
 
 namespace CronSchedulerApp
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
-
-        private readonly ILogger<Startup> logger;
+        private readonly ILogger<Startup> _logger;
 
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
-            this.logger = logger;
+            _logger = logger;
         }
+
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddStartupJob<SeedDatabaseJob>();
-
+            // Build a policy that will handle exceptions, 408s, and 500s from the remote server
             services.AddHttpClient<TorahService>()
-                // Build a policy that will handle exceptions, 408s, and 500s from the remote server
                 .AddTransientHttpErrorPolicy(p => p.RetryAsync());
 
             services.Configure<CookiePolicyOptions>(options =>
@@ -61,21 +62,14 @@ namespace CronSchedulerApp
                 builder.UnobservedTaskExceptionHandler = UnobservedHandler;
             });
 
-            //services.AddScheduler((sender, args) =>
-            //{
+            // services.AddScheduler((sender, args) =>
+            // {
             //    _logger.LogError(args.Exception.Message);
             //    args.SetObserved();
-            //});
+            // });
+            services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete: true);
 
-            services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete:true);
-
-            logger.LogDebug("Configuration completed");
-        }
-
-        private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
-        {
-            logger.LogError(args.Exception.Message);
-            args.SetObserved();
+            _logger.LogDebug("Configuration completed");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -104,6 +98,12 @@ namespace CronSchedulerApp
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
+        {
+            _logger.LogError(args.Exception.Message);
+            args.SetObserved();
         }
     }
 }

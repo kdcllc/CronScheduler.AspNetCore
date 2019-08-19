@@ -5,12 +5,11 @@ ARG runtimeTag
 
 ARG RUNTESTS="false"
 ARG VERBOSE="false"
-# ARG PROJECT_PATH=/src/CronSchedulerApp/CronSchedulerApp.csproj
 
 # Build image
 FROM ${sdkImage}:${sdkTag} as builder
-WORKDIR ./src/CronSchedulerApp
-RUN dotnet publish  -c Release  -o /app
+#WORKDIR ./src/CronSchedulerApp
+#RUN dotnet publish  -c Release  -o /app
 
 #WORKDIR ./src/CronSchedulerApp
 #RUN dotnet build --no-restore -c Release -v d

@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
+
+using Newtonsoft.Json;
 
 namespace CronSchedulerApp.Services
 {
@@ -14,13 +16,16 @@ namespace CronSchedulerApp.Services
     /// </summary>
     public class TorahService
     {
-        private readonly TorahSettings options;
+        private readonly TorahSettings _options;
 
-        public HttpClient Client { get; }
-
-        public TorahService(HttpClient httpClient, IOptions<TorahSettings> options )
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TorahService"/> class.
+        /// </summary>
+        /// <param name="httpClient"></param>
+        /// <param name="options"></param>
+        public TorahService(HttpClient httpClient, IOptions<TorahSettings> options)
         {
-            this.options = options.Value;
+            _options = options.Value;
 
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("User-Agent", nameof(TorahService));
@@ -28,9 +33,11 @@ namespace CronSchedulerApp.Services
             Client = httpClient;
         }
 
+        public HttpClient Client { get; }
+
         /// <summary>
         /// Returns verses from the quotation.
-        ///  Utilizes QqueryHelpers: https://rehansaeed.com/asp-net-core-hidden-gem-queryhelpers/
+        ///  Utilizes QqueryHelpers: https://rehansaeed.com/asp-net-core-hidden-gem-queryhelpers/.
         /// </summary>
         /// <param name="exp"></param>
         /// <param name="cancellationToken"></param>
@@ -41,17 +48,19 @@ namespace CronSchedulerApp.Services
             var args = new Dictionary<string, string>
             {
                 { "type", "json" },
-                { "passage", Uri.EscapeDataString(exp)}
+                { "passage", Uri.EscapeDataString(exp) }
             };
 
-            var url = QueryHelpers.AddQueryString(options.ApiUrl, args);
+            var url = QueryHelpers.AddQueryString(_options.ApiUrl, args);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            var response = await Client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
+            using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+            {
+                var response = await Client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
 
-            var result = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<TorahVerses>>(result);
+                var result = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<TorahVerses>>(result);
+            }
         }
     }
 }

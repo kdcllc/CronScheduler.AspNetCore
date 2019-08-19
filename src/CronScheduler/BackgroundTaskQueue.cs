@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CronScheduler.AspNetCore
 {
-    public class BackgroundTaskQueue : IBackgroundTaskQueue
+    public class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
         private readonly ConcurrentQueue<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onExeption)>
                     _workItems = new ConcurrentQueue<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>();
@@ -27,6 +27,12 @@ namespace CronScheduler.AspNetCore
             return workItem;
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <inheritdoc/>
         public void QueueBackgroundWorkItem(
             Func<CancellationToken, Task> workItem,
@@ -38,9 +44,17 @@ namespace CronScheduler.AspNetCore
                 throw new ArgumentNullException(nameof(workItem));
             }
 
-            _workItems.Enqueue((workItem,workItemName,onException));
+            _workItems.Enqueue((workItem, workItemName, onException));
             _signal.Release();
             _context.RegisterTask();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _signal?.Dispose();
+            }
         }
     }
 }

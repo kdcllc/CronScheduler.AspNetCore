@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
 using Xunit;
 
 namespace CronScheduler.UnitTest
@@ -34,16 +36,20 @@ namespace CronScheduler.UnitTest
 
                 await host.WaitForShutdownAsync(cts.Token);
             }
+
+            cts.Dispose();
         }
 
         [Fact]
         public async Task RunDelegate()
         {
-            async Task task() => await Task.CompletedTask;
+            async Task CompletedTask() => await Task.CompletedTask;
 
-            var host = CreateHost(services => services.AddStartupJobInitializer(task));
+            var host = CreateHost(services => services.AddStartupJobInitializer(CompletedTask));
 
             await host.RunStartupJobsAync();
+
+            host.Dispose();
         }
 
         private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false)

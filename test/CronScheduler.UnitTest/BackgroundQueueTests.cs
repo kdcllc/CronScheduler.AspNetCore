@@ -1,13 +1,15 @@
-﻿using CronScheduler.AspNetCore;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+
+using CronScheduler.AspNetCore;
+
 using Xunit;
 
 namespace CronScheduler.UnitTest
 {
     public class BackgroundQueueTests
     {
-        [Fact(Skip ="Review")]
+        [Fact]
         public async Task Dequeue_With_Susseful_WorkItemName()
         {
             var workItemName = "TestItem";
@@ -15,17 +17,20 @@ namespace CronScheduler.UnitTest
 
             var service = new BackgroundTaskQueue(context);
 
-            service.QueueBackgroundWorkItem(async token =>
-            {
-                await new TaskCompletionSource<object>().Task;
-            }
-            , workItemName);
+            service.QueueBackgroundWorkItem(
+                async token =>
+                {
+                    await Task.CompletedTask;
+                },
+                workItemName);
 
             var task = await service.DequeueAsync(CancellationToken.None);
 
             await task.workItem(CancellationToken.None);
 
             Assert.Equal(workItemName, task.workItemName);
+
+            service.Dispose();
         }
     }
 }

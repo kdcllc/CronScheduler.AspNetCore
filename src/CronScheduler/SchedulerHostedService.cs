@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Cronos;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -14,15 +16,13 @@ namespace CronScheduler.AspNetCore
     /// </summary>
     public class SchedulerHostedService : BackgroundService
     {
-        public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
-
         private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
         private readonly TaskFactory _taskFactory = new TaskFactory(TaskScheduler.Current);
         private readonly bool _hasSecondsCron;
         private readonly ILogger<SchedulerHostedService> _logger;
 
         /// <summary>
-        /// Constructor for <see cref="SchedulerHostedService"/>
+        /// Initializes a new instance of the <see cref="SchedulerHostedService"/> class.
         /// </summary>
         /// <param name="scheduledTasks"></param>
         /// <param name="loggerFactory"></param>
@@ -76,13 +76,15 @@ namespace CronScheduler.AspNetCore
                     crontabSchedule = CronExpression.Parse(scheduledTask.CronSchedule, CronFormat.Standard);
                 }
 
-                var nextRunTime = (scheduledTask.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc, timeZone).Value);
+                var nextRunTime = scheduledTask.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc, timeZone).Value;
                 _scheduledTasks.Add(new SchedulerTaskWrapper(
                     crontabSchedule,
                     scheduledTask,
                     nextRunTime));
             }
         }
+
+        public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -111,6 +113,7 @@ namespace CronScheduler.AspNetCore
             {
                 taskThatShouldRun.Increment();
 
+#pragma warning disable CA2008 // Do not create tasks without passing a TaskScheduler
                 await _taskFactory.StartNew(
                     async () =>
                     {
@@ -132,6 +135,7 @@ namespace CronScheduler.AspNetCore
                         }
                     },
                     stoppingToken);
+#pragma warning restore CA2008 // Do not create tasks without passing a TaskScheduler
             }
         }
     }

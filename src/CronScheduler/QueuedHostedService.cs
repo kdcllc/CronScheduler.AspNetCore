@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CronScheduler.AspNetCore
 {
@@ -11,6 +12,7 @@ namespace CronScheduler.AspNetCore
     {
         private readonly ILogger<QueuedHostedService> _logger;
         private readonly BackgroundTaskContext _context;
+
         // https://github.com/aspnet/AspNetCore/issues/7749
 #if NETCOREAPP3_0
         private readonly IHostApplicationLifetime _applicationLifetime;
@@ -26,7 +28,7 @@ namespace CronScheduler.AspNetCore
 #if NETCOREAPP3_0
             IHostApplicationLifetime applicationLifetime,
 #else
-         IApplicationLifetime applicationLifetime,
+            IApplicationLifetime applicationLifetime,
 #endif
             IOptionsMonitor<QueuedHostedServiceOptions> options)
         {
@@ -63,11 +65,11 @@ namespace CronScheduler.AspNetCore
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var (workItem, workItemName, onException) =  await TaskQueued.DequeueAsync(stoppingToken);
+                var (workItem, workItemName, onException) = await TaskQueued.DequeueAsync(stoppingToken);
 
                 try
                 {
-                   await workItem(stoppingToken).ConfigureAwait(false);
+                    await workItem(stoppingToken).ConfigureAwait(false);
                     _context.MarkAsComplete();
                 }
                 catch (Exception ex)

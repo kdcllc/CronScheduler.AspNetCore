@@ -1,14 +1,14 @@
-﻿using CronScheduler.AspNetCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using CronScheduler.AspNetCore;
 using CronSchedulerApp.Models;
 using CronSchedulerApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CronSchedulerApp.Controllers
 {
@@ -93,40 +93,40 @@ namespace CronSchedulerApp.Controllers
 
             ViewData["Process"] = processId;
 
-            _taskQueue.QueueBackgroundWorkItem(async (token) =>
-            {
-                token.Register(() =>
+            _taskQueue.QueueBackgroundWorkItem(
+                async (token) =>
                 {
-                    _logger.LogInformation("{Task}  canceled.", processId);
+                    token.Register(() =>
+                    {
+                        _logger.LogInformation("{Task}  canceled.", processId);
+                    });
+
+                    token.ThrowIfCancellationRequested();
+
+                    var guid = Guid.NewGuid().ToString();
+
+                    var repeat = 4;
+                    var idx = 0;
+
+                    for (var delayLoop = 0; delayLoop < repeat; delayLoop++)
+                    {
+                        ++idx;
+
+                        // if (idx == new Random().Next(0, repeat))
+                        // {
+                        //    throw new AggregateException("Something went wrong");
+                        // }
+                        _logger.LogInformation($"Queued Background Task {guid} is running. {delayLoop}/{idx}");
+                        await Task.Delay(TimeSpan.FromSeconds(10), token);
+                    }
+
+                    _logger.LogInformation($"Queued Background Task {guid} is complete. {repeat}/{idx}");
+                },
+                processId,
+                ex =>
+                {
+                    _logger.LogError(ex.ToString());
                 });
-
-                token.ThrowIfCancellationRequested();
-
-                var guid = Guid.NewGuid().ToString();
-
-                var repeat = 4;
-                var idx = 0;
-
-                for (var delayLoop = 0; delayLoop < repeat; delayLoop++)
-                {
-                    ++idx;
-
-                    //if (idx == new Random().Next(0, repeat))
-                    //{
-                    //    throw new AggregateException("Something went wrong");
-                    //}
-
-                    _logger.LogInformation($"Queued Background Task {guid} is running. {delayLoop}/{idx}");
-                    await Task.Delay(TimeSpan.FromSeconds(10), token);
-                }
-
-                _logger.LogInformation($"Queued Background Task {guid} is complete. {repeat}/{idx}");
-            }
-            , processId
-            , ex=>
-            {
-                _logger.LogError(ex.ToString());
-            });
 
             return View();
         }

@@ -4,7 +4,7 @@
     {
         /// <summary>
         /// Specify the CRON schedule.
-        /// <see cref="!:https://github.com/HangfireIO/Cronos/blob/f512241dfc9a0acd65f835cb8f4eab91053efcd5/README.md#cron-format"/>
+        /// <see cref="!:https://github.com/HangfireIO/Cronos/blob/f512241dfc9a0acd65f835cb8f4eab91053efcd5/README.md#cron-format"/>.
         /// </summary>
         public string CronSchedule { get; set; }
 

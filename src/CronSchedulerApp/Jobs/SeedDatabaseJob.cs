@@ -1,8 +1,11 @@
-﻿using CronScheduler.AspNetCore;
-using CronSchedulerApp.Data;
-using Microsoft.Extensions.Logging;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+
+using CronScheduler.AspNetCore;
+
+using CronSchedulerApp.Data;
+
+using Microsoft.Extensions.Logging;
 
 namespace CronSchedulerApp
 {
@@ -22,9 +25,9 @@ namespace CronSchedulerApp
         public async Task ExecuteAsync(CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("{job} started.", nameof(SeedDatabaseJob));
+
             // await for docker container to come up.
             // await Task.Delay(TimeSpan.FromSeconds(40));
-
             await _dbContext.Database.EnsureCreatedAsync(cancellationToken);
             _logger.LogInformation("{job} ended.", nameof(SeedDatabaseJob));
         }

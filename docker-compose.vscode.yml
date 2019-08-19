@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  CronSchedulerApp:
+    image: kdcllc/dotnet:3.0-sdk-vscode-bionic
+    # Azure Key Vault Authentication global tool
+    # dotnet tool install --global appauthentication --version 1.2.2
+    # run this tool first then check the configuration
+    # docker-compose -f ./docker-compose.vscode.yml config
+    environment:
+      - MSI_ENDPOINT=${MSI_ENDPOINT}
+      - MSI_SECRET=${MSI_SECRET}
+    volumes:
+      - ..:/workspace
+      - ~/.ssh:/root/.ssh-localhost
+      # Forwards the local Docker socket to the container.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # kubernetes
+      - $HOME/.kube:/root/.kube-localhost
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
