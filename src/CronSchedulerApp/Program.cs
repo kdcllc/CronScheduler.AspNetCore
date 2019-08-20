@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using System.Threading.Tasks;
+
+using CronSchedulerApp.Jobs.Startup;
+
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace CronSchedulerApp
 {
-#pragma warning disable RCS1102 // Make class static.
-    public class Program
-#pragma warning restore RCS1102 // Make class static.
+    public sealed class Program
     {
         public static async Task Main(string[] args)
         {
@@ -19,7 +20,7 @@ namespace CronSchedulerApp
 
             await host.RunStartupJobsAync();
 
-            //await host.RunAsync();
+            // await host.RunAsync();
             host.Run();
         }
 
@@ -28,7 +29,7 @@ namespace CronSchedulerApp
             return WebHost.CreateDefaultBuilder(args)
                     .ConfigureServices(services =>
                     {
-                        services.AddStartupJob<SeedDatabaseJob>();
+                        services.AddStartupJob<SeedDatabaseStartupJob>();
                         services.AddStartupJob<TestStartupJob>();
                     })
                     .ConfigureLogging((context, logger) =>

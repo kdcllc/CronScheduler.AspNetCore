@@ -1,11 +1,36 @@
-﻿using CronScheduler.AspNetCore;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using CronScheduler.AspNetCore;
+
+using Microsoft.Extensions.Logging;
+
 namespace CronScheduler.UnitTest
 {
+    public class TestJob : IScheduledJob
+    {
+        private readonly ILogger<TestJob> _logger;
+
+        public TestJob(
+            ILogger<TestJob> logger)
+        {
+            _logger = logger;
+        }
+
+        public string CronSchedule { get; set; }
+
+        public bool RunImmediately { get; set; }
+
+        public string CronTimeZone { get; set; }
+
+        public Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Running {name}", nameof(TestJob));
+            return Task.CompletedTask;
+        }
+    }
+
     public class TestJobExceptionOptions : SchedulerOptions
     {
         public bool RaiseException { get; set; }
@@ -47,30 +72,8 @@ namespace CronScheduler.UnitTest
                 _logger.LogError(message);
                 throw new Exception(message);
             }
+
             _logger.LogInformation("Running {name}", nameof(TestJobException));
-            return Task.CompletedTask;
-        }
-    }
-
-    public class TestJob : IScheduledJob
-    {
-        private readonly ILogger<TestJob> _logger;
-
-        public TestJob(
-            ILogger<TestJob> logger)
-        {
-            _logger = logger;
-        }
-
-        public string CronSchedule { get; set; }
-
-        public bool RunImmediately { get; set; }
-
-        public string CronTimeZone { get; set; }
-
-        public Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Running {name}", nameof(TestJob));
             return Task.CompletedTask;
         }
     }

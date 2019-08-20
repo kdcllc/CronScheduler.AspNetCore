@@ -1,0 +1,54 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json or the definition README at
+// https://github.com/microsoft/vscode-dev-containers/tree/master/containers/dotnetcore-latest
+{
+	"name": "CronSchedulerApp",
+
+	"dockerComposeFile": "../docker-compose.vscode.yml",
+	"service": "CronSchedulerApp",
+	"workspaceFolder": "/workspace/CronScheduler.AspNetCore",
+    // "shutdownAction": "stopCompose",
+	"shutdownAction": "none",
+	"appPort": [5000],
+
+	// "postCreateCommand": "dotnet restore",
+
+	"runArgs": [
+		// Uncomment the next line if you will use a ptrace-based debugger like C++, Go, and Rust.
+		// "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined",
+
+		// Uncomment the next line to use a non-root user. On Linux, this will prevent
+		// new files getting created as root, but you may need to update the USER_UID
+		// and USER_GID in .devcontainer/Dockerfile to match your user if not 1000.
+		// "-u", "vscode",
+
+		"--mount", "type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock",
+		"--mount", "type=bind,source=${env:HOME}${env:USERPROFILE}/.kube,target=/root/.kube-localhost",
+
+		// Uncomment the next line to also sync certs in your .minikube folder
+		// "--mount", "type=bind,source=${env:HOME}${env:USERPROFILE}/.minikube,target=/root/.minikube-localhost",
+
+		"-e", "SYNC_LOCALHOST_KUBECONFIG=true",
+		"-v","/var/run/docker.sock:/var/run/docker.sock",
+		"-v", "$HOME/.kube:/root/.kube-localhost"
+	],
+
+	"extensions": [
+        "ms-vscode.csharp",
+        "ms-vscode.azurecli",
+		"ms-azuretools.vscode-docker",
+		"ms-kubernetes-tools.vscode-kubernetes-tools",
+		"eamodio.gitlens",
+		"formulahendry.dotnet-test-explorer",
+		"streetsidesoftware.code-spell-checker",
+		"davidanson.vscode-markdownlint",
+		"humao.rest-client",
+		"visualstudioexptteam.vscodeintellicode"
+	],
+
+	"settings": {
+		"remote.extensionKind": {
+			"ms-azuretools.vscode-docker": "workspace",
+			"ms-kubernetes-tools.vscode-kubernetes-tools": "workspace"
+		}
+	},
+}

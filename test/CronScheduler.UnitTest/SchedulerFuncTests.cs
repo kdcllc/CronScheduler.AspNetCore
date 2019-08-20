@@ -1,4 +1,8 @@
-﻿using CronScheduler.AspNetCore;
+﻿using System;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using CronScheduler.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -6,10 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
 using Moq;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,11 +17,11 @@ namespace CronScheduler.UnitTest
 {
     public class SchedulerFuncTests
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public SchedulerFuncTests(ITestOutputHelper output)
         {
-            this.output = output;
+            _output = output;
         }
 
         [Fact(Skip = "Review")]
@@ -59,23 +59,23 @@ namespace CronScheduler.UnitTest
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
 
-            mockLoggerTestJob.Verify(l => l.Log(
+            mockLoggerTestJob.Verify(
+                l => l.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
                 It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
-                It.IsAny<Func<object, Exception, string>>()
-                ),
-                Times.Between(1,2,Range.Inclusive));
+                It.IsAny<Func<object, Exception, string>>()),
+                Times.Between(1, 2, Range.Inclusive));
 
-            mockLoggerTestJobException.Verify(l => l.Log(
+            mockLoggerTestJobException.Verify(
+                l => l.Log(
                       LogLevel.Error,
                       It.IsAny<EventId>(),
                       It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(Exception))),
                       It.IsAny<Exception>(),
-                      It.IsAny<Func<object, Exception, string>>()
-                      ),
-                     Times.Between(1, 2, Range.Inclusive));
+                      It.IsAny<Func<object, Exception, string>>()),
+                Times.Between(1, 2, Range.Inclusive));
         }
 
         [Fact]
@@ -87,7 +87,8 @@ namespace CronScheduler.UnitTest
             {
                 services.AddScheduler(ctx =>
                 {
-                    ctx.Services.AddSingleton<IScheduledJob, TestJob>(_ => {
+                    ctx.Services.AddSingleton<IScheduledJob, TestJob>(_ =>
+                    {
                         return new TestJob(mockLogger.Object)
                         {
                             RunImmediately = false,
@@ -107,14 +108,14 @@ namespace CronScheduler.UnitTest
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
 
-            mockLogger.Verify(l => l.Log(
+            mockLogger.Verify(
+                l => l.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
                 It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
-                It.IsAny<Func<object, Exception, string>>()
-                ),
-                Times.Between(1,3,Range.Inclusive));
+                It.IsAny<Func<object, Exception, string>>()),
+                Times.Between(1, 3, Range.Inclusive));
         }
 
         [Fact]
@@ -127,7 +128,7 @@ namespace CronScheduler.UnitTest
             {
                 services.AddScheduler(ctx =>
                 {
-                    ctx.UnobservedTaskExceptionHandler = unobservedTaskExceptionHandler;
+                    ctx.UnobservedTaskExceptionHandler = UnobservedTaskExceptionHandler;
                     ctx.AddJob<TestJobException>(_ =>
                     {
                         return new TestJobException(mockLogger.Object, null, true)
@@ -141,7 +142,7 @@ namespace CronScheduler.UnitTest
                 // services.AddTransient<ILogger<TestJob>>(x => mockLogger.Object);
 
                 // short registration without UnobservedTaskExceptionHandler
-                //services.AddSchedulerJob<TestJob,TestJobOptions>();
+                // services.AddSchedulerJob<TestJob,TestJobOptions>();
             });
 
             var client = new TestServer(host).CreateClient();
@@ -154,14 +155,14 @@ namespace CronScheduler.UnitTest
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
 
-            mockLogger.Verify(l => l.Log(
+            mockLogger.Verify(
+                l => l.Log(
                         LogLevel.Error,
                         It.IsAny<EventId>(),
                         It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(Exception))),
                         It.IsAny<Exception>(),
-                        It.IsAny<Func<object, Exception, string>>()
-                        ),
-                        Times.Between(1, 2, Range.Inclusive));
+                        It.IsAny<Func<object, Exception, string>>()),
+                Times.Between(1, 2, Range.Inclusive));
         }
 
         [Fact(Skip = "Review")]
@@ -174,6 +175,7 @@ namespace CronScheduler.UnitTest
             {
                 // used for tests
                 services.AddTransient<ILogger<TestJobException>>(x => mockLogger.Object);
+
                 // short registration without UnobservedTaskExceptionHandler
                 services.AddSchedulerJob<TestJobException, TestJobExceptionOptions>();
             });
@@ -188,14 +190,14 @@ namespace CronScheduler.UnitTest
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
 
-            mockLogger.Verify(l => l.Log(
+            mockLogger.Verify(
+                l => l.Log(
                         LogLevel.Error,
                         It.IsAny<EventId>(),
                         It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(Exception))),
                         It.IsAny<Exception>(),
-                        It.IsAny<Func<object, Exception, string>>()
-                        ),
-                        Times.Between(1,2,Range.Inclusive));
+                        It.IsAny<Func<object, Exception, string>>()),
+                Times.Between(1, 2, Range.Inclusive));
         }
 
         private IWebHostBuilder CreateHost(
@@ -204,7 +206,7 @@ namespace CronScheduler.UnitTest
         {
             return new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .ConfigureAppConfiguration((hostingContext, config)=>
+                .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
 
@@ -231,9 +233,10 @@ namespace CronScheduler.UnitTest
                 .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes);
         }
 
-        private void unobservedTaskExceptionHandler(object sender, UnobservedTaskExceptionEventArgs e)
+        private void UnobservedTaskExceptionHandler(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            output.WriteLine(e.Exception.InnerException.Message);
+            _output.WriteLine(e.Exception.InnerException.Message);
+
             // if not set exception is thrown from the tasks management context
             e.SetObserved();
         }

@@ -1,38 +1,38 @@
-﻿using CronScheduler.AspNetCore;
-using CronSchedulerApp.Services;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
+using CronScheduler.AspNetCore;
+
+using CronSchedulerApp.Services;
+
+using Microsoft.Extensions.Options;
+
 namespace CronSchedulerApp.Jobs
 {
-    public class TorahQuoteJob : IScheduledJob
+    public class TorahQuoteJob : ScheduledJob
     {
-        public string CronSchedule { get; }
-
-        public bool RunImmediately { get; }
-
-        public string CronTimeZone { get; }
-
-        private readonly TorahService _service;
-        private readonly TorahSettings _options;
+        private readonly TorahQuoteJobOptions _options;
         private readonly TorahVerses _torahVerses;
+        private readonly TorahService _service;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TorahQuoteJob"/> class.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="service"></param>
+        /// <param name="torahVerses"></param>
         public TorahQuoteJob(
-            IOptionsMonitor<TorahSettings> options,
+            IOptionsMonitor<TorahQuoteJobOptions> options,
             TorahService service,
-            TorahVerses torahVerses)
+            TorahVerses torahVerses) : base(options.CurrentValue)
         {
             _options = options.CurrentValue;
-            CronSchedule = _options.CronSchedule; //set to 10 seconds in appsettings.json
-            RunImmediately = _options.RunImmediately;
-            CronTimeZone = _options.CronTimeZone;
-            _service = service;
-            _torahVerses = torahVerses;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+            _torahVerses = torahVerses ?? throw new ArgumentNullException(nameof(torahVerses));
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];

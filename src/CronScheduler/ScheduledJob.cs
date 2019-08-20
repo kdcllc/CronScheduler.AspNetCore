@@ -7,15 +7,10 @@ namespace CronScheduler.AspNetCore
     /// <inheritdoc/>
     public abstract class ScheduledJob : IScheduledJob
     {
-        /// <inheritdoc/>
-        public string CronSchedule { get; }
-
-        /// <inheritdoc/>
-        public bool RunImmediately { get; }
-
-        /// <inheritdoc/>
-        public string CronTimeZone { get; }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduledJob"/> class.
+        /// </summary>
+        /// <param name="options"></param>
         public ScheduledJob(SchedulerOptions options)
         {
             if (options == null)
@@ -29,6 +24,15 @@ namespace CronScheduler.AspNetCore
 
             CronTimeZone = options.CronTimeZone;
         }
+
+        /// <inheritdoc/>
+        public string CronSchedule { get; }
+
+        /// <inheritdoc/>
+        public bool RunImmediately { get; }
+
+        /// <inheritdoc/>
+        public string CronTimeZone { get; }
 
         /// <inheritdoc/>
         public abstract Task ExecuteAsync(CancellationToken cancellationToken);

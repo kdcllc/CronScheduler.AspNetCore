@@ -1,12 +1,21 @@
-# CronScheduler.AspNetCore 
+# CronScheduler.AspNetCore
+
 [![Build status](https://ci.appveyor.com/api/projects/status/wrme1wr6kgjp3a0o?svg=true)](https://ci.appveyor.com/project/kdcllc/cronscheduler-aspnetcore)
+[![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
 
 The goal of this library was to design a simple Cron Scheduling engine that is based on build-in Asp.Net Core  IHostedService interface.
 It is much lighter than Quartz schedular and operates inside of any .NET Core GenericHost thus makes it simpler to setup and configure.
 In addition `IStartupJob` was added to support async initialization before the IWebHost is ready to start. Sample project includes support for
 making sure that Database is created before the application starts.
 
+## .NET CLI
+
+```bash
+    dotnet add package CronScheduler.AspNetCore --version 1.1.0
+```
+
 ## Uses Crontab format for Jobs/Tasks schedules
+
 This library supports up to 5 seconds job intervals in the Crontab format thank to [HangfireIO/Cronos](https://github.com/HangfireIO/Cronos) library.
 
 You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
@@ -25,51 +34,103 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
     * * * * * *
 
 ## Example CronSchedulerApp
+
 The sample website provides with use-case scenario for this library.
 
-Includes the following sample service:
+## Singleton dependencies for `ScheduledJob`
+
 ```csharp
-    public class TorahQuoteJob : IScheduledJob
+    public class TorahQuoteJob : ScheduledJob
     {
-        public string CronSchedule { get; }
-
-        public bool RunImmediately { get; }
-
-        public string CronTimeZone { get; }
-
+        private readonly TorahQuoteJobOptions _options;
+        private readonly TorahVerses _torahVerses;
         private readonly TorahService _service;
-        private readonly TorahSettings _options;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TorahQuoteJob"/> class.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="service"></param>
+        /// <param name="torahVerses"></param>
         public TorahQuoteJob(
-            IOptions<TorahSettings> options,
-            TorahService service)
+            IOptionsMonitor<TorahQuoteJobOptions> options,
+            TorahService service,
+            TorahVerses torahVerses) : base(options.CurrentValue)
         {
-            _options = options.Value;
-            CronSchedule = _options.CronSchedule; //set to 10 seconds in appsettings.json
-            RunImmediately = _options.RunImmediately;
-            CronTimeZone = _options.CronTimeZone;
-            _service = service;
+            _options = options.CurrentValue;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+            _torahVerses = torahVerses ?? throw new ArgumentNullException(nameof(torahVerses));
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];
 
-            var result = await _service.GetVerses(exp, cancellationToken);
-
-            TorahVerses.Current = result;
+            _torahVerses.Current = await _service.GetVersesAsync(exp, cancellationToken);
         }
     }
 ```
 
 Then register this service within the `Startup.cs`
+
 ```csharp
     services.AddScheduler(builder =>
     {
-        builder.AddJob<TorahQuoteJob,TorahSettings>();
+        builder.Services.AddSingleton<TorahVerses>();
+
+        // Build a policy that will handle exceptions, 408s, and 500s from the remote server
+        builder.Services.AddHttpClient<TorahService>()
+            .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+        builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
+
         builder.UnobservedTaskExceptionHandler = UnobservedHandler;
     });
+```
+
+## Scoped or Transient Dependencies for `ScheduledJob`
+
+```csharp
+    public class UserJob : ScheduledJob
+    {
+        private readonly UserJobOptions _options;
+        private readonly IServiceProvider _provider;
+
+        public UserJob(
+            IServiceProvider provider,
+            IOptionsMonitor<UserJobOptions> options) : base(options.CurrentValue)
+        {
+            _options = options.CurrentValue;
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        }
+
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            using (var scope = _provider.CreateScope())
+            {
+                var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+
+                var users = userService.GetUsers();
+
+                foreach (var user in users)
+                {
+                    await userService.AddClaimAsync(user, new Claim(_options.ClaimName, DateTime.UtcNow.ToString()));
+                }
+            }
+        }
+    }
+```
+
+Then register this service within the `Startup.cs`
+
+```csharp
+        services.AddScheduler(builder =>
+        {
+            builder.Services.AddScoped<UserService>();
+            builder.AddJob<UserJob, UserJobOptions>();
+
+            builder.UnobservedTaskExceptionHandler = UnobservedHandler;
+        });
 ```
 
 - Sample uses Microsoft.Extensions.Http.Polly extension library to make http calls every 10 seconds.
@@ -96,32 +157,35 @@ This library makes it possible by simply doing the following:
 - Register the startup job in `Program.cs` or in `Startup.cs` file.
 
 ```csharp
-   public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            return WebHost.CreateDefaultBuilder(args)
-                    .ConfigureServices(services =>
-                    {
-                        services.AddStartupJob<SeedDatabaseJob>();
-                    })
-                    .ConfigureLogging((context, logger) =>
-                    {
-                        logger.AddConsole();
-                        logger.AddDebug();
-                        logger.AddConfiguration(context.Configuration.GetSection("Logging"));
-                    })
-                    .UseStartup<Startup>();
-        }
+public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+{
+    return WebHost.CreateDefaultBuilder(args)
+            .ConfigureServices(services =>
+            {
+                services.AddStartupJob<SeedDatabaseJob>();
+            })
+            .ConfigureLogging((context, logger) =>
+            {
+                logger.AddConsole();
+                logger.AddDebug();
+                logger.AddConfiguration(context.Configuration.GetSection("Logging"));
+            })
+            .UseStartup<Startup>();
+}
 ```
+
 ## Background Queues
-In some instances of the application the need for queueing of the tasks is required. In order to enable this add the following in `Startup.cs`.
+
+In some instances of the application the need for queuing of the tasks is required. In order to enable this add the following in `Startup.cs`.
 
 ```csharp
-    services.AddQueuedService();
+    services.AddBackgroundQueuedService();
 ```
+
 Then add sample async task to be executed by the Queued Hosted Service.
 
 ```csharp
-    
+
     public class MyService
     {
         private readonly IBackgroundTaskQueue _taskQueue;
@@ -130,7 +194,7 @@ Then add sample async task to be executed by the Queued Hosted Service.
         {
             _taskQueue = taskQueue;
         }
-        
+
         public void RunTask()
         {
             _taskQueue.QueueBackgroundWorkItem(async (token)=>
@@ -142,14 +206,23 @@ Then add sample async task to be executed by the Queued Hosted Service.
     }
 ```
 
-
 ## Special Thanks to
+
 - [Maarten Balliauw](https://blog.maartenballiauw.be/post/2017/08/01/building-a-scheduled-cache-updater-in-aspnet-core-2.html) for the Asp.Net Core idea for the background hosted implementation.
 - [3 ways to use HTTPClientFactory in ASP.NET Core 2.1](http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/)
 
 ## Docker build
+
 Utilizes [King David Consulting LLC DotNet Docker Image](https://github.com/kdcllc/docker/tree/master/dotnet)
 
 ```bash
     docker-compose -f "docker-compose.yml" -f "docker-compose.override.yml" up -d --build
+```
+
+### Note
+
+Workaround for  `Retrying 'FindPackagesByIdAsync' for source` in Docker containers restore.
+
+```bash
+ dotnet restore --disable-parallel
 ```

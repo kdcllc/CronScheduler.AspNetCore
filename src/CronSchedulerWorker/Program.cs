@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace CronScheduler
 {
-#pragma warning disable RCS1102 // Make class static.
-    public class Program
-#pragma warning restore RCS1102 // Make class static.
+    public sealed class Program
     {
         public static void Main(string[] args)
         {
@@ -24,7 +21,6 @@ namespace CronScheduler
                 services.AddHostedService<Worker>();
 
                 // services.AddSchedulerJob<TestJob, TestJobOptions>();
-
                 services.AddScheduler(builder =>
                 {
                     builder.AddJob<TestJob, TestJobOptions>();

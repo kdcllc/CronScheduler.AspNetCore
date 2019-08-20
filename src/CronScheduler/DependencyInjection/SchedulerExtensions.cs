@@ -1,15 +1,17 @@
-﻿using CronScheduler.AspNetCore;
+﻿using System;
+using System.Threading.Tasks;
+
+using CronScheduler.AspNetCore;
+
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// An Extension method to register <see cref="SchedulerHostedService"/>.
-    /// https://github.com/aspnet/Hosting/blob/a3dd609ae667adcb6eb062125d76f9a76a82f7b4/src/Microsoft.Extensions.Hosting.Abstractions/ServiceCollectionHostedServiceExtensions.cs#L17
+    /// https://github.com/aspnet/Hosting/blob/a3dd609ae667adcb6eb062125d76f9a76a82f7b4/src/Microsoft.Extensions.Hosting.Abstractions/ServiceCollectionHostedServiceExtensions.cs#L17.
     /// </summary>
     public static class SchedulerExtensions
     {
@@ -42,7 +44,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// Adds <see cref="SchedulerHostedService"/> service with ability to register all of the cron job inside the context with
-        /// global error handler <see cref="UnobservedTaskExceptionEventArgs"/>
+        /// global error handler <see cref="UnobservedTaskExceptionEventArgs"/>.
         /// </summary>
         /// <param name="services"></param>
         /// <param name="config"></param>
@@ -70,8 +72,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddSchedulerJob<TJob, TJobOptions>(
             this IServiceCollection services,
             string sectionName = "SchedulerJobs")
-            where TJob: class, IScheduledJob
-            where TJobOptions: SchedulerOptions, new()
+            where TJob : class, IScheduledJob
+            where TJobOptions : SchedulerOptions, new()
         {
             var builder = new SchedulerBuilder(services);
 
@@ -85,10 +87,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void CreateInstance(
             IServiceCollection services,
-            EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler=null)
+            EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler = null)
         {
             // should prevent from double registrations.
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, SchedulerHostedService>(sp=>
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, SchedulerHostedService>(sp =>
             {
                 var loggerFactory = sp.GetService<ILoggerFactory>();
                 var scheduledJobs = sp.GetServices<IScheduledJob>();
@@ -99,9 +101,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     instance.UnobservedTaskException += unobservedTaskExceptionHandler;
                 }
+
                 return instance;
             }));
-
         }
     }
 }
