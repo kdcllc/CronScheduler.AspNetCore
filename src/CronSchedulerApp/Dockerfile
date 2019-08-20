@@ -9,7 +9,7 @@ ARG VERBOSE="false"
 # Build image
 FROM ${sdkImage}:${sdkTag} as builder
 WORKDIR ./src/CronSchedulerApp
-RUN dotnet publish  -c Release  -o /app
+RUN dotnet publish --no-build -c Release  -o /app
 
 #WORKDIR ./src/CronSchedulerApp
 #RUN dotnet build --no-restore -c Release -v d

@@ -37,39 +37,37 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
 
 The sample website provides with use-case scenario for this library.
 
-Includes the following sample service:
+## Singleton dependencies for `ScheduledJob`
 
 ```csharp
-    public class TorahQuoteJob : IScheduledJob
+    public class TorahQuoteJob : ScheduledJob
     {
-        public string CronSchedule { get; }
-
-        public bool RunImmediately { get; }
-
-        public string CronTimeZone { get; }
-
+        private readonly TorahQuoteJobOptions _options;
+        private readonly TorahVerses _torahVerses;
         private readonly TorahService _service;
-        private readonly TorahSettings _options;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TorahQuoteJob"/> class.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="service"></param>
+        /// <param name="torahVerses"></param>
         public TorahQuoteJob(
-            IOptions<TorahSettings> options,
-            TorahService service)
+            IOptionsMonitor<TorahQuoteJobOptions> options,
+            TorahService service,
+            TorahVerses torahVerses) : base(options.CurrentValue)
         {
-            _options = options.Value;
-            CronSchedule = _options.CronSchedule; //set to 10 seconds in appsettings.json
-            RunImmediately = _options.RunImmediately;
-            CronTimeZone = _options.CronTimeZone;
-            _service = service;
+            _options = options.CurrentValue;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+            _torahVerses = torahVerses ?? throw new ArgumentNullException(nameof(torahVerses));
         }
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];
 
-            var result = await _service.GetVerses(exp, cancellationToken);
-
-            TorahVerses.Current = result;
+            _torahVerses.Current = await _service.GetVersesAsync(exp, cancellationToken);
         }
     }
 ```
@@ -79,9 +77,60 @@ Then register this service within the `Startup.cs`
 ```csharp
     services.AddScheduler(builder =>
     {
-        builder.AddJob<TorahQuoteJob,TorahSettings>();
+        builder.Services.AddSingleton<TorahVerses>();
+
+        // Build a policy that will handle exceptions, 408s, and 500s from the remote server
+        builder.Services.AddHttpClient<TorahService>()
+            .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+        builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
+
         builder.UnobservedTaskExceptionHandler = UnobservedHandler;
     });
+```
+
+## Scoped or Transient Dependencies for `ScheduledJob`
+
+```csharp
+    public class UserJob : ScheduledJob
+    {
+        private readonly UserJobOptions _options;
+        private readonly IServiceProvider _provider;
+
+        public UserJob(
+            IServiceProvider provider,
+            IOptionsMonitor<UserJobOptions> options) : base(options.CurrentValue)
+        {
+            _options = options.CurrentValue;
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        }
+
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            using (var scope = _provider.CreateScope())
+            {
+                var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+
+                var users = userService.GetUsers();
+
+                foreach (var user in users)
+                {
+                    await userService.AddClaimAsync(user, new Claim(_options.ClaimName, DateTime.UtcNow.ToString()));
+                }
+            }
+        }
+    }
+```
+
+Then register this service within the `Startup.cs`
+
+```csharp
+        services.AddScheduler(builder =>
+        {
+            builder.Services.AddScoped<UserService>();
+            builder.AddJob<UserJob, UserJobOptions>();
+
+            builder.UnobservedTaskExceptionHandler = UnobservedHandler;
+        });
 ```
 
 - Sample uses Microsoft.Extensions.Http.Polly extension library to make http calls every 10 seconds.
@@ -130,7 +179,7 @@ public static IWebHostBuilder CreateWebHostBuilder(string[] args)
 In some instances of the application the need for queuing of the tasks is required. In order to enable this add the following in `Startup.cs`.
 
 ```csharp
-    services.AddQueuedService();
+    services.AddBackgroundQueuedService();
 ```
 
 Then add sample async task to be executed by the Queued Hosted Service.

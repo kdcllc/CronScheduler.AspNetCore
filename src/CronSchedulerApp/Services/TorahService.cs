@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using CronSchedulerApp.Jobs;
+
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
@@ -16,16 +18,21 @@ namespace CronSchedulerApp.Services
     /// </summary>
     public class TorahService
     {
-        private readonly TorahSettings _options;
+        private TorahQuoteJobOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TorahService"/> class.
         /// </summary>
         /// <param name="httpClient"></param>
         /// <param name="options"></param>
-        public TorahService(HttpClient httpClient, IOptions<TorahSettings> options)
+        public TorahService(
+            HttpClient httpClient,
+            IOptionsMonitor<TorahQuoteJobOptions> options)
         {
-            _options = options.Value;
+            _options = options.CurrentValue;
+
+            // updates on providers change
+            options.OnChange((opt) => _options = opt);
 
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("User-Agent", nameof(TorahService));

@@ -35,9 +35,7 @@ namespace CronSchedulerApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Build a policy that will handle exceptions, 408s, and 500s from the remote server
-            services.AddHttpClient<TorahService>()
-                .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -58,6 +56,7 @@ namespace CronSchedulerApp
                     options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
                 }
             });
+
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -65,11 +64,20 @@ namespace CronSchedulerApp
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddSingleton<TorahVerses>();
-
             services.AddScheduler(builder =>
             {
-                builder.AddJob<TorahQuoteJob, TorahSettings>();
+                // 1. Add Torah Quote Service and Job.
+                builder.Services.AddSingleton<TorahVerses>();
+
+                // Build a policy that will handle exceptions, 408s, and 500s from the remote server
+                builder.Services.AddHttpClient<TorahService>()
+                    .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+                builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
+
+                // 2. Add User Service and Job
+                builder.Services.AddScoped<UserService>();
+                builder.AddJob<UserJob, UserJobOptions>();
+
                 builder.UnobservedTaskExceptionHandler = UnobservedHandler;
             });
 

@@ -3,29 +3,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+
 using CronScheduler.AspNetCore;
+
 using CronSchedulerApp.Models;
 using CronSchedulerApp.Services;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace CronSchedulerApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly TorahSettings _options;
         private readonly IBackgroundTaskQueue _taskQueue;
         private readonly ILogger<HomeController> _logger;
         private readonly TorahVerses _torahVerses;
 
         public HomeController(
-            IOptions<TorahSettings> options,
             IBackgroundTaskQueue taskQueue,
             ILogger<HomeController> logger,
             TorahVerses torahVerses)
         {
-            _options = options.Value;
             _taskQueue = taskQueue;
             _logger = logger;
             _torahVerses = torahVerses;

@@ -10,11 +10,11 @@ using Microsoft.Extensions.Options;
 
 namespace CronSchedulerApp.Jobs
 {
-    public class TorahQuoteJob : IScheduledJob
+    public class TorahQuoteJob : ScheduledJob
     {
-        private readonly TorahService _service;
-        private readonly TorahSettings _options;
+        private readonly TorahQuoteJobOptions _options;
         private readonly TorahVerses _torahVerses;
+        private readonly TorahService _service;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TorahQuoteJob"/> class.
@@ -23,25 +23,16 @@ namespace CronSchedulerApp.Jobs
         /// <param name="service"></param>
         /// <param name="torahVerses"></param>
         public TorahQuoteJob(
-            IOptionsMonitor<TorahSettings> options,
+            IOptionsMonitor<TorahQuoteJobOptions> options,
             TorahService service,
-            TorahVerses torahVerses)
+            TorahVerses torahVerses) : base(options.CurrentValue)
         {
             _options = options.CurrentValue;
-            CronSchedule = _options.CronSchedule; // set to 10 seconds in appsettings.json
-            RunImmediately = _options.RunImmediately;
-            CronTimeZone = _options.CronTimeZone;
-            _service = service;
-            _torahVerses = torahVerses;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+            _torahVerses = torahVerses ?? throw new ArgumentNullException(nameof(torahVerses));
         }
 
-        public string CronSchedule { get; }
-
-        public bool RunImmediately { get; }
-
-        public string CronTimeZone { get; }
-
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];

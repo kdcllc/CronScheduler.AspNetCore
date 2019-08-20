@@ -1,8 +1,8 @@
 ﻿using CronScheduler.AspNetCore;
 
-namespace CronSchedulerApp.Services
+namespace CronSchedulerApp.Jobs
 {
-    public class TorahSettings : SchedulerOptions
+    public class TorahQuoteJobOptions : SchedulerOptions
     {
         public string ApiUrl { get; set; }
 
