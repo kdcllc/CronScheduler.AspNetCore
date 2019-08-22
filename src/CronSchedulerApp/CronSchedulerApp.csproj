@@ -32,8 +32,4 @@
     <ProjectReference Include="..\CronScheduler\CronScheduler.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Jobs\Startup\" />
-  </ItemGroup>
-
 </Project>

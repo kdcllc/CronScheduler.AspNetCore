@@ -12,31 +12,36 @@ namespace CronScheduler.AspNetCore
         /// <param name="cronExpression"></param>
         /// <param name="scheduledJob"></param>
         /// <param name="nextRunTime"></param>
+        /// <param name="timeZoneInfo"></param>
         public SchedulerTaskWrapper(
             CronExpression cronExpression,
             IScheduledJob scheduledJob,
-            DateTime nextRunTime)
+            DateTimeOffset nextRunTime,
+            TimeZoneInfo timeZoneInfo)
         {
             Schedule = cronExpression;
             ScheduledJob = scheduledJob;
             NextRunTime = nextRunTime;
+            TimeZoneInfo = timeZoneInfo;
         }
 
         public CronExpression Schedule { get; set; }
 
         public IScheduledJob ScheduledJob { get; set; }
 
-        public DateTime LastRunTime { get; set; }
+        public DateTimeOffset LastRunTime { get; set; }
 
-        public DateTime NextRunTime { get; set; }
+        public DateTimeOffset NextRunTime { get; set; }
+
+        public TimeZoneInfo TimeZoneInfo { get; set; }
 
         public void Increment()
         {
             LastRunTime = NextRunTime;
-            NextRunTime = Schedule.GetNextOccurrence(NextRunTime).Value;
+            NextRunTime = Schedule.GetNextOccurrence(NextRunTime, TimeZoneInfo).Value;
         }
 
-        public bool ShouldRun(DateTime currentTime)
+        public bool ShouldRun(DateTimeOffset currentTime)
         {
             return NextRunTime < currentTime && LastRunTime != NextRunTime;
         }
