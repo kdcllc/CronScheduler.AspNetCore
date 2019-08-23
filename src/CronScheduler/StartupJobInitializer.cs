@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Microsoft.Extensions.Logging;
 
 namespace CronScheduler.AspNetCore
 {
@@ -46,6 +47,7 @@ namespace CronScheduler.AspNetCore
                         _logger.LogError("{jobName} failed with the following message {message}", job.GetType(), ex.Message);
                     }
                 }
+
                 _logger.LogInformation("{name} completed queuing {count} jobs", nameof(StartupJobInitializer), jobCount);
             }
             catch (Exception ex)

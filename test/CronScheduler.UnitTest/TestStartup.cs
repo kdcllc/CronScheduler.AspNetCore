@@ -9,8 +9,6 @@ namespace CronScheduler.UnitTest
 {
     public class TestStartup
     {
-        public IConfiguration Configuration { get; }
-
         private readonly ILogger<TestStartup> _logger;
 
         public TestStartup(
@@ -20,6 +18,8 @@ namespace CronScheduler.UnitTest
             Configuration = configuration;
             _logger = logger;
         }
+
+        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -31,7 +31,8 @@ namespace CronScheduler.UnitTest
         {
             app.Map("/hc", route =>
             {
-                route.Run( async context=> {
+                route.Run(async context =>
+                {
                     await context.Response.WriteAsync("healthy");
                 });
             });

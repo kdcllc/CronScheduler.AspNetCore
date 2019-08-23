@@ -8,7 +8,6 @@
       https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json;
       https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json;
       https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json;
-      https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json;
       https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json;
       https://dotnetfeed.blob.core.windows.net/aspnet-blazor/index.json;
       https://api.nuget.org/v3/index.json;

@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -26,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Registers a configuration instance which TOptions will bind against without passing <see cref="IConfiguration"/> into registration.
         /// In addition adds the singelton of the {TOptions}.
-        /// https://github.com/aspnet/Extensions/blob/299af9e32ba790dbfe8cfdf99b441766d7b0f6b6/src/Options/ConfigurationExtensions/src/OptionsConfigurationServiceCollectionExtensions.cs#L58
+        /// https://github.com/aspnet/Extensions/blob/299af9e32ba790dbfe8cfdf99b441766d7b0f6b6/src/Options/ConfigurationExtensions/src/OptionsConfigurationServiceCollectionExtensions.cs#L58.
         /// </summary>
         /// <typeparam name="TConfigureType">The type of the object that configuration provider has entry for.</typeparam>
         /// <typeparam name="TOptions">The type of the option object.</typeparam>
@@ -55,7 +56,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddOptions();
 
-            services.AddSingleton<IOptionsChangeTokenSource<TOptions>>((sp) => {
+            services.AddSingleton<IOptionsChangeTokenSource<TOptions>>((sp) =>
+            {
                 var config = sp.GetRequiredService<IConfiguration>();
                 var section = config.GetSection(sectionName).GetSection(typeof(TConfigureType).Name);
 

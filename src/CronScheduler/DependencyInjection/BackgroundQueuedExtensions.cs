@@ -1,6 +1,7 @@
-﻿using CronScheduler.AspNetCore;
-using System;
+﻿using System;
 using System.Linq;
+
+using CronScheduler.AspNetCore;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -13,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The instance of <see cref="IServiceCollection"/>.</param>
         /// <param name="applicationOnStopWaitForTasksToComplete">The flag to enable or disable wait for the background queued tasks to complete before application shutdowns. Default is false.</param>
-        /// <param name="applicationOnStopTimeoutWait">The <see cref="TimeSpan"/> timeout to wait for the background queued tasks to complete. Default is 10 seconds</param>
+        /// <param name="applicationOnStopTimeoutWait">The <see cref="TimeSpan"/> timeout to wait for the background queued tasks to complete. Default is 10 seconds.</param>
         /// <returns></returns>
         public static IServiceCollection AddBackgroundQueuedService(
             this IServiceCollection services,

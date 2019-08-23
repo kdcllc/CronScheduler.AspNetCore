@@ -1,10 +1,12 @@
-﻿using CronScheduler.AspNetCore;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CronSchedulerApp
+using CronScheduler.AspNetCore;
+
+using Microsoft.Extensions.Logging;
+
+namespace CronSchedulerApp.Jobs.Startup
 {
     public class TestStartupJob : IStartupJob
     {

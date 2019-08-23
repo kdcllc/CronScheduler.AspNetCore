@@ -1,10 +1,12 @@
-﻿using CronScheduler.AspNetCore;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+using CronScheduler.AspNetCore;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -74,7 +76,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <returns></returns>
         public static IServiceCollection AddStartupJob<TStartupJob>(this IServiceCollection services)
-            where TStartupJob: class, IStartupJob
+            where TStartupJob : class, IStartupJob
         {
             return services
                 .AddStartupJobInitializer()
