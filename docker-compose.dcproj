@@ -6,7 +6,7 @@
     <ProjectGuid>cfb990f3-58b7-4c9a-af62-cc13454162b2</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
-    <DockerServiceName>CronSchedulerApp</DockerServiceName>
+    <DockerServiceName>cronscheduler.app</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
