@@ -2,6 +2,8 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/wrme1wr6kgjp3a0o?svg=true)](https://ci.appveyor.com/project/kdcllc/cronscheduler-aspnetcore)
 [![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
+[![MyGet](https://img.shields.io/myget/kdcllc/v/CronScheduler.AspNetCore.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
+
 
 The goal of this library was to design a simple Cron Scheduling engine that is based on build-in Asp.Net Core  IHostedService interface.
 It is much lighter than Quartz schedular and operates inside of any .NET Core GenericHost thus makes it simpler to setup and configure.
@@ -226,3 +228,7 @@ Workaround for  `Retrying 'FindPackagesByIdAsync' for source` in Docker containe
 ```bash
  dotnet restore --disable-parallel
 ```
+
+## License
+
+[MIT License Copyright (c) 2017 King David Consulting LLC](./LICENSE)
