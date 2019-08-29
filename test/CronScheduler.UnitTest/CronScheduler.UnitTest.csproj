@@ -10,10 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' == 'netcoreapp2.2'" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' == 'netcoreapp3.0'" />
 
-    <PackageReference Include="Microsoft.AspNetCore.TestHost"  />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" />
     <PackageReference Include="Moq" />
-    <PackageReference Include="xunit"  />
-    <PackageReference Include="xunit.runner.visualstudio" >
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

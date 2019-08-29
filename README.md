@@ -4,7 +4,6 @@
 [![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
 [![MyGet](https://img.shields.io/myget/kdcllc/v/CronScheduler.AspNetCore.svg?label=myget)](https://www.myget.org/F/kdcllc/api/v2)
 
-
 The goal of this library was to design a simple Cron Scheduling engine that is based on build-in Asp.Net Core  IHostedService interface.
 It is much lighter than Quartz schedular and operates inside of any .NET Core GenericHost thus makes it simpler to setup and configure.
 In addition `IStartupJob` was added to support async initialization before the IWebHost is ready to start. Sample project includes support for
@@ -13,7 +12,7 @@ making sure that Database is created before the application starts.
 ## .NET CLI
 
 ```bash
-    dotnet add package CronScheduler.AspNetCore --version 1.1.0
+    dotnet add package CronScheduler.AspNetCore --version 1.1.2
 ```
 
 ## Uses Crontab format for Jobs/Tasks schedules
@@ -35,7 +34,15 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
     │ │ │ │ │ │
     * * * * * *
 
-## Example CronSchedulerApp
+
+## Examples
+
+### CronSchedulerWorker
+
+This example demonstrates how to use CronScheduler with new Microsoft .NET Core Workers Template
+[CronSchedulerWorker](./src/CronSchedulerWorker/README.md)
+
+### CronSchedulerApp
 
 The sample website provides with use-case scenario for this library.
 
