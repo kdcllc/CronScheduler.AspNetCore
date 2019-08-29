@@ -18,9 +18,6 @@ namespace CronScheduler
             return Host.CreateDefaultBuilder(args)
             .ConfigureServices(services =>
             {
-                services.AddHostedService<Worker>();
-
-                // services.AddSchedulerJob<TestJob, TestJobOptions>();
                 services.AddScheduler(builder =>
                 {
                     builder.AddJob<TestJob, TestJobOptions>();

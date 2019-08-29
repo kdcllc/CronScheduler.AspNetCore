@@ -10,7 +10,7 @@ namespace CronScheduler.UnitTest
     public class BackgroundQueueTests
     {
         [Fact]
-        public async Task Dequeue_With_Susseful_WorkItemName()
+        public async Task Dequeue_With_Successful_WorkItemName()
         {
             var workItemName = "TestItem";
             var context = new BackgroundTaskContext();

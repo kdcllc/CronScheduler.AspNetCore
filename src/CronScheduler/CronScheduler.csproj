@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
     <AssemblyName>CronScheduler.AspNetCore</AssemblyName>
     <RootNamespace>CronScheduler.AspNetCore</RootNamespace>
   </PropertyGroup>

@@ -32,7 +32,7 @@ namespace CronScheduler.AspNetCore
         {
             _logger = loggerFactory.CreateLogger<SchedulerHostedService>();
 
-            var currentTimeUtc = DateTime.UtcNow;
+            var currentTimeUtc = DateTimeOffset.UtcNow;
             var timeZone = TimeZoneInfo.Local;
 
             foreach (var scheduledTask in scheduledTasks)
@@ -80,7 +80,8 @@ namespace CronScheduler.AspNetCore
                 _scheduledTasks.Add(new SchedulerTaskWrapper(
                     crontabSchedule,
                     scheduledTask,
-                    nextRunTime));
+                    nextRunTime,
+                    timeZone));
             }
         }
 
@@ -105,7 +106,7 @@ namespace CronScheduler.AspNetCore
 
         private async Task ExecuteOnceAsync(CancellationToken stoppingToken)
         {
-            var referenceTime = DateTime.UtcNow;
+            var referenceTime = DateTimeOffset.UtcNow;
 
             var tasksThatShouldRun = _scheduledTasks.Where(t => t.ShouldRun(referenceTime)).ToList();
 

@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>1.1.0-pre</VersionPrefix>
+    <VersionPrefix>1.1.2-preview1</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>false</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;NU1605;</NoWarn>
@@ -20,7 +20,10 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget Package Settings">
-    <Description>Cron based Scheduler for AspNetCore 2.x/3.x or DotNetCore 2.x/3.0 Self-hosted application in Kubernetes/Docker</Description>
+    <Description>
+      The Cron based Scheduler for AspNetCore 2.x/3.x or DotNetCore 2.x/3.0 Self-hosted Applications in Kubernetes/Docker or as WindowsService.
+      This is a lightweight alternative to Quarts Scheduler.
+    </Description>
     <PackageProjectUrl>https://github.com/kdcllc/CronScheduler.AspNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kdcllc/CronScheduler.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

@@ -2,6 +2,11 @@
 Change Log
 ===============================================================================
 
+Version 1.1.2
+
+* Resolved issue #22 "schedule executing twice per day instead of once"
+* Resolved issue #23 "Updating CronScheduler with .NET Core Workers Template"
+
 Version 1.0.9 (2019-02-18)
 
 * Resolved issue #8 "Add Background Task Queue Functionality".

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging.Internal;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
+using Range = Moq.Range;
 
 namespace CronScheduler.UnitTest
 {
