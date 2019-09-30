@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 
 using CronScheduler.AspNetCore;
 
+#if !NETCOREAPP3_0
 using Microsoft.AspNetCore.Hosting;
+#endif
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
@@ -12,6 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class StartupJobExtensions
     {
+#if !NETCOREAPP3_0
         /// <summary>
         /// Runs async all of the registered <see cref="IStartupJob"/> jobs.
         /// </summary>
@@ -28,6 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 await jobInitializer.StartJobsAsync(cancellationToken);
             }
         }
+#endif
 
         /// <summary>
         /// Runs async all of the registered <see cref="IStartupJob"/> jobs.
