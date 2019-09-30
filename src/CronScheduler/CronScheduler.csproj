@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Cronos" />
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Condition="'$(TargetFramework)' == 'netcoreapp2.2'" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />

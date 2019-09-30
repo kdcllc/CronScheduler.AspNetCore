@@ -20,15 +20,15 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-    <AspNetCoreVersion>3.0.0-preview8.*</AspNetCoreVersion>
-    <AspNetCoreLowerVersion>3.0.0-*</AspNetCoreLowerVersion>
-    <EFCommonVersion>3.0.0-preview8.*</EFCommonVersion>
-    <ExtensionsVersion>3.0.0-preview8.*</ExtensionsVersion>
+    <AspNetCoreVersion>3.0.*</AspNetCoreVersion>
+    <AspNetCoreLowerVersion>3.0.*</AspNetCoreLowerVersion>
+    <EFCommonVersion>3.0.*</EFCommonVersion>
+    <ExtensionsVersion>3.0.*</ExtensionsVersion>
   </PropertyGroup>
 
   <ItemGroup Label="CronScheduler">
     <PackageReference Update="Cronos" Version="0.7.0" />
-    <PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreLowerVersion)" />
+    <PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreLowerVersion)" Condition="'$(TargetFramework)' != 'netcoreapp3.0'" />
     <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
     <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
