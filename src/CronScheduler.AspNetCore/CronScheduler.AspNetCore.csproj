@@ -3,6 +3,13 @@
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Description>
+      The Cron based Scheduler for AspNetCore 2.x/3.x Applications in Kubernetes/Docker.
+      This is a lightweight alternative to Quarts Scheduler or HangFire.
+    </Description>
+  </PropertyGroup>
+
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" Condition="'$(TargetFramework)' == 'netcoreapp3.0'" />
   </ItemGroup>
