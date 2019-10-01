@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.BackgroundTask
 {
     public class QueuedHostedService : BackgroundService
     {
@@ -14,7 +14,7 @@ namespace CronScheduler.AspNetCore
         private readonly BackgroundTaskContext _context;
 
         // https://github.com/aspnet/AspNetCore/issues/7749
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETSTANDARD2_1
         private readonly IHostApplicationLifetime _applicationLifetime;
 #else
         private readonly IApplicationLifetime _applicationLifetime;
@@ -25,7 +25,7 @@ namespace CronScheduler.AspNetCore
             IBackgroundTaskQueue taskQueued,
             ILoggerFactory loggerFactory,
             BackgroundTaskContext context,
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETSTANDARD2_1
             IHostApplicationLifetime applicationLifetime,
 #else
             IApplicationLifetime applicationLifetime,
@@ -37,7 +37,7 @@ namespace CronScheduler.AspNetCore
             _context = context;
             _options = options.CurrentValue;
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_0 || NETSTANDARD2_1
             _applicationLifetime = applicationLifetime;
             _applicationLifetime.ApplicationStopping.Register(OnApplicationStopping);
 #else

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.BackgroundTask
 {
     /// <summary>
     /// The basic options for the <see cref="QueuedHostedService"/>.

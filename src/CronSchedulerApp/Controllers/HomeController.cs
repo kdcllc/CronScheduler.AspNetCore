@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.BackgroundTask;
 
 using CronSchedulerApp.Models;
 using CronSchedulerApp.Services;

@@ -2,7 +2,9 @@
 
 using Cronos;
 
-namespace CronScheduler.AspNetCore
+using CronScheduler.Extensions.Scheduler;
+
+namespace CronScheduler.Extensions.Internal
 {
     internal class SchedulerTaskWrapper
     {

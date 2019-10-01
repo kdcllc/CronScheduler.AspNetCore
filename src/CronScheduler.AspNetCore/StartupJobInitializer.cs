@@ -13,9 +13,12 @@ namespace CronScheduler.AspNetCore
         private readonly ILogger<StartupJobInitializer> _logger;
         private readonly IEnumerable<IStartupJob> _startupJobs;
 
-        public StartupJobInitializer(
-            IEnumerable<IStartupJob> startupJobs,
-            ILoggerFactory loggerFactory)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartupJobInitializer"/> class.
+        /// </summary>
+        /// <param name="startupJobs"></param>
+        /// <param name="loggerFactory"></param>
+        public StartupJobInitializer(IEnumerable<IStartupJob> startupJobs, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<StartupJobInitializer>();
 

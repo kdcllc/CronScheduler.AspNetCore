@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.BackgroundTask
 {
     /// <summary>
     /// Background Task Queue.

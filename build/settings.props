@@ -16,7 +16,7 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' AND '$(LangVersion)' == '8.0'">
     <LangVersion>latest</LangVersion>
     <NullableReferenceTypes>true</NullableReferenceTypes>
-    <NullableContextOptions>enable</NullableContextOptions>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget Package Settings">

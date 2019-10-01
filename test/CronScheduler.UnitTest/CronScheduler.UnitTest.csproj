@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CronSchedulerApp\CronSchedulerApp.csproj" />
+    <ProjectReference Include="..\..\src\CronScheduler.AspNetCore\CronScheduler.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.BackgroundTask;
 
 using Xunit;
 
@@ -18,11 +18,11 @@ namespace CronScheduler.UnitTest
             var service = new BackgroundTaskQueue(context);
 
             service.QueueBackgroundWorkItem(
-                async token =>
-                {
-                    await Task.CompletedTask;
-                },
-                workItemName);
+            async token =>
+            {
+                await Task.CompletedTask;
+            },
+            workItemName);
 
             var task = await service.DequeueAsync(CancellationToken.None);
 

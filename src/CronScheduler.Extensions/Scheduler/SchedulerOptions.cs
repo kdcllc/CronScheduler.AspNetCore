@@ -1,4 +1,4 @@
-﻿namespace CronScheduler.AspNetCore
+﻿namespace CronScheduler.Extensions.Scheduler
 {
     public class SchedulerOptions
     {

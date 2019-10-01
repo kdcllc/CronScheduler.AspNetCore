@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.BackgroundTask;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class BackgroundQueuedExtensions
+    public static class BackgroundQueuedServiceCollectionExtensions
     {
         private static readonly BackgroundTaskContext _sharedContext = new BackgroundTaskContext();
 

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class StartupJobExtensions
+    public static class StartupJobsServiceCollectionExtensions
     {
         /// <summary>
         /// Runs async all of the registered <see cref="IStartupJob"/> jobs.
@@ -18,9 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="host"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task RunStartupJobsAync(
-            this IWebHost host,
-            CancellationToken cancellationToken = default)
+        public static async Task RunStartupJobsAync(this IWebHost host, CancellationToken cancellationToken = default)
         {
             using (var scope = host.Services.CreateScope())
             {
@@ -35,9 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="host"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task RunStartupJobsAync(
-            this IHost host,
-            CancellationToken cancellationToken = default)
+        public static async Task RunStartupJobsAync(this IHost host, CancellationToken cancellationToken = default)
         {
             using (var scope = host.Services.CreateScope())
             {

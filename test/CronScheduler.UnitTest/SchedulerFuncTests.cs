@@ -2,16 +2,21 @@
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using CronScheduler.AspNetCore;
+
+using CronScheduler.Extensions.Scheduler;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
+
 using Moq;
+
 using Xunit;
 using Xunit.Abstractions;
+
 using Range = Moq.Range;
 
 namespace CronScheduler.UnitTest
