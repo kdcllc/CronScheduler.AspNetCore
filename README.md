@@ -9,6 +9,8 @@ It is much lighter than Quartz schedular and operates inside of any .NET Core Ge
 In addition `IStartupJob` was added to support async initialization before the IWebHost is ready to start. Sample project includes support for
 making sure that Database is created before the application starts.
 
+*** Please refer to [Migration notes from 1.x to 2.x](./Migration1x-2x.md) version the library. ***
+
 ## Install package for `AspNetCore` hosting .NET CLI
 
 ```bash

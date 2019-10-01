@@ -1,9 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.StartupInitializer;
 
 using CronSchedulerApp.Data;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 

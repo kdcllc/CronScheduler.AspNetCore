@@ -2,46 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.StartupInitializer;
 
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class StartupJobsServiceCollectionExtensions
     {
-        /// <summary>
-        /// Runs async all of the registered <see cref="IStartupJob"/> jobs.
-        /// </summary>
-        /// <param name="host"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static async Task RunStartupJobsAync(this IWebHost host, CancellationToken cancellationToken = default)
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var jobInitializer = scope.ServiceProvider.GetRequiredService<StartupJobInitializer>();
-                await jobInitializer.StartJobsAsync(cancellationToken);
-            }
-        }
-
-        /// <summary>
-        /// Runs async all of the registered <see cref="IStartupJob"/> jobs.
-        /// </summary>
-        /// <param name="host"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public static async Task RunStartupJobsAync(this IHost host, CancellationToken cancellationToken = default)
-        {
-            using (var scope = host.Services.CreateScope())
-            {
-                var jobInitializer = scope.ServiceProvider.GetRequiredService<StartupJobInitializer>();
-                await jobInitializer.StartJobsAsync(cancellationToken);
-            }
-        }
-
         /// <summary>
         /// Adds task to run as async job before the rest of the application launches.
         /// </summary>

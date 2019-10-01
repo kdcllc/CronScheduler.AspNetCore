@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.StartupInitializer
 {
     public class StartupJobInitializer
     {
@@ -40,6 +40,8 @@ namespace CronScheduler.AspNetCore
 
                 foreach (var job in _startupJobs)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     try
                     {
                         await job.ExecuteAsync(cancellationToken);

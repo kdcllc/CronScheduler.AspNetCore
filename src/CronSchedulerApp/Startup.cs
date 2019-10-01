@@ -18,16 +18,13 @@ using Polly;
 
 namespace CronSchedulerApp
 {
-#pragma warning disable CA1724 // Type names should not match namespaces
     public class Startup
-#pragma warning restore CA1724 // Type names should not match namespaces
     {
-        private readonly ILogger<Startup> _logger;
+        private ILogger<Startup> _logger;
 
-        public Startup(IConfiguration configuration, ILogger<Startup> logger)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -85,21 +82,13 @@ namespace CronSchedulerApp
             //    args.SetObserved();
             // });
             services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete: true);
-
-            _logger.LogDebug("Configuration completed");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(
-            IApplicationBuilder app,
-#if NETCOREAPP2_2
-            IHostingEnvironment env)
-#elif NETCOREAPP3_0
-            IWebHostEnvironment env)
-#else
-           )
-#endif
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            _logger = loggerFactory.CreateLogger<Startup>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -116,15 +105,7 @@ namespace CronSchedulerApp
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-#if NETCOREAPP2_2
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-#elif NETCOREAPP3_0
             app.UseRouting();
 
             // https://devblogs.microsoft.com/aspnet/blazor-now-in-official-preview/
@@ -134,7 +115,6 @@ namespace CronSchedulerApp
                 routes.MapDefaultControllerRoute();
                 routes.MapRazorPages();
             });
-#endif
         }
 
         private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)

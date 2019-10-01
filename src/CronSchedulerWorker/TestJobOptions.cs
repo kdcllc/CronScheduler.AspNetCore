@@ -1,6 +1,6 @@
 ﻿using CronScheduler.Extensions.Scheduler;
 
-namespace CronScheduler
+namespace CronSchedulerWorker
 {
     public class TestJobOptions : SchedulerOptions
     {
