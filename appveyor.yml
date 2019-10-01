@@ -19,14 +19,14 @@ nuget:
 
 build_script:
   - ps: dotnet restore CronScheduler.sln -v quiet
-  - ps: dotnet build src/CronScheduler/ /p:configuration=Release /p:Version=$($env:appveyor_build_version)
+  - ps: dotnet build CronScheduler.sln /p:configuration=Release /p:Version=$($env:appveyor_build_version)
 
 #test: off
 test_script:
   - dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj
 
 artifacts:
-- path: .\src\CronScheduler\bin\Release\**\*.nupkg
+- path: .\src\**\*.nupkg
   name: NuGet package
 
 deploy:
