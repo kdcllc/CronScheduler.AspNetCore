@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.BackgroundTask
 {
     public class BackgroundTaskContext
     {

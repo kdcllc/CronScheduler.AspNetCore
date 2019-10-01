@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 using Cronos;
 
+using CronScheduler.Extensions.Internal;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.Scheduler
 {
     /// <summary>
     /// The implementation for <see cref="BackgroundService"/> service.

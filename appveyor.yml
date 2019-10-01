@@ -5,9 +5,9 @@ branches:
 pull_requests:
   do_not_increment_build_number: true
 image: Visual Studio 2017
-## temporary until 3.0.100-preview8-013656 sdk is installed
+## temporary until 3.0.100 sdk is installed
 install:
-  - ps: $urlCurrent = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/3.0.100-preview8-013656/dotnet-sdk-3.0.100-preview8-013656-win-x64.zip"
+  - ps: $urlCurrent = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/3.0.100/dotnet-sdk-3.0.100-win-x64.zip"
   - ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
   - ps: mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
   - ps: $tempFileCurrent = [System.IO.Path]::GetTempFileName()
@@ -19,14 +19,14 @@ nuget:
 
 build_script:
   - ps: dotnet restore CronScheduler.sln -v quiet
-  - ps: dotnet build src/CronScheduler/ /p:configuration=Release /p:Version=$($env:appveyor_build_version)
+  - ps: dotnet build CronScheduler.sln /p:configuration=Release /p:Version=$($env:appveyor_build_version)
 
 #test: off
 test_script:
   - dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj
 
 artifacts:
-- path: .\src\CronScheduler\bin\Release\**\*.nupkg
+- path: .\src\**\*.nupkg
   name: NuGet package
 
 deploy:

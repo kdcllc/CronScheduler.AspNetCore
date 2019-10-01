@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>1.1.2-preview1</VersionPrefix>
+    <VersionPrefix>2.0.0-preview1</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>false</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;NU1605;</NoWarn>
@@ -16,20 +16,16 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' AND '$(LangVersion)' == '8.0'">
     <LangVersion>latest</LangVersion>
     <NullableReferenceTypes>true</NullableReferenceTypes>
-    <NullableContextOptions>enable</NullableContextOptions>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget Package Settings">
-    <Description>
-      The Cron based Scheduler for AspNetCore 2.x/3.x or DotNetCore 2.x/3.0 Self-hosted Applications in Kubernetes/Docker or as WindowsService.
-      This is a lightweight alternative to Quarts Scheduler.
-    </Description>
     <PackageProjectUrl>https://github.com/kdcllc/CronScheduler.AspNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kdcllc/CronScheduler.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicense>https://github.com/kdcllc/CronScheduler.AspNetCoreblob/master/LICENSE</PackageLicense>
     <PackageIconUrl>https://raw.githubusercontent.com/kdcllc/CronScheduler.AspNetCore/master/img/logo64x64.png</PackageIconUrl>
-    <PackageTags>Cron, Quatz, AspNetCore, DotNet, DotNetCore CronNET, Scheduler, Worker, Hosting, Kubernetes, Docker</PackageTags>
+    <PackageTags>Cron, Quatz, HangFire, AspNetCore, DotNet, DotNetCore CronNET, Scheduler, Worker, Hosting, Kubernetes, Docker</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
   </PropertyGroup>

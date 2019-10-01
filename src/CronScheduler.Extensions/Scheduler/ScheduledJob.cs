@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.Scheduler
 {
     /// <inheritdoc/>
     public abstract class ScheduledJob : IScheduledJob
@@ -11,7 +11,7 @@ namespace CronScheduler.AspNetCore
         /// Initializes a new instance of the <see cref="ScheduledJob"/> class.
         /// </summary>
         /// <param name="options"></param>
-        public ScheduledJob(SchedulerOptions options)
+        protected ScheduledJob(SchedulerOptions options)
         {
             if (options == null)
             {

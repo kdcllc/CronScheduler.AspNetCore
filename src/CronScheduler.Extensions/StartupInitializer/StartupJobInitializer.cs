@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.StartupInitializer
 {
     public class StartupJobInitializer
     {
         private readonly ILogger<StartupJobInitializer> _logger;
         private readonly IEnumerable<IStartupJob> _startupJobs;
 
-        public StartupJobInitializer(
-            IEnumerable<IStartupJob> startupJobs,
-            ILoggerFactory loggerFactory)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StartupJobInitializer"/> class.
+        /// </summary>
+        /// <param name="startupJobs"></param>
+        /// <param name="loggerFactory"></param>
+        public StartupJobInitializer(IEnumerable<IStartupJob> startupJobs, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<StartupJobInitializer>();
 
@@ -37,6 +40,8 @@ namespace CronScheduler.AspNetCore
 
                 foreach (var job in _startupJobs)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     try
                     {
                         await job.ExecuteAsync(cancellationToken);

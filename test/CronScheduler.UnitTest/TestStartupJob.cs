@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CronScheduler.AspNetCore;
+
+using CronScheduler.Extensions.StartupInitializer;
 
 namespace CronScheduler.UnitTest
 {

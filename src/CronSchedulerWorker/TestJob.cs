@@ -2,12 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.Scheduler;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace CronScheduler
+namespace CronSchedulerWorker
 {
     public class TestJob : ScheduledJob
     {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Hosting;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.StartupInitializer
 {
     /// <summary>
     /// Allows to run async jobs on Program.cs.

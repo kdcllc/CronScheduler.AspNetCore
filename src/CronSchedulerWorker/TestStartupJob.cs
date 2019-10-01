@@ -6,7 +6,7 @@ using CronScheduler.Extensions.StartupInitializer;
 
 using Microsoft.Extensions.Logging;
 
-namespace CronSchedulerApp.Jobs.Startup
+namespace CronSchedulerWorker
 {
     public class TestStartupJob : IStartupJob
     {

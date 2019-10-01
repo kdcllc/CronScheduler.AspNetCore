@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.BackgroundTask
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {

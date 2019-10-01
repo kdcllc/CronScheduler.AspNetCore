@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.DependencyInjection;
+using CronScheduler.Extensions.Scheduler;
 
-namespace CronScheduler.AspNetCore
+namespace Microsoft.Extensions.DependencyInjection
 {
     public class SchedulerBuilder
     {
-#pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable SA1401 // Fields should be private
-                              /// <summary>
-                              /// EventHanlder for Startup for Hosted Apps.
-                              /// </summary>
+#pragma warning disable CA1051 // Do not declare visible instance fields
+        /// <summary>
+        /// EventHanlder for Startup for Hosted Apps.
+        /// </summary>
         public EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskExceptionHandler;
-#pragma warning restore SA1401 // Fields should be private
 #pragma warning restore CA1051 // Do not declare visible instance fields
+#pragma warning restore SA1401 // Fields should be private
 
         public SchedulerBuilder(IServiceCollection services)
         {

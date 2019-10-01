@@ -1,34 +1,33 @@
 <Project>
 
-<PropertyGroup>
+  <PropertyGroup>
     <AspNetCoreVersion>2.1.1</AspNetCoreVersion>
-    <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
     <ExtensionsVersion>2.1.1</ExtensionsVersion>
-    <BetCommon>1.2.2</BetCommon>
+    <BetCommon>1.4.2</BetCommon>
+    <EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1' Or '$(TargetFramework)' == 'netstandard2.0'">
     <AspNetCoreVersion>2.1.1</AspNetCoreVersion>
-    <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
+    <ExtensionsVersion>2.1.1</ExtensionsVersion>
+    <EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
     <AspNetCoreVersion>[2.2.*, )</AspNetCoreVersion>
-    <AspNetCoreLowerVersion>$(AspNetCoreVersion)</AspNetCoreLowerVersion>
     <EFCommonVersion>[2.2.*, )</EFCommonVersion>
     <ExtensionsVersion>[2.2.*, )</ExtensionsVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
-    <AspNetCoreVersion>3.0.0-preview8.*</AspNetCoreVersion>
-    <AspNetCoreLowerVersion>3.0.0-*</AspNetCoreLowerVersion>
-    <EFCommonVersion>3.0.0-preview8.*</EFCommonVersion>
-    <ExtensionsVersion>3.0.0-preview8.*</ExtensionsVersion>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' Or '$(TargetFramework)' == 'netstandard2.1'">
+    <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
+    <ExtensionsVersion>3.0.0</ExtensionsVersion>
+    <EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
   </PropertyGroup>
 
   <ItemGroup Label="CronScheduler">
     <PackageReference Update="Cronos" Version="0.7.0" />
-    <PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreLowerVersion)" />
+    <PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
     <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
     <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
@@ -57,14 +56,14 @@
 
   <ItemGroup Label="Unit Tests">
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreLowerVersion)" />
+    <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
     <PackageReference Update="Moq" Version="4.12.0" />
     <PackageReference Update="xunit" Version="2.4.1" />
     <PackageReference Update="xunit.runner.visualstudio" Version="2.4.1"  PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Label="SourceLink">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19270-01" PrivateAssets="All" />
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19270-01" PrivateAssets="All" />
     <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.6" PrivateAssets="All" />
   </ItemGroup>
 

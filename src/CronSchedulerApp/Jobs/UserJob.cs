@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.Scheduler;
 
 using CronSchedulerApp.Services;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace CronScheduler.AspNetCore
+namespace CronScheduler.Extensions.Scheduler
 {
     /// <summary>
     /// Forces the implementation of the required methods for the job.

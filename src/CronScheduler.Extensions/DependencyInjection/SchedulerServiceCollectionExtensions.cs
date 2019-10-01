@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using CronScheduler.AspNetCore;
+using CronScheduler.Extensions.Scheduler;
 
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// An Extension method to register <see cref="SchedulerHostedService"/>.
     /// https://github.com/aspnet/Hosting/blob/a3dd609ae667adcb6eb062125d76f9a76a82f7b4/src/Microsoft.Extensions.Hosting.Abstractions/ServiceCollectionHostedServiceExtensions.cs#L17.
     /// </summary>
-    public static class SchedulerExtensions
+    public static class SchedulerServiceCollectionExtensions
     {
         /// <summary>
         /// Adds <see cref="SchedulerHostedService"/> service without global error handler <see cref="UnobservedTaskExceptionEventArgs"/>.
@@ -49,9 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static IServiceCollection AddScheduler(
-            this IServiceCollection services,
-            Action<SchedulerBuilder> config)
+        public static IServiceCollection AddScheduler(this IServiceCollection services, Action<SchedulerBuilder> config)
         {
             var builder = new SchedulerBuilder(services);
             config(builder);
@@ -69,9 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <param name="sectionName"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSchedulerJob<TJob, TJobOptions>(
-            this IServiceCollection services,
-            string sectionName = "SchedulerJobs")
+        public static IServiceCollection AddSchedulerJob<TJob, TJobOptions>(this IServiceCollection services, string sectionName = "SchedulerJobs")
             where TJob : class, IScheduledJob
             where TJobOptions : SchedulerOptions, new()
         {
