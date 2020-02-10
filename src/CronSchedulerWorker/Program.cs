@@ -34,7 +34,7 @@ namespace CronSchedulerWorker
 
         private static void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            Console.WriteLine(e.Exception.GetBaseException());
+            Console.WriteLine(e.Exception?.GetBaseException());
             e.SetObserved();
         }
     }

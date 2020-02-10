@@ -36,8 +36,8 @@ namespace CronScheduler.Extensions.BackgroundTask
         /// <inheritdoc/>
         public void QueueBackgroundWorkItem(
             Func<CancellationToken, Task> workItem,
-            string workItemName = default,
-            Action<Exception> onException = default)
+            string workItemName,
+            Action<Exception> onException)
         {
             if (workItem == null)
             {
@@ -47,6 +47,16 @@ namespace CronScheduler.Extensions.BackgroundTask
             _workItems.Enqueue((workItem, workItemName, onException));
             _signal.Release();
             _context.RegisterTask();
+        }
+
+        public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, Action<Exception> onException)
+        {
+            QueueBackgroundWorkItem(workItem, string.Empty, onException);
+        }
+
+        public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, string workItemName = "")
+        {
+            QueueBackgroundWorkItem(workItem, workItemName, (x) => { });
         }
 
         protected virtual void Dispose(bool disposing)

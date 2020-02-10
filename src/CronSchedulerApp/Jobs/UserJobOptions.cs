@@ -4,6 +4,6 @@ namespace CronSchedulerApp.Jobs
 {
     public class UserJobOptions : SchedulerOptions
     {
-        public string ClaimName { get; set; }
+        public string ClaimName { get; set; } = string.Empty;
     }
 }

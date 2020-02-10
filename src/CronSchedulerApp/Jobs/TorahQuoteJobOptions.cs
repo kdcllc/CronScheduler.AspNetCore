@@ -1,13 +1,15 @@
-﻿using CronScheduler.Extensions.Scheduler;
+﻿using System;
+
+using CronScheduler.Extensions.Scheduler;
 
 namespace CronSchedulerApp.Jobs
 {
     public class TorahQuoteJobOptions : SchedulerOptions
     {
-        public string ApiUrl { get; set; }
+        public string ApiUrl { get; set; } = string.Empty;
 
-        public string WebsiteUrl { get; set; }
+        public string WebsiteUrl { get; set; } = string.Empty;
 
-        public string[] Verses { get; set; }
+        public string[] Verses { get; set; } = Array.Empty<string>();
     }
 }

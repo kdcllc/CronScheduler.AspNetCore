@@ -1,21 +1,16 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>2.0.0-preview1</VersionPrefix>
+    <VersionPrefix>2.0.1-preview</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <SuppressNETCoreSdkPreviewMessage>false</SuppressNETCoreSdkPreviewMessage>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;NU1605;</NoWarn>
     <TieredCompilation>true</TieredCompilation>
     <AspNetCoreHostingModel>inprocess</AspNetCoreHostingModel>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2' Or '$(TargetFramework)' == 'netstandard2.0'">
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0' AND '$(LangVersion)' == '8.0'">
+  <PropertyGroup>
     <LangVersion>latest</LangVersion>
-    <NullableReferenceTypes>true</NullableReferenceTypes>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -24,7 +19,7 @@
     <RepositoryUrl>https://github.com/kdcllc/CronScheduler.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicense>https://github.com/kdcllc/CronScheduler.AspNetCoreblob/master/LICENSE</PackageLicense>
-    <PackageIconUrl>https://raw.githubusercontent.com/kdcllc/CronScheduler.AspNetCore/master/img/logo64x64.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageTags>Cron, Quatz, HangFire, AspNetCore, DotNet, DotNetCore CronNET, Scheduler, Worker, Hosting, Kubernetes, Docker</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
@@ -35,6 +30,10 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
+     <!-- https://github.com/kdcllc/Bet.AspNetCore/issues/103 -->
+    <DebugType>Embedded</DebugType>
+    <EmbedAllSources>True</EmbedAllSources>
   </PropertyGroup>
 
 </Project>

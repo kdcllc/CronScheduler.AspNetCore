@@ -66,7 +66,7 @@ namespace CronScheduler.Extensions.Scheduler
                     }
                 }
 
-                CronExpression crontabSchedule = null;
+                CronExpression crontabSchedule;
 
                 if (scheduledTask.CronSchedule.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length == 6)
                 {
@@ -78,7 +78,7 @@ namespace CronScheduler.Extensions.Scheduler
                     crontabSchedule = CronExpression.Parse(scheduledTask.CronSchedule, CronFormat.Standard);
                 }
 
-                var nextRunTime = scheduledTask.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc, timeZone).Value;
+                var nextRunTime = scheduledTask.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc, timeZone) !.Value;
                 _scheduledTasks.Add(new SchedulerTaskWrapper(
                     crontabSchedule,
                     scheduledTask,
@@ -87,7 +87,7 @@ namespace CronScheduler.Extensions.Scheduler
             }
         }
 
-        public event EventHandler<UnobservedTaskExceptionEventArgs> UnobservedTaskException;
+        public event EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskException;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

@@ -17,8 +17,12 @@ namespace CronScheduler.Extensions.BackgroundTask
         /// <param name="onException">The delegate for exception handling of the task.</param>
         void QueueBackgroundWorkItem(
             Func<CancellationToken, Task> workItem,
-            string workItemName = default,
-            Action<Exception> onException = default);
+            string workItemName,
+            Action<Exception> onException);
+
+        void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, Action<Exception> onException);
+
+        void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, string workItemName = "");
 
         /// <summary>
         /// <summary>

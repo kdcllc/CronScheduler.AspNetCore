@@ -4,6 +4,6 @@ namespace CronSchedulerWorker
 {
     public class TestJobOptions : SchedulerOptions
     {
-        public string CustomField { get; set; }
+        public string CustomField { get; set; } = string.Empty;
     }
 }

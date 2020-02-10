@@ -67,7 +67,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <param name="sectionName"></param>
         /// <returns></returns>
-        public static IServiceCollection AddSchedulerJob<TJob, TJobOptions>(this IServiceCollection services, string sectionName = "SchedulerJobs")
+        public static IServiceCollection AddSchedulerJob<TJob, TJobOptions>(
+            this IServiceCollection services,
+            string sectionName = "SchedulerJobs")
             where TJob : class, IScheduledJob
             where TJobOptions : SchedulerOptions, new()
         {
@@ -83,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void CreateInstance(
             IServiceCollection services,
-            EventHandler<UnobservedTaskExceptionEventArgs> unobservedTaskExceptionHandler = null)
+            EventHandler<UnobservedTaskExceptionEventArgs>? unobservedTaskExceptionHandler = default)
         {
             // should prevent from double registrations.
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, SchedulerHostedService>(sp =>

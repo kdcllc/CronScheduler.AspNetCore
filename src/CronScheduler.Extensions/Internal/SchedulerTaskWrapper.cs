@@ -40,7 +40,7 @@ namespace CronScheduler.Extensions.Internal
         public void Increment()
         {
             LastRunTime = NextRunTime;
-            NextRunTime = Schedule.GetNextOccurrence(NextRunTime, TimeZoneInfo).Value;
+            NextRunTime = Schedule.GetNextOccurrence(NextRunTime, TimeZoneInfo) !.Value;
         }
 
         public bool ShouldRun(DateTimeOffset currentTime)

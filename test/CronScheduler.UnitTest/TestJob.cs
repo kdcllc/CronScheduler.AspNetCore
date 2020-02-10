@@ -18,11 +18,11 @@ namespace CronScheduler.UnitTest
             _logger = logger;
         }
 
-        public string CronSchedule { get; set; }
+        public string CronSchedule { get; set; } = string.Empty;
 
         public bool RunImmediately { get; set; }
 
-        public string CronTimeZone { get; set; }
+        public string CronTimeZone { get; set; } = string.Empty;
 
         public Task ExecuteAsync(CancellationToken cancellationToken)
         {
@@ -43,7 +43,7 @@ namespace CronScheduler.UnitTest
 
         public TestJobException(
             ILogger<TestJobException> logger,
-            TestJobExceptionOptions jobOptions,
+            TestJobExceptionOptions? jobOptions,
             bool raiseException = false)
         {
             _logger = logger;
@@ -54,15 +54,15 @@ namespace CronScheduler.UnitTest
                 _raiseException = jobOptions.RaiseException;
                 CronSchedule = jobOptions.CronSchedule;
                 RunImmediately = jobOptions.RunImmediately;
-                CronTimeZone = jobOptions.CronTimeZone;
+                CronTimeZone = jobOptions?.CronTimeZone ?? string.Empty;
             }
         }
 
-        public string CronSchedule { get; set; }
+        public string CronSchedule { get; set; } = string.Empty;
 
         public bool RunImmediately { get; set; }
 
-        public string CronTimeZone { get; set; }
+        public string CronTimeZone { get; set; } = string.Empty;
 
         public Task ExecuteAsync(CancellationToken cancellationToken)
         {
