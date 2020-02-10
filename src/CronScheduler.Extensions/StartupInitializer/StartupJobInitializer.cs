@@ -34,7 +34,7 @@ namespace CronScheduler.Extensions.StartupInitializer
         {
             try
             {
-                var jobCount = _startupJobs.ToList().Count();
+                var jobCount = _startupJobs.ToList().Count;
 
                 _logger.LogInformation("{name} start queuing {count} jobs", nameof(StartupJobInitializer), jobCount);
 

@@ -22,7 +22,7 @@ namespace CronScheduler.Extensions.Scheduler
 
             RunImmediately = options.RunImmediately;
 
-            CronTimeZone = options.CronTimeZone;
+            CronTimeZone = options?.CronTimeZone ?? string.Empty;
         }
 
         /// <inheritdoc/>

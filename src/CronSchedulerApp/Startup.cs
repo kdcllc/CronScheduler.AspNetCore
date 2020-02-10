@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Polly;
@@ -119,7 +120,7 @@ namespace CronSchedulerApp
 
         private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
         {
-            _logger.LogError(args.Exception.Message);
+            _logger.LogError(args.Exception?.Message);
             args.SetObserved();
         }
     }
