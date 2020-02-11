@@ -56,9 +56,9 @@ namespace CronSchedulerApp
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.AddControllersWithViews();
+
+            services.AddRazorPages();
 
             services.AddScheduler(builder =>
             {

@@ -8,6 +8,8 @@
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
     <IsPackable>false</IsPackable>
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <PreserveCompilationReferences>true</PreserveCompilationReferences>
     <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
   </PropertyGroup>
 
