@@ -27,7 +27,7 @@ namespace CronScheduler.UnitTest
 
         public void Configure(
             IApplicationBuilder app,
-            IHostingEnvironment env)
+            IWebHostEnvironment env)
         {
             app.Map("/hc", route =>
             {

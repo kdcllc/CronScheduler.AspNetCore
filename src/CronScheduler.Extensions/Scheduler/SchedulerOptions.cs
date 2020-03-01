@@ -1,4 +1,6 @@
-﻿namespace CronScheduler.Extensions.Scheduler
+﻿using System;
+
+namespace CronScheduler.Extensions.Scheduler
 {
     public class SchedulerOptions
     {

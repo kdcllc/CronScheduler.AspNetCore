@@ -6,7 +6,7 @@ using CronScheduler.Extensions.Scheduler;
 
 namespace CronScheduler.Extensions.Internal
 {
-    internal class SchedulerTaskWrapper
+    public sealed class SchedulerTaskWrapper
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SchedulerTaskWrapper"/> class.
