@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>2.0.1-preview</VersionPrefix>
+    <VersionPrefix>2.1.0-preview1</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;NU1605;</NoWarn>
@@ -14,11 +14,19 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
+  <PropertyGroup Label="Ownership Settings">
+    <Company>King David Consulting LLC</Company>
+    <Authors>kdcllc</Authors>
+    <Copyright>Copyright © King David Consulting LLC</Copyright>
+  </PropertyGroup>
+
+
   <PropertyGroup Label="Nuget Package Settings">
     <PackageProjectUrl>https://github.com/kdcllc/CronScheduler.AspNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kdcllc/CronScheduler.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageLicense>https://github.com/kdcllc/CronScheduler.AspNetCoreblob/master/LICENSE</PackageLicense>
+    <PackageLicense>https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/LICENSE</PackageLicense>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>Cron, Quatz, HangFire, AspNetCore, DotNet, DotNetCore CronNET, Scheduler, Worker, Hosting, Kubernetes, Docker</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace CronScheduler.Extensions.Scheduler
 {
     /// <inheritdoc/>
+    [Obsolete("Use " + nameof(SchedulerOptions) + " with named job registration.")]
     public abstract class ScheduledJob : IScheduledJob
     {
         /// <summary>

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 
+using CronScheduler.Extensions.Internal;
 using CronScheduler.Extensions.Scheduler;
 
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -90,10 +90,9 @@ namespace Microsoft.Extensions.DependencyInjection
             // should prevent from double registrations.
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, SchedulerHostedService>(sp =>
             {
-                var loggerFactory = sp.GetService<ILoggerFactory>();
-                var scheduledJobs = sp.GetServices<IScheduledJob>();
+                var registry = sp.GetRequiredService<ISchedulerRegistration>();
 
-                var instance = new SchedulerHostedService(scheduledJobs, loggerFactory);
+                var instance = new SchedulerHostedService(registry);
 
                 if (unobservedTaskExceptionHandler != null)
                 {

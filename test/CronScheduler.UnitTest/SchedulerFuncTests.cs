@@ -3,14 +3,12 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using CronScheduler.Extensions.Scheduler;
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Internal;
 
 using Moq;
 
@@ -69,7 +67,7 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
-                It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(TestJob))),
+                It.Is<It.IsAnyType>(v => v.ToString().Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<object, Exception, string>>()),
                 Times.Between(1, 2, Range.Inclusive));
@@ -78,7 +76,7 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                       LogLevel.Error,
                       It.IsAny<EventId>(),
-                      It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(Exception))),
+                      It.Is<It.IsAnyType>(v => v.ToString().Contains(nameof(Exception))),
                       It.IsAny<Exception>(),
                       It.IsAny<Func<object, Exception, string>>()),
                 Times.Between(1, 2, Range.Inclusive));
@@ -91,9 +89,9 @@ namespace CronScheduler.UnitTest
 
             var host = CreateHost(services =>
             {
-                services.AddScheduler(ctx =>
+                services.AddScheduler(builder =>
                 {
-                    ctx.Services.AddSingleton<IScheduledJob, TestJob>(_ =>
+                    builder.AddJob<TestJob>(_ =>
                     {
                         return new TestJob(mockLogger.Object)
                         {
@@ -114,14 +112,15 @@ namespace CronScheduler.UnitTest
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
 
+            // fixed moq and log according to https://github.com/moq/moq4/issues/918#issuecomment-535060645
             mockLogger.Verify(
                 l => l.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
-                It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(TestJob))),
+                It.Is<It.IsAnyType>((object v, Type _) => v.ToString().Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
-                It.IsAny<Func<object, Exception, string>>()),
-                Times.Between(1, 3, Range.Inclusive));
+                It.Is<Func<object, Exception, string>>((v, t) => true)),
+                Times.Between(1, 15, Range.Inclusive));
         }
 
         [Fact]
@@ -165,9 +164,9 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                         LogLevel.Error,
                         It.IsAny<EventId>(),
-                        It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(Exception))),
+                        It.Is<It.IsAnyType>((object v, Type _) => v.ToString().Contains(nameof(Exception))),
                         It.IsAny<Exception>(),
-                        It.IsAny<Func<object, Exception, string>>()),
+                        It.Is<Func<object, Exception, string>>((v, t) => true)),
                 Times.Between(1, 2, Range.Inclusive));
         }
 
@@ -200,7 +199,7 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                         LogLevel.Error,
                         It.IsAny<EventId>(),
-                        It.Is<FormattedLogValues>(v => v.ToString().Contains(nameof(Exception))),
+                        It.Is<It.IsAnyType>(v => v.ToString().Contains(nameof(Exception))),
                         It.IsAny<Exception>(),
                         It.IsAny<Func<object, Exception, string>>()),
                 Times.Between(1, 2, Range.Inclusive));

@@ -5,7 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using CronScheduler.Extensions.BackgroundTask;
-
+using CronScheduler.Extensions.Scheduler;
+using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Models;
 using CronSchedulerApp.Services;
 
@@ -19,19 +20,33 @@ namespace CronSchedulerApp.Controllers
         private readonly IBackgroundTaskQueue _taskQueue;
         private readonly ILogger<HomeController> _logger;
         private readonly TorahVerses _torahVerses;
+        private readonly ISchedulerRegistration _schedulerRegistration;
+        private readonly ILoggerFactory _loggerFactory;
 
         public HomeController(
             IBackgroundTaskQueue taskQueue,
             ILogger<HomeController> logger,
+            ILoggerFactory loggerFactory,
+            ISchedulerRegistration schedulerRegistration,
             TorahVerses torahVerses)
         {
             _taskQueue = taskQueue;
             _logger = logger;
             _torahVerses = torahVerses;
+            _schedulerRegistration = schedulerRegistration;
+            _loggerFactory = loggerFactory;
         }
 
         public IActionResult Index()
         {
+            var jobOptions = new SchedulerOptions
+            {
+                CronSchedule = "0/1 * * * * *",
+                RunImmediately = true
+            };
+
+            _schedulerRegistration.AddOrUpdate(new TestJob(jobOptions, _loggerFactory.CreateLogger<TestJob>()), jobOptions);
+
             if (_torahVerses.Current != null)
             {
                 var text = _torahVerses.Current.Select(x => x.Text).Aggregate((i, j) => i + Environment.NewLine + j);
