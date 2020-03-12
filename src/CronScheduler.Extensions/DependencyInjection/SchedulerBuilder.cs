@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="sectionName">The section for the job configurations.</param>
         /// <param name="namedJob">The name of the job.</param>
         /// <returns></returns>
-        [Obsolete("This method will be depreciated in the next release.")]
+        [Obsolete("This method will be deprecated in the next release.")]
         public IServiceCollection AddJob<TJob>(string sectionName = "SchedulerJobs", string? namedJob = null)
             where TJob : class, IScheduledJob
         {
@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return Services;
         }
 
-        [Obsolete("This method will be depreciated in the next release.")]
+        [Obsolete("This method will be deprecated in the next release.")]
         public IServiceCollection AddJob<TJob>(Func<IServiceProvider, TJob> factory, string sectionName = "SchedulerJobs")
             where TJob : class, IScheduledJob
         {
