@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.Logging
             public static readonly EventId JobTimeZoneFailedParsing = new EventId(103, nameof(JobTimeZoneFailedParsing));
         }
 
-        private static readonly Action<ILogger,string, Exception> _unhandledException =
+        private static readonly Action<ILogger, string, Exception> _unhandledException =
           LoggerMessage.Define<string>(
             LogLevel.Error,
             EventIds.UnhandledException,

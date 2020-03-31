@@ -2,6 +2,12 @@
 Change Log
 ===============================================================================
 
+Version 3.0.0
+
+* Removed ScheduledJob class
+* Removed properties from IScheduledJob (CronSchedule, CronTimeZone, RunImmediately)
+  
+
 Version 1.1.2
 
 * Resolved issue #22 "schedule executing twice per day instead of once"

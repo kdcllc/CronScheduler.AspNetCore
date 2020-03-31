@@ -90,6 +90,45 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             string sectionName,
             string? optionName = default,
+            Action<TOptions, IServiceProvider>? configureAction = default) where TOptions : class, new()
+        {
+            // configure changeable configurations
+            services.RegisterInternal<TOptions>(sectionName, optionName);
+
+            // create options instance from the configuration
+            services.AddTransient((Func<IServiceProvider, IConfigureNamedOptions<TOptions>>)(sp =>
+            {
+                return new ConfigureNamedOptions<TOptions>(optionName, options =>
+                {
+                    var configuration = sp.GetRequiredService<IConfiguration>();
+                    configuration.Bind(sectionName, options);
+
+                    configureAction?.Invoke(options, sp);
+                });
+            }));
+
+            // Registers an IConfigureOptions<TOptions> action configurator. Being last it will bind from config source first
+            // and run the customization afterwards
+            services
+                .AddOptions<TOptions>(optionName)
+                .PostConfigure<IServiceProvider>((options, sp) => configureAction?.Invoke(options, sp));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds Options that support being updated during application run.
+        /// </summary>
+        /// <typeparam name="TOptions"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="sectionName"></param>
+        /// <param name="optionName"></param>
+        /// <param name="configureAction"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddChangeTokenOptions<TOptions>(
+            this IServiceCollection services,
+            string sectionName,
+            string? optionName = default,
             Action<TOptions>? configureAction = default) where TOptions : class, new()
         {
             // configure changeable configurations

@@ -10,23 +10,18 @@ namespace CronSchedulerApp.Jobs
 {
     public class TestJob : IScheduledJob
     {
-        private SchedulerOptions _options;
         private readonly ILogger<TestJob> _logger;
+        private SchedulerOptions _options;
 
-        public TestJob(SchedulerOptions options, ILogger<TestJob> logger)
+        public TestJob(
+            SchedulerOptions options,
+            ILogger<TestJob> logger)
         {
             _options = options;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // will be removed in the next release
-        public string CronSchedule { get; }
-
-        // will be removed in the next release
-        public string CronTimeZone { get; }
-
-        // will be removed in the next release
-        public bool RunImmediately { get; }
+        public string Name { get; } = nameof(TestJob);
 
         // will be removed in the next release
         public Task ExecuteAsync(CancellationToken cancellationToken)

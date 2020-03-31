@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CronScheduler.Extensions.Scheduler;
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CronScheduler.UnitTest
 {
@@ -12,17 +13,12 @@ namespace CronScheduler.UnitTest
     {
         private readonly ILogger<TestJob> _logger;
 
-        public TestJob(
-            ILogger<TestJob> logger)
+        public TestJob(ILogger<TestJob> logger)
         {
             _logger = logger;
         }
 
-        public string CronSchedule { get; set; } = string.Empty;
-
-        public bool RunImmediately { get; set; }
-
-        public string CronTimeZone { get; set; } = string.Empty;
+        public string Name { get; } = nameof(TestJob);
 
         public Task ExecuteAsync(CancellationToken cancellationToken)
         {
@@ -39,34 +35,22 @@ namespace CronScheduler.UnitTest
     public class TestJobException : IScheduledJob
     {
         private readonly ILogger<TestJobException> _logger;
-        private readonly bool _raiseException;
+        private readonly TestJobExceptionOptions _options;
 
         public TestJobException(
             ILogger<TestJobException> logger,
-            TestJobExceptionOptions? jobOptions,
-            bool raiseException = false)
+            IOptionsMonitor<TestJobExceptionOptions> optionsMonitor)
         {
             _logger = logger;
-            _raiseException = raiseException;
 
-            if (jobOptions != null)
-            {
-                _raiseException = jobOptions.RaiseException;
-                CronSchedule = jobOptions.CronSchedule;
-                RunImmediately = jobOptions.RunImmediately;
-                CronTimeZone = jobOptions?.CronTimeZone ?? string.Empty;
-            }
+            _options = optionsMonitor.Get(Name);
         }
 
-        public string CronSchedule { get; set; } = string.Empty;
-
-        public bool RunImmediately { get; set; }
-
-        public string CronTimeZone { get; set; } = string.Empty;
+        public string Name { get; } = nameof(TestJobException);
 
         public Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            if (_raiseException)
+            if (_options.RaiseException)
             {
                 var message = nameof(Exception);
                 _logger.LogError(message);

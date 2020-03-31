@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 using Cronos;
 
-using CronScheduler.Extensions.Internal;
+using CronScheduler.Extensions.Scheduler;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace CronScheduler.Extensions.Scheduler
+namespace CronScheduler.Extensions.Internal
 {
-    public class SchedulerRegistration : ISchedulerRegistration
+    internal class SchedulerRegistration : ISchedulerRegistration
     {
         private readonly IOptionsMonitor<SchedulerOptions> _optionsMonitor;
         private readonly ILogger<SchedulerRegistration> _logger;
@@ -28,7 +28,7 @@ namespace CronScheduler.Extensions.Scheduler
 
             foreach (var job in scheduledJobs)
             {
-                AddOrUpdate(job);
+                AddOrUpdate(job.Name, job);
             }
 
             _optionsMonitor.OnChange((o, n) =>
@@ -45,17 +45,24 @@ namespace CronScheduler.Extensions.Scheduler
 
         public bool AddOrUpdate(IScheduledJob job, SchedulerOptions options)
         {
-            var name = job.GetType().Name;
+            return AddOrUpdate(job.GetType().Name, job, options);
+        }
 
-            return AddJob(name, job, options);
+        public bool AddOrUpdate(string jobName, IScheduledJob job, SchedulerOptions options)
+        {
+            return AddJob(jobName, job, options);
         }
 
         public bool AddOrUpdate(IScheduledJob job)
         {
-            var name = job.GetType().Name;
-            var options = _optionsMonitor.Get(name);
+            return AddOrUpdate(job.GetType().Name, job);
+        }
 
-            return AddJob(name, job, options);
+        public bool AddOrUpdate(string jobName, IScheduledJob job)
+        {
+            var options = _optionsMonitor.Get(jobName);
+
+            return AddJob(jobName, job, options);
         }
 
         public bool Remove(string jobName)

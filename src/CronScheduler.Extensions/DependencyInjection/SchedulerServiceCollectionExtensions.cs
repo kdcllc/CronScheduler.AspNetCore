@@ -62,21 +62,25 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds <see cref="IScheduledJob"/> job to DI without support for <see cref="UnobservedTaskExceptionEventArgs"/> delegate.
         /// </summary>
-        /// <typeparam name="TJob"></typeparam>
-        /// <typeparam name="TJobOptions"></typeparam>
-        /// <param name="services"></param>
-        /// <param name="sectionName"></param>
+        /// <typeparam name="TJob">The type of the schedule job.</typeparam>
+        /// <typeparam name="TJobOptions">The options to be using for the job.</typeparam>
+        /// <param name="services">The DI services.</param>
+        /// <param name="configure"></param>
+        /// <param name="sectionName">The section name of the configuration for the job.</param>
+        /// <param name="jobName">The name for the schedule job.</param>
         /// <returns></returns>
         public static IServiceCollection AddSchedulerJob<TJob, TJobOptions>(
             this IServiceCollection services,
-            string sectionName = "SchedulerJobs")
+            Action<TJobOptions>? configure = default,
+            string sectionName = "SchedulerJobs",
+            string? jobName = default)
             where TJob : class, IScheduledJob
             where TJobOptions : SchedulerOptions, new()
         {
             var builder = new SchedulerBuilder(services);
 
             // add job with configuration settings
-            builder.AddJob<TJob, TJobOptions>(sectionName);
+            builder.AddJob<TJob, TJobOptions>(configure, sectionName, jobName);
 
             CreateInstance(builder.Services);
 
