@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Bet.Extensions.Testing.Logging;
 
+using CronScheduler.Extensions.Internal;
 using CronScheduler.Extensions.Scheduler;
 
 using Microsoft.Extensions.Configuration;
@@ -73,7 +75,7 @@ namespace CronScheduler.UnitTest
             var job = new TestJob(logFactory.CreateLogger<TestJob>());
             var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(name);
 
-            instance.AddOrUpdate(job, options);
+            instance.AddOrUpdate(job.GetType().Name, job, options);
 
             Assert.Single(instance.Jobs);
         }
@@ -123,7 +125,7 @@ namespace CronScheduler.UnitTest
             var job = new TestJob(logFactory.CreateLogger<TestJob>());
             var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(name);
 
-            instance.AddOrUpdate(job, options);
+            instance.AddOrUpdate(job.GetType().Name, job, options);
 
             Assert.Equal(1, instance.Jobs.Count);
 

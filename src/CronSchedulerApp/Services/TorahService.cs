@@ -29,10 +29,16 @@ namespace CronSchedulerApp.Services
             HttpClient httpClient,
             IOptionsMonitor<TorahQuoteJobOptions> options)
         {
-            _options = options.CurrentValue;
+            _options = options.Get(nameof(TorahQuoteJob));
 
             // updates on providers change
-            options.OnChange((opt) => _options = opt);
+            options.OnChange((opt, n) =>
+            {
+                if (n == nameof(TorahQuoteJob))
+                {
+                    _options = opt;
+                }
+            });
 
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("User-Agent", nameof(TorahService));

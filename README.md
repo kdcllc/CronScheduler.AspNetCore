@@ -5,20 +5,25 @@
 ![Nuget](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore)
 [![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/shield/CronScheduler.AspNetCore/latest)](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/packages/CronScheduler.AspNetCore/latest/download)
 
-The goal of this library was to design a simple Cron Scheduling engine that is based on build-in Asp.Net Core  IHostedService interface.
-It is much lighter than Quartz schedular and operates inside of any .NET Core GenericHost thus makes it simpler to setup and configure.
-In addition `IStartupJob` was added to support async initialization before the IWebHost is ready to start. Sample project includes support for
-making sure that Database is created before the application starts.
+The goal of this library was to design a simple Cron Scheduling engine that could be used with DotNetCore `IHost` or with AspNetCore `IWebHost`.
 
-*** Please refer to [Migration notes from 1.x to 2.x](./Migration1x-2x.md) version the library. ***
+It is much lighter than Quartz schedular or its alternatives. In the heart of its design was `KISS` principle.
 
-## Install package for `AspNetCore` hosting .NET CLI
+The `CronScheduler` can operate inside of any .NET Core GenericHost `IHost` thus makes it simpler to setup and configure but it always allow to be run inside of Kubernetes.
+
+In addition `IStartupJob` was added to support async initialization of critical process before the `IHost` is ready to start.
+
+> 
+> **Please refer to [Migration Guide](./Migration.md) for the upgrade.**
+>
+
+- Install package for `AspNetCore` hosting .NET CLI
 
 ```bash
     dotnet add package CronScheduler.AspNetCore
 ```
 
-## Install package for `IHost` hosting .NET CLI
+- Install package for `IHost` hosting .NET CLI
 
 ```bash
     dotnet add package CronScheduler.Extensions
@@ -43,22 +48,64 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
     │ │ │ │ │ │
     * * * * * *
 
+## Demo Applications
 
-## Examples
+- [CronSchedulerWorker](./src/CronSchedulerWorker/) - this example demonstrates how to use `CronScheduler` with new Microsoft .NET Core Workers Template
+- [CronSchedulerApp](./src/CronSchedulerApp) - this example demonstrates how to use `CronScheduler` with AspNetCore applications.
 
-### CronSchedulerWorker
+There are two ways that options and jobs can be registered within the Scheduler Jobs.
 
-This example demonstrates how to use CronScheduler with new Microsoft .NET Core Workers Template
-[CronSchedulerWorker](./src/CronSchedulerWorker/README.md)
+1. The basic and most effective way to register is via `IConfiguration`
 
-### CronSchedulerApp
-
-The sample website provides with use-case scenario for this library.
-
-## Singleton dependencies for `ScheduledJob`
+This job registration is assuming that the name of the job and options name are the same.
 
 ```csharp
-    public class TorahQuoteJob : ScheduledJob
+    services.AddScheduler(ctx =>
+    {
+        ctx.AddJob<TestJob>();
+    });
+```
+
+2. The complex factory registration of the same cron job with different options
+
+```csharp
+        services.AddScheduler(ctx =>
+        {
+            var jobName1 = "TestJob1";
+
+            ctx.AddJob(
+                sp =>
+                {
+                    var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(jobName1);
+                    return new TestJobDup(options, mockLoggerTestJob.Object);
+                },
+                options =>
+                {
+                    options.CronSchedule = "*/5 * * * * *";
+                    options.RunImmediately = true;
+                },
+                jobName: jobName1);
+
+            var jobName2 = "TestJob2";
+
+            ctx.AddJob(
+                sp =>
+                {
+                    var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(jobName2);
+                    return new TestJobDup(options, mockLoggerTestJob.Object);
+                }, options =>
+                {
+                    options.CronSchedule = "*/5 * * * * *";
+                    options.RunImmediately = true;
+                },
+                jobName: jobName2);
+        });
+```
+
+## Sample code for Singleton Schedule Job and its dependencies
+
+```csharp
+    public class TorahQuoteJob : IScheduledJob
     {
         private readonly TorahQuoteJobOptions _options;
         private readonly TorahVerses _torahVerses;
@@ -73,14 +120,17 @@ The sample website provides with use-case scenario for this library.
         public TorahQuoteJob(
             IOptionsMonitor<TorahQuoteJobOptions> options,
             TorahService service,
-            TorahVerses torahVerses) : base(options.CurrentValue)
+            TorahVerses torahVerses)
         {
-            _options = options.CurrentValue;
+            _options = options.Get(Name);
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _torahVerses = torahVerses ?? throw new ArgumentNullException(nameof(torahVerses));
         }
 
-        public override async Task ExecuteAsync(CancellationToken cancellationToken)
+        // job name and options name must match.
+        public string Name { get; } = nameof(TorahQuoteJob);
+
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];
@@ -91,6 +141,7 @@ The sample website provides with use-case scenario for this library.
 ```
 
 Then register this service within the `Startup.cs`
+The sample uses `Microsoft.Extensions.Http.Polly` extension library to make http calls every 10 seconds.
 
 ```csharp
     services.AddScheduler(builder =>
@@ -106,34 +157,35 @@ Then register this service within the `Startup.cs`
     });
 ```
 
-## Scoped or Transient Dependencies for `ScheduledJob`
+## Sample code for Scoped or Transient Schedule Job and its dependencies
 
 ```csharp
-    public class UserJob : ScheduledJob
+    public class UserJob : IScheduledJob
     {
         private readonly UserJobOptions _options;
         private readonly IServiceProvider _provider;
 
         public UserJob(
             IServiceProvider provider,
-            IOptionsMonitor<UserJobOptions> options) : base(options.CurrentValue)
+            IOptionsMonitor<UserJobOptions> options)
         {
-            _options = options.CurrentValue;
+            _options = options.Get(Name);
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
-        public override async Task ExecuteAsync(CancellationToken cancellationToken)
+        public string Name { get; } = nameof(UserJob);
+
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            using (var scope = _provider.CreateScope())
+            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-2.2&tabs=visual-studio#consuming-a-scoped-service-in-a-background-task
+            using var scope = _provider.CreateScope();
+            var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+
+            var users = userService.GetUsers();
+
+            foreach (var user in users)
             {
-                var userService = scope.ServiceProvider.GetRequiredService<UserService>();
-
-                var users = userService.GetUsers();
-
-                foreach (var user in users)
-                {
-                    await userService.AddClaimAsync(user, new Claim(_options.ClaimName, DateTime.UtcNow.ToString()));
-                }
+                await userService.AddClaimAsync(user, new Claim(_options.ClaimName, DateTime.UtcNow.ToString()));
             }
         }
     }
@@ -150,8 +202,6 @@ Then register this service within the `Startup.cs`
             builder.UnobservedTaskExceptionHandler = UnobservedHandler;
         });
 ```
-
-- Sample uses Microsoft.Extensions.Http.Polly extension library to make http calls every 10 seconds.
 
 ## `IStartupJobs` to assist with async jobs initialization before the application starts
 
@@ -223,11 +273,6 @@ Then add sample async task to be executed by the Queued Hosted Service.
         }
     }
 ```
-
-## Special Thanks to
-
-- [Maarten Balliauw](https://blog.maartenballiauw.be/post/2017/08/01/building-a-scheduled-cache-updater-in-aspnet-core-2.html) for the Asp.Net Core idea for the background hosted implementation.
-- [3 ways to use HTTPClientFactory in ASP.NET Core 2.1](http://www.talkingdotnet.com/3-ways-to-use-httpclientfactory-in-asp-net-core-2-1/)
 
 ## Docker build
 

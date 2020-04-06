@@ -13,7 +13,9 @@ namespace Microsoft.Extensions.Logging
             public static readonly EventId JobTimeZoneFailedParsing = new EventId(103, nameof(JobTimeZoneFailedParsing));
         }
 
-        private static readonly Action<ILogger,string, Exception> _unhandledException =
+#pragma warning disable SA1201 // Elements should appear in the correct order
+        private static readonly Action<ILogger, string, Exception> _unhandledException =
+#pragma warning restore SA1201 // Elements should appear in the correct order
           LoggerMessage.Define<string>(
             LogLevel.Error,
             EventIds.UnhandledException,

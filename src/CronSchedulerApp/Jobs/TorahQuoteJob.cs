@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace CronSchedulerApp.Jobs
 {
-    public class TorahQuoteJob : ScheduledJob
+    public class TorahQuoteJob : IScheduledJob
     {
         private readonly TorahQuoteJobOptions _options;
         private readonly TorahVerses _torahVerses;
@@ -25,14 +25,17 @@ namespace CronSchedulerApp.Jobs
         public TorahQuoteJob(
             IOptionsMonitor<TorahQuoteJobOptions> options,
             TorahService service,
-            TorahVerses torahVerses) : base(options.CurrentValue)
+            TorahVerses torahVerses)
         {
-            _options = options.CurrentValue;
+            _options = options.Get(Name);
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _torahVerses = torahVerses ?? throw new ArgumentNullException(nameof(torahVerses));
         }
 
-        public override async Task ExecuteAsync(CancellationToken cancellationToken)
+        // job name and options name must match.
+        public string Name { get; } = nameof(TorahQuoteJob);
+
+        public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             var index = new Random().Next(_options.Verses.Length);
             var exp = _options.Verses[index];

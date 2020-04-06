@@ -20,5 +20,10 @@ namespace CronScheduler.Extensions.Scheduler
         /// Specify if the Job to be run immediately. Default value is false.
         /// </summary>
         public bool RunImmediately { get; set; } = false;
+
+        /// <summary>
+        /// The name of the job that this options is associated with.
+        /// </summary>
+        internal string JobName { get; set; } = string.Empty;
     }
 }

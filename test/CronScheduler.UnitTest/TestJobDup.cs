@@ -7,16 +7,21 @@ using Microsoft.Extensions.Logging;
 
 namespace CronScheduler.UnitTest
 {
-    public class TestJob : IScheduledJob
+    /// <summary>
+    /// The purpose of this class to demonstrate how to utilize the same job
+    /// with different schedules.
+    /// </summary>
+    public class TestJobDup : IScheduledJob
     {
-        private readonly ILogger<TestJob> _logger;
+        private readonly ILogger<TestJobDup> _logger;
 
-        public TestJob(ILogger<TestJob> logger)
+        public TestJobDup(SchedulerOptions options, ILogger<TestJobDup> logger)
         {
             _logger = logger;
+            Name = options.JobName;
         }
 
-        public string Name { get; } = nameof(TestJob);
+        public string Name { get; }
 
         public Task ExecuteAsync(CancellationToken cancellationToken)
         {
