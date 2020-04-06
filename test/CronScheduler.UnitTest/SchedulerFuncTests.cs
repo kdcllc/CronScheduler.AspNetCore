@@ -3,6 +3,8 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
+using CronScheduler.Extensions.Scheduler;
+
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -30,11 +32,10 @@ namespace CronScheduler.UnitTest
         }
 
         [Fact]
-        public async Task RunImmediately_Successfully()
+        public async Task Job_RunImmediately_Factory_Successfully()
         {
             // assign
             var mockLoggerTestJob = new Mock<ILogger<TestJob>>();
-            var mockLoggerTestJobException = new Mock<ILogger<TestJobException>>();
 
             var host = CreateHost(services =>
             {
@@ -46,13 +47,10 @@ namespace CronScheduler.UnitTest
                         sp => new TestJob(mockLoggerTestJob.Object),
                         options =>
                         {
-                            options.CronSchedule = "*/10 * * * * *";
-                            options.RunImmediately = false;
+                            options.CronSchedule = "*/5 * * * * *";
+                            options.RunImmediately = true;
                         },
                         jobName: jobName);
-
-                    services.AddTransient(x => mockLoggerTestJobException.Object);
-                    //ctx.AddJob<TestJobException, TestJobExceptionOptions>();
                 });
             });
 
@@ -61,7 +59,7 @@ namespace CronScheduler.UnitTest
             // act
             var response = await client.GetAsync("/hc");
             response.EnsureSuccessStatusCode();
-            await Task.Delay(TimeSpan.FromSeconds(15));
+            await Task.Delay(TimeSpan.FromSeconds(6));
 
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
@@ -70,23 +68,111 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((object v, Type _) => v.ToString().Contains(nameof(TestJob))),
+                It.Is<It.IsAnyType>((object v, Type _) => v.ToString() !.Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception, string>>((v, t) => true)),
                 Times.Between(1, 2, Range.Inclusive));
-
-            //mockLoggerTestJobException.Verify(
-            //    l => l.Log(
-            //          LogLevel.Error,
-            //          It.IsAny<EventId>(),
-            //          It.Is<It.IsAnyType>((object v, Type _) => v.ToString().Contains(nameof(Exception))),
-            //          It.IsAny<Exception>(),
-            //          It.Is<Func<object, Exception, string>>((v, t) => true)),
-            //    Times.Between(1, 2, Range.Inclusive));
         }
 
         [Fact]
-        public async Task RunDelayed_Successfully()
+        public async Task Same_Job_RunImmediately_Factory_Two_Different_Options_Successfully()
+        {
+            // assign
+            var mockLoggerTestJob = new Mock<ILogger<TestJobDup>>();
+
+            var host = CreateHost(services =>
+            {
+                services.AddScheduler(ctx =>
+                {
+                    var jobName1 = "TestJob1";
+
+                    ctx.AddJob(
+                        sp =>
+                        {
+                            var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(jobName1);
+                            return new TestJobDup(options, mockLoggerTestJob.Object);
+                        },
+                        options =>
+                        {
+                            options.CronSchedule = "*/5 * * * * *";
+                            options.RunImmediately = true;
+                        },
+                        jobName: jobName1);
+
+                    var jobName2 = "TestJob2";
+
+                    ctx.AddJob(
+                        sp =>
+                        {
+                            var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(jobName2);
+                            return new TestJobDup(options, mockLoggerTestJob.Object);
+                        }, options =>
+                        {
+                            options.CronSchedule = "*/5 * * * * *";
+                            options.RunImmediately = true;
+                        },
+                        jobName: jobName2);
+                });
+            });
+
+            var client = new TestServer(host).CreateClient();
+
+            // act
+            var response = await client.GetAsync("/hc");
+            response.EnsureSuccessStatusCode();
+            await Task.Delay(TimeSpan.FromSeconds(6));
+
+            // assert
+            Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+
+            mockLoggerTestJob.Verify(
+                    l => l.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((object v, Type _) => v.ToString() !.Contains(nameof(TestJob))),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<object, Exception, string>>((v, t) => true)),
+                    Times.Between(2, 6, Range.Inclusive));
+        }
+
+        [Fact]
+        public async Task Job_RunImmediately_Configuration_Successfully()
+        {
+            // assign
+            var mockLoggerTestJob = new Mock<ILogger<TestJob>>();
+
+            var host = CreateHost(services =>
+            {
+                services.AddScheduler(ctx =>
+                {
+                    ctx.AddJob<TestJob>();
+                });
+
+                services.AddTransient(x => mockLoggerTestJob.Object);
+            });
+
+            var client = new TestServer(host).CreateClient();
+
+            // act
+            var response = await client.GetAsync("/hc");
+            response.EnsureSuccessStatusCode();
+            await Task.Delay(TimeSpan.FromSeconds(6));
+
+            // assert
+            Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+
+            mockLoggerTestJob.Verify(
+                    l => l.Log(
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((object v, Type _) => v.ToString() !.Contains(nameof(TestJob))),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<object, Exception, string>>((v, t) => true)),
+                    Times.Between(1, 2, Range.Inclusive));
+        }
+
+        [Fact]
+        public async Task Job_RunDelayed_Factory_Successfully()
         {
             var mockLogger = new Mock<ILogger<TestJob>>();
 
@@ -112,7 +198,7 @@ namespace CronScheduler.UnitTest
             // act
             var response = await client.GetAsync("/hc");
             response.EnsureSuccessStatusCode();
-            await Task.Delay(TimeSpan.FromSeconds(15));
+            await Task.Delay(TimeSpan.FromSeconds(6));
 
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
@@ -122,14 +208,14 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                 LogLevel.Information,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((object v, Type _) => v.ToString().Contains(nameof(TestJob))),
+                It.Is<It.IsAnyType>((object v, Type _) => v.ToString() !.Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception, string>>((v, t) => true)),
-                Times.Between(1, 15, Range.Inclusive));
+                Times.Between(1, 2, Range.Inclusive));
         }
 
         [Fact]
-        public async Task Run_And_Raise_UnobservedTaskException()
+        public async Task Job_RunDelayed_And_Raise_UnobservedTaskException()
         {
             // arrange
             var mockLogger = new Mock<ILogger<TestJobException>>();
@@ -164,7 +250,7 @@ namespace CronScheduler.UnitTest
             // act
             var response = await client.GetAsync("/hc");
             response.EnsureSuccessStatusCode();
-            await Task.Delay(TimeSpan.FromSeconds(4));
+            await Task.Delay(TimeSpan.FromSeconds(6));
 
             // assert
             Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
@@ -173,14 +259,14 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                         LogLevel.Error,
                         It.IsAny<EventId>(),
-                        It.Is<It.IsAnyType>((object v, Type _) => v.ToString().Contains(nameof(Exception))),
+                        It.Is<It.IsAnyType>((object v, Type _) => v.ToString() !.Contains(nameof(Exception))),
                         It.IsAny<Exception>(),
                         It.Is<Func<object, Exception, string>>((v, t) => true)),
                 Times.Between(1, 2, Range.Inclusive));
         }
 
         [Fact]
-        public async Task Run_Job_With_Options_And_Raise_Exception()
+        public async Task Job_RunImmediately_Configuration_And_Raise_Exception()
         {
             // arrange
             var mockLogger = new Mock<ILogger<TestJobException>>();
@@ -208,7 +294,7 @@ namespace CronScheduler.UnitTest
                 l => l.Log(
                         LogLevel.Error,
                         It.IsAny<EventId>(),
-                        It.Is<It.IsAnyType>((object v, Type _) => v.ToString().Contains(nameof(Exception))),
+                        It.Is<It.IsAnyType>((object v, Type _) => v.ToString() !.Contains(nameof(Exception))),
                         It.IsAny<Exception>(),
                         It.Is<Func<object, Exception, string>>((v, t) => true)),
                 Times.Between(1, 4, Range.Inclusive));

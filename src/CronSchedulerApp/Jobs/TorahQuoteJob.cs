@@ -32,6 +32,7 @@ namespace CronSchedulerApp.Jobs
             _torahVerses = torahVerses ?? throw new ArgumentNullException(nameof(torahVerses));
         }
 
+        // job name and options name must match.
         public string Name { get; } = nameof(TorahQuoteJob);
 
         public async Task ExecuteAsync(CancellationToken cancellationToken)

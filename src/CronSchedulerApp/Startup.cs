@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +20,7 @@ namespace CronSchedulerApp
 {
     public class Startup
     {
-        private ILogger<Startup> _logger;
+        private ILogger<Startup>? _logger;
 
         public Startup(IConfiguration configuration)
         {
@@ -66,8 +65,10 @@ namespace CronSchedulerApp
                 builder.Services.AddSingleton<TorahVerses>();
 
                 // Build a policy that will handle exceptions, 408s, and 500s from the remote server
-                builder.Services.AddHttpClient<TorahService>()
+                builder.Services
+                    .AddHttpClient<TorahService>()
                     .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+
                 builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
 
                 // 2. Add User Service and Job
@@ -120,7 +121,7 @@ namespace CronSchedulerApp
 
         private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
         {
-            _logger.LogError(args.Exception?.Message);
+            _logger?.LogError(args.Exception?.Message);
             args.SetObserved();
         }
     }

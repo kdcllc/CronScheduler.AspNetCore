@@ -21,6 +21,10 @@ namespace Microsoft.Extensions.DependencyInjection
 #pragma warning restore SA1401 // Fields should be private
 #pragma warning restore CA1051 // Do not declare visible instance fields
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SchedulerBuilder"/> class.
+        /// </summary>
+        /// <param name="services"></param>
         public SchedulerBuilder(IServiceCollection services)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
@@ -28,39 +32,70 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// <see cref="IServiceCollection"/> for the DI.
+        /// The Service Collection <see cref="IServiceCollection"/> for the DI.
         /// </summary>
         public IServiceCollection Services { get; }
 
         /// <summary>
-        /// Adds Custom Named Job.
+        /// Add Custom Scheduler <see cref="IScheduledJob"/> Job with the Default <see cref="SchedulerOptions"/> options type.
+        /// The options are accessible based on the job name that is being specified.
         /// </summary>
         /// <typeparam name="TJob">The type of the job.</typeparam>
-        /// <param name="sectionName">The section for the job configurations.</param>
-        /// <param name="namedJob">The name of the job.</param>
+        /// <param name="sectionName">The section name for the job configurations. The default value is SchedulerJobs.</param>
+        /// <param name="jobName">The name of the job.</param>
+        /// <param name="configure">
+        /// The action to configure custom options.
+        /// This will override the what is in <see cref="IConfiguration"/> providers.
+        /// </param>
         /// <returns></returns>
-        [Obsolete("This method will be depreciated in the next release.")]
-        public IServiceCollection AddJob<TJob>(string sectionName = "SchedulerJobs", string? namedJob = null)
+        public IServiceCollection AddJob<TJob>(
+            string sectionName = "SchedulerJobs",
+            string? jobName = default,
+            Action<SchedulerOptions>? configure = default)
             where TJob : class, IScheduledJob
         {
             Services.AddSingleton<IScheduledJob, TJob>();
 
-            var name = namedJob ?? typeof(TJob).Name;
-
-            // named options used within the scheduler itself.
-            Services.AddChangeTokenOptions<SchedulerOptions>($"{sectionName}:{typeof(TJob).Name}", name, _ => { });
+            AddJobOptions<TJob>(sectionName, jobName, configure);
 
             return Services;
         }
 
         /// <summary>
-        /// Adds schedule job with factory.
+        /// Add Custom Scheduler <see cref="IScheduledJob"/> Job with factory registration and the Default <see cref="SchedulerOptions"/> options type.
+        /// The options are accessible based on the job name that is being specified.
+        /// </summary>
+        /// <typeparam name="TJob">The type of the job.</typeparam>
+        /// <param name="factory">The factory registration for the job.</param>
+        /// <param name="configure">
+        /// The action to configure custom options.
+        /// This will override the what is in <see cref="IConfiguration"/> providers.
+        /// </param>
+        /// <param name="sectionName">The section name for the job configurations. The default value is SchedulerJobs.</param>
+        /// <param name="jobName">The name of the job.</param>
+        /// <returns></returns>
+        public IServiceCollection AddJob<TJob>(
+            Func<IServiceProvider, TJob> factory,
+            Action<SchedulerOptions>? configure = default,
+            string sectionName = "SchedulerJobs",
+            string? jobName = default) where TJob : class, IScheduledJob
+        {
+            Services.AddSingleton(typeof(IScheduledJob), factory);
+
+            AddJobOptions<TJob>(sectionName, jobName, configure);
+
+            return Services;
+        }
+
+        /// <summary>
+        /// Add Custom Scheduler <see cref="IScheduledJob"/> Job with factory registration and Custom TJobOptions options type.
         /// </summary>
         /// <typeparam name="TJob">The type of the job.</typeparam>
         /// <typeparam name="TJobOptions">The type of the options.</typeparam>
         /// <param name="factory">The factory to register the job with.</param>
-        /// <param name="configure">The action to configure custom options.
-        ///                         This will override the what is in <see cref="IConfiguration"/> providers.
+        /// <param name="configure">
+        /// The action to configure custom options.
+        /// This will override the what is in <see cref="IConfiguration"/> providers.
         /// </param>
         /// <param name="sectionName">The section name for the configurations.</param>
         /// <param name="jobName">The name of the job.</param>
@@ -77,41 +112,20 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var name = jobName ?? typeof(TJob).Name;
 
-            AddOptions(configure, sectionName, name);
-
-            return Services;
-        }
-
-        public IServiceCollection AddJob<TJob>(
-            Func<IServiceProvider, TJob> factory,
-            Action<SchedulerOptions>? configure = default,
-            string sectionName = "SchedulerJobs",
-            string? jobName = default)
-            where TJob : class, IScheduledJob
-        {
-            var name = jobName ?? typeof(TJob).Name;
-
-            Services.AddSingleton(typeof(IScheduledJob), factory);
-
-            Services
-              .AddChangeTokenOptions<SchedulerOptions>(
-              $"{sectionName}:{name}",
-              name,
-              o =>
-              {
-                  configure?.Invoke(o);
-                  o.JobName = name;
-              });
+            AddJobOptions(configure, sectionName, name);
 
             return Services;
         }
 
         /// <summary>
-        /// Adds <see cref="IScheduledJob"/> to DI with options.
+        /// Add Custom Scheduler <see cref="IScheduledJob"/> Job instance with custom <see cref="SchedulerOptions"/> options.
         /// </summary>
         /// <typeparam name="TJob">The type of the job.</typeparam>
         /// <typeparam name="TJobOptions">The options for the job.</typeparam>
-        /// <param name="configure"></param>
+        /// <param name="configure">
+        /// The action to configure custom options.
+        /// This will override the what is in <see cref="IConfiguration"/> providers.
+        /// </param>
         /// <param name="sectionName"></param>
         /// <param name="jobName">The name of the job, use this for options as well.</param>
         /// <returns></returns>
@@ -126,19 +140,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var name = jobName ?? typeof(TJob).Name;
 
-            AddOptions(configure, sectionName, name);
+            AddJobOptions(configure, sectionName, name);
 
             return Services;
         }
 
-        /// <summary>
-        /// Adds options for the custom job.
-        /// </summary>
-        /// <typeparam name="TJob"></typeparam>
-        /// <param name="sectionName"></param>
-        /// <param name="configure"></param>
-        /// <returns></returns>
-        public IServiceCollection AddJobOptions<TJob>(
+        private void AddJobOptions<TJob>(
             string sectionName = "SchedulerJobs",
             string? jobName = default,
             Action<SchedulerOptions>? configure = null)
@@ -155,26 +162,9 @@ namespace Microsoft.Extensions.DependencyInjection
                   configure?.Invoke(o);
                   o.JobName = name;
               });
-
-            return Services;
         }
 
-        /// <summary>
-        /// Add Jobs options based on the string name.
-        /// </summary>
-        /// <param name="namedJob">The named job.</param>
-        /// <param name="sectionName">The section name.</param>
-        /// <param name="configure">The custom options configuration.</param>
-        /// <returns></returns>
-        public IServiceCollection AddJobOptions(
-            string namedJob,
-            string sectionName,
-            Action<SchedulerOptions>? configure = null)
-        {
-            return Services.AddChangeTokenOptions(sectionName, namedJob, configure);
-        }
-
-        private void AddOptions<TJobOptions>(
+        private void AddJobOptions<TJobOptions>(
             Action<TJobOptions>? configure,
             string sectionName,
             string name) where TJobOptions : SchedulerOptions, new()

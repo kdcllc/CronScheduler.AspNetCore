@@ -10,6 +10,8 @@ namespace CronScheduler.Extensions.Scheduler
     {
         /// <summary>
         /// The name of the executing job.
+        /// In order for the <see cref="SchedulerOptions"/> options to work correctly make sure that the name is matched
+        /// between the job and the named job options.
         /// </summary>
         string Name { get; }
 
