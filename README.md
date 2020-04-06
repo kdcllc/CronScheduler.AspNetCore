@@ -13,8 +13,9 @@ The `CronScheduler` can operate inside of any .NET Core GenericHost `IHost` thus
 
 In addition `IStartupJob` was added to support async initialization of critical process before the `IHost` is ready to start.
 
-> [!IMPORTANT]
-> Please refer to [Migration notes](./Migration.md) for the upgrade.
+> 
+> **Please refer to [Migration Guide](./Migration.md) for the upgrade.**
+>
 
 - Install package for `AspNetCore` hosting .NET CLI
 

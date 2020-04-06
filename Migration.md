@@ -1,4 +1,4 @@
-# Migration
+# Migration Guide
 
 This document provide with direction for migration between different version of the library.
 
