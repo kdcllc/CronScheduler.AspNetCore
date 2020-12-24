@@ -17,7 +17,7 @@ namespace CronSchedulerApp
         public static async Task Main(string[] args)
         {
             // run async jobs before the IWebHost run
-            // AspNetCore 2.x syntaxn of the registration.
+            // AspNetCore 2.x syntax of the registration.
             // var host = CreateWebHostBuilder(args).Build();
             var host = CreateHostBuilder(args).Build();
 
@@ -48,7 +48,7 @@ namespace CronSchedulerApp
         }
 
         /// <summary>
-        /// AspNetCore 2.x syntaxn of the registration.
+        /// AspNetCore 2.x syntax of the registration.
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>

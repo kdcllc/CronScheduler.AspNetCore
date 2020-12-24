@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp2.1;netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <Description>
-      The Cron based Scheduler for DotNetCore 2.x/3.0 Self-hosted Applications in Kubernetes/Docker or as WindowsService on Windows Machine.
+      The Cron based Scheduler for DotNetCore 2.x/3.x Self-hosted Applications in Kubernetes/Docker or as WindowsService on Windows Machine.
       This is a lightweight alternative to Quarts Scheduler or HangFire.
     </Description>
   </PropertyGroup>

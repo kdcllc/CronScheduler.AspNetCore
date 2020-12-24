@@ -38,30 +38,30 @@ namespace CronScheduler.UnitTest
 
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
 
-            var service = new ServiceCollection();
+            var services = new ServiceCollection();
 
-            service.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<IConfiguration>(configuration);
 
-            service.AddOptions();
+            services.AddOptions();
 
             var name = typeof(TestJob).Name;
 
-            service.AddOptions<SchedulerOptions>(name)
+            services.AddOptions<SchedulerOptions>(name)
                 .Configure<IConfiguration>((options, configuration) =>
                 {
                     configuration.Bind("SchedulerJobs:TestJobException", options);
                 });
 
-            service.AddLogging(builder =>
+            services.AddLogging(builder =>
             {
                 builder.AddConsole();
                 builder.AddDebug();
                 builder.AddXunit(_output, LogLevel.Debug);
             });
 
-            service.AddSingleton<SchedulerRegistration>();
+            services.AddSingleton<SchedulerRegistration>();
 
-            var sp = service.BuildServiceProvider();
+            var sp = services.BuildServiceProvider();
 
             var instance = sp.GetService<SchedulerRegistration>();
 

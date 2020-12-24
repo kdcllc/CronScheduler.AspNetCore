@@ -45,7 +45,7 @@ namespace CronScheduler.Extensions.Internal
 
         public bool AddOrUpdate(IScheduledJob job, SchedulerOptions options)
         {
-            return AddOrUpdate(job.GetType().Name, job, options);
+            return AddOrUpdate(job.Name, job, options);
         }
 
         public bool AddOrUpdate(string jobName, IScheduledJob job, SchedulerOptions options)
@@ -55,7 +55,7 @@ namespace CronScheduler.Extensions.Internal
 
         public bool AddOrUpdate(IScheduledJob job)
         {
-            return AddOrUpdate(job.GetType().Name, job);
+            return AddOrUpdate(job.Name, job);
         }
 
         public bool AddOrUpdate(string jobName, IScheduledJob job)
