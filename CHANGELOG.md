@@ -2,6 +2,10 @@
 Change Log
 ===============================================================================
 
+Version 3.0.1
+* Fixed issue with Scheduled jobs that are added on the fly to the execution engine issue #43
+* Upgraded to the latest nuget packages
+
 Version 3.0.0
 
 * Removed ScheduledJob class

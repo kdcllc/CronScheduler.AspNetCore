@@ -91,6 +91,8 @@ namespace Microsoft.Extensions.DependencyInjection
             IServiceCollection services,
             EventHandler<UnobservedTaskExceptionEventArgs>? unobservedTaskExceptionHandler = default)
         {
+            services.TryAddSingleton<ISchedulerRegistration, SchedulerRegistration>();
+
             // should prevent from double registrations.
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, SchedulerHostedService>(sp =>
             {

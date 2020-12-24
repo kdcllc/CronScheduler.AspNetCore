@@ -28,7 +28,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public SchedulerBuilder(IServiceCollection services)
         {
             Services = services ?? throw new ArgumentNullException(nameof(services));
-            Services.TryAddSingleton<ISchedulerRegistration, SchedulerRegistration>();
         }
 
         /// <summary>
