@@ -12,9 +12,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public class SchedulerBuilder
     {
-        /// <summary>
-        /// EventHanlder for Startup for Hosted Apps.
-        /// </summary>
 #pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable SA1401 // Fields should be private
         public EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskExceptionHandler;
@@ -34,6 +31,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// The Service Collection <see cref="IServiceCollection"/> for the DI.
         /// </summary>
         public IServiceCollection Services { get; }
+
+        internal Func<IServiceProvider, EventHandler<UnobservedTaskExceptionEventArgs>>? CreateUnobservedTaskExceptionHandler { get; private set; }
+
+        /// <summary>
+        /// Adds a function to create an event handler that handles unobserved task exceptions during the lifetime of the CRON job.
+        /// </summary>
+        /// <param name="createUnobservedTaskExceptionHandler">The function to create the event handler.</param>
+        public IServiceCollection AddUnobservedTaskExceptionHandler(
+            Func<IServiceProvider, EventHandler<UnobservedTaskExceptionEventArgs>> createUnobservedTaskExceptionHandler)
+        {
+            CreateUnobservedTaskExceptionHandler = createUnobservedTaskExceptionHandler;
+            return Services;
+        }
 
         /// <summary>
         /// Add Custom Scheduler <see cref="IScheduledJob"/> Job with the Default <see cref="SchedulerOptions"/> options type.

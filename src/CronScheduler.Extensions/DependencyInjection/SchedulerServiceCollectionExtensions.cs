@@ -46,15 +46,28 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds <see cref="SchedulerHostedService"/> service with ability to register all of the cron job inside the context with
         /// global error handler <see cref="UnobservedTaskExceptionEventArgs"/>.
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="config"></param>
-        /// <returns></returns>
+        /// <param name="services">The available registered application services.</param>
+        /// <param name="createUnobservedTaskExceptionHandler">The function to create an event handler that handles unobserved exceptions during the lifetime of the cron job.</param>
+        public static IServiceCollection AddScheduler(
+            this IServiceCollection services,
+            Func<IServiceProvider, EventHandler<UnobservedTaskExceptionEventArgs>> createUnobservedTaskExceptionHandler)
+        {
+            CreateInstance(services, createUnobservedTaskExceptionHandler);
+            return services;
+        }
+
+        /// <summary>
+        /// Adds <see cref="SchedulerHostedService"/> service with ability to register all of the cron job inside the context with
+        /// global error handler <see cref="UnobservedTaskExceptionEventArgs"/>.
+        /// </summary>
+        /// <param name="services">The available registered application services.</param>
+        /// <param name="config">The function to configure this scheduler job.</param>
         public static IServiceCollection AddScheduler(this IServiceCollection services, Action<SchedulerBuilder> config)
         {
             var builder = new SchedulerBuilder(services);
             config(builder);
 
-            CreateInstance(builder.Services, builder.UnobservedTaskExceptionHandler);
+            CreateInstance(builder.Services, sp => builder.UnobservedTaskExceptionHandler ?? builder.CreateUnobservedTaskExceptionHandler?.Invoke(sp));
 
             return builder.Services;
         }
@@ -91,6 +104,13 @@ namespace Microsoft.Extensions.DependencyInjection
             IServiceCollection services,
             EventHandler<UnobservedTaskExceptionEventArgs>? unobservedTaskExceptionHandler = default)
         {
+            CreateInstance(services, _ => unobservedTaskExceptionHandler);
+        }
+
+        private static void CreateInstance(
+            IServiceCollection services,
+            Func<IServiceProvider, EventHandler<UnobservedTaskExceptionEventArgs>?> createUnobservedTaskExceptionHandler)
+        {
             services.TryAddSingleton<ISchedulerRegistration, SchedulerRegistration>();
 
             // should prevent from double registrations.
@@ -100,6 +120,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var instance = new SchedulerHostedService(registry);
 
+                var unobservedTaskExceptionHandler = createUnobservedTaskExceptionHandler(sp);
                 if (unobservedTaskExceptionHandler != null)
                 {
                     instance.UnobservedTaskException += unobservedTaskExceptionHandler;

@@ -266,6 +266,56 @@ namespace CronScheduler.UnitTest
         }
 
         [Fact]
+        public async Task Job_RunDelayed_And_Raise_UnobservedTaskException_Via_Delegate()
+        {
+            // arrange
+            var mockLogger = new Mock<ILogger<TestJobException>>();
+            var host = CreateHost(services =>
+            {
+                services.AddScheduler(ctx =>
+                {
+                    var jobName = nameof(TestJobException);
+
+                    ctx.AddUnobservedTaskExceptionHandler(sp => UnobservedTaskExceptionHandler);
+
+                    ctx.AddJob<TestJobException, TestJobExceptionOptions>(
+                        sp =>
+                        {
+                            var options = sp.GetRequiredService<IOptionsMonitor<TestJobExceptionOptions>>();
+                            return new TestJobException(mockLogger.Object, options);
+                        },
+                        options =>
+                        {
+                            options.CronSchedule = "*/4 * * * * *";
+                            options.RunImmediately = false;
+                            options.JobName = jobName;
+                            options.RaiseException = true;
+                        },
+                        jobName: jobName);
+                });
+            });
+
+            var client = new TestServer(host).CreateClient();
+
+            // act
+            var response = await client.GetAsync("/hc");
+            response.EnsureSuccessStatusCode();
+            await Task.Delay(TimeSpan.FromSeconds(6));
+
+            // assert
+            Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+
+            mockLogger.Verify(
+                l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(Exception))),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<object, Exception, string>>((v, t) => true)),
+                Times.Between(1, 2, Range.Inclusive));
+        }
+
+        [Fact]
         public async Task Job_RunImmediately_Configuration_And_Raise_Exception()
         {
             // arrange
@@ -292,11 +342,11 @@ namespace CronScheduler.UnitTest
 
             mockLogger.Verify(
                 l => l.Log(
-                        LogLevel.Error,
-                        It.IsAny<EventId>(),
-                        It.Is<It.IsAnyType>((object v, Type _) => v.ToString() !.Contains(nameof(Exception))),
-                        It.IsAny<Exception>(),
-                        It.Is<Func<object, Exception, string>>((v, t) => true)),
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(Exception))),
+                    It.IsAny<Exception>(),
+                    It.Is<Func<object, Exception, string>>((v, t) => true)),
                 Times.Between(1, 4, Range.Inclusive));
         }
 
