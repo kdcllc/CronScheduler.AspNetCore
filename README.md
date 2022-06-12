@@ -11,7 +11,7 @@
 
 The goal of this library was to design a simple Cron Scheduling engine that could be used with DotNetCore `IHost` or with AspNetCore `IWebHost`.
 
-It is much lighter than Quartz schedular or its alternatives. In the heart of its design was `KISS` principle.
+It is much lighter than Quartz schedular or its alternatives. The `KISS` principle was at the heart of the development of this library. 
 
 The `CronScheduler` can operate inside of any .NET Core GenericHost `IHost` thus makes it simpler to setup and configure but it always allow to be run inside of Kubernetes.
 
@@ -162,8 +162,19 @@ The sample uses `Microsoft.Extensions.Http.Polly` extension library to make http
         builder.Services.AddHttpClient<TorahService>()
             .AddTransientHttpErrorPolicy(p => p.RetryAsync());
         builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
+        
+        // register a custom error processing for internal errors
+        builder.AddUnobservedTaskExceptionHandler(sp =>
+        {
+            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
 
-        builder.UnobservedTaskExceptionHandler = UnobservedHandler;
+            return
+                (sender, args) =>
+                {
+                    logger?.LogError(args.Exception?.Message);
+                    args.SetObserved();
+                };
+        });
     });
 ```
 
@@ -209,7 +220,18 @@ Then register this service within the `Startup.cs`
             builder.Services.AddScoped<UserService>();
             builder.AddJob<UserJob, UserJobOptions>();
 
-            builder.UnobservedTaskExceptionHandler = UnobservedHandler;
+        // register a custom error processing for internal errors
+        builder.AddUnobservedTaskExceptionHandler(sp =>
+        {
+            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
+
+            return
+                (sender, args) =>
+                {
+                    logger?.LogError(args.Exception?.Message);
+                    args.SetObserved();
+                };
+        });
         });
 ```
 
@@ -284,22 +306,6 @@ Then add sample async task to be executed by the Queued Hosted Service.
     }
 ```
 
-## Docker build
-
-Utilizes [King David Consulting LLC DotNet Docker Image](https://github.com/kdcllc/docker/tree/master/dotnet)
-
-```bash
-    docker-compose -f "docker-compose.yml" -f "docker-compose.override.yml" up -d --build
-```
-
-### Note
-
-Workaround for  `Retrying 'FindPackagesByIdAsync' for source` in Docker containers restore.
-
-```bash
- dotnet restore --disable-parallel
-```
-
 ## License
 
-[MIT License Copyright (c) 2017 King David Consulting LLC](./LICENSE)
+[MIT License Copyright (c) 2017-2022 King David Consulting LLC](./LICENSE)

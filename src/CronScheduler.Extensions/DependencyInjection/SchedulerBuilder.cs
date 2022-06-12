@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using CronScheduler.Extensions.Internal;
 using CronScheduler.Extensions.Scheduler;
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -14,6 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
 #pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable SA1401 // Fields should be private
+        [Obsolete("User AddUnobservedTaskExceptionHandler() instead")]
         public EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskExceptionHandler;
 #pragma warning restore SA1401 // Fields should be private
 #pragma warning restore CA1051 // Do not declare visible instance fields

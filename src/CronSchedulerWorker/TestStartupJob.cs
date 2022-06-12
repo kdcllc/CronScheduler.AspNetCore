@@ -6,24 +6,23 @@ using CronScheduler.Extensions.StartupInitializer;
 
 using Microsoft.Extensions.Logging;
 
-namespace CronSchedulerWorker
+namespace CronSchedulerWorker;
+
+public class TestStartupJob : IStartupJob
 {
-    public class TestStartupJob : IStartupJob
+    private readonly ILogger<TestStartupJob> _logger;
+
+    public TestStartupJob(ILogger<TestStartupJob> logger)
     {
-        private readonly ILogger<TestStartupJob> _logger;
+        _logger = logger;
+    }
 
-        public TestStartupJob(ILogger<TestStartupJob> logger)
-        {
-            _logger = logger;
-        }
+    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("{job} started", nameof(TestStartupJob));
 
-        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("{job} started", nameof(TestStartupJob));
+        await Task.Delay(TimeSpan.FromSeconds(3));
 
-            await Task.Delay(TimeSpan.FromSeconds(3));
-
-            _logger.LogInformation("{job} ended", nameof(TestStartupJob));
-        }
+        _logger.LogInformation("{job} ended", nameof(TestStartupJob));
     }
 }

@@ -15,124 +15,123 @@ using Microsoft.Extensions.Options;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace CronScheduler.UnitTest
+namespace CronScheduler.UnitTest;
+
+public class SchedulerServiceTests
 {
-    public class SchedulerServiceTests
+    private readonly ITestOutputHelper _output;
+
+    public SchedulerServiceTests(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output ?? throw new ArgumentNullException(nameof(output));
+    }
 
-        public SchedulerServiceTests(ITestOutputHelper output)
+    [Fact]
+    public void Add_Job_Successfully()
+    {
+        var dic = new Dictionary<string, string>
         {
-            _output = output ?? throw new ArgumentNullException(nameof(output));
-        }
+            { "SchedulerJobs:TestJobException:CronSchedule", "*/10 * * * * *" },
+            { "SchedulerJobs:TestJobException:CronTimeZone", string.Empty },
+            { "SchedulerJobs:TestJobException:RunImmediately", "true" },
+        };
 
-        [Fact]
-        public void Add_Job_Successfully()
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+
+        var services = new ServiceCollection();
+
+        services.AddSingleton<IConfiguration>(configuration);
+
+        services.AddOptions();
+
+        var name = typeof(TestJob).Name;
+
+        services.AddOptions<SchedulerOptions>(name)
+            .Configure<IConfiguration>((options, configuration) =>
+            {
+                configuration.Bind("SchedulerJobs:TestJobException", options);
+            });
+
+        services.AddLogging(builder =>
         {
-            var dic = new Dictionary<string, string>
-            {
-                { "SchedulerJobs:TestJobException:CronSchedule", "*/10 * * * * *" },
-                { "SchedulerJobs:TestJobException:CronTimeZone", string.Empty },
-                { "SchedulerJobs:TestJobException:RunImmediately", "true" },
-            };
+            builder.AddConsole();
+            builder.AddDebug();
+            builder.AddXunit(_output, LogLevel.Debug);
+        });
 
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        services.AddSingleton<SchedulerRegistration>();
 
-            var services = new ServiceCollection();
+        var sp = services.BuildServiceProvider();
 
-            services.AddSingleton<IConfiguration>(configuration);
+        var instance = sp.GetService<SchedulerRegistration>();
 
-            services.AddOptions();
-
-            var name = typeof(TestJob).Name;
-
-            services.AddOptions<SchedulerOptions>(name)
-                .Configure<IConfiguration>((options, configuration) =>
-                {
-                    configuration.Bind("SchedulerJobs:TestJobException", options);
-                });
-
-            services.AddLogging(builder =>
-            {
-                builder.AddConsole();
-                builder.AddDebug();
-                builder.AddXunit(_output, LogLevel.Debug);
-            });
-
-            services.AddSingleton<SchedulerRegistration>();
-
-            var sp = services.BuildServiceProvider();
-
-            var instance = sp.GetService<SchedulerRegistration>();
-
-            using var logFactory = TestLoggerBuilder.Create(builder =>
-            {
-                builder.AddConsole();
-                builder.AddDebug();
-                builder.AddXunit(_output, LogLevel.Debug);
-            });
-
-            var job = new TestJob(logFactory.CreateLogger<TestJob>());
-            var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(name);
-
-            instance.AddOrUpdate(job.GetType().Name, job, options);
-
-            Assert.Single(instance.Jobs);
-        }
-
-        [Fact]
-        public void Add_Job_Successfully_1()
+        using var logFactory = TestLoggerBuilder.Create(builder =>
         {
-            var dic = new Dictionary<string, string>
-            {
-                { "SchedulerJobs:TestJobException:CronSchedule", "*/10 * * * * *" },
-                { "SchedulerJobs:TestJobException:CronTimeZone", string.Empty },
-                { "SchedulerJobs:TestJobException:RunImmediately", "true" },
-            };
+            builder.AddConsole();
+            builder.AddDebug();
+            builder.AddXunit(_output, LogLevel.Debug);
+        });
 
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
+        var job = new TestJob(logFactory.CreateLogger<TestJob>());
+        var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(name);
 
-            var service = new ServiceCollection();
+        instance!.AddOrUpdate(job.GetType().Name, job, options);
 
-            service.AddSingleton<IConfiguration>(configuration);
+        Assert.Single(instance.Jobs);
+    }
 
-            service.AddOptions();
+    [Fact]
+    public void Add_Job_Successfully_1()
+    {
+        var dic = new Dictionary<string, string>
+        {
+            { "SchedulerJobs:TestJobException:CronSchedule", "*/10 * * * * *" },
+            { "SchedulerJobs:TestJobException:CronTimeZone", string.Empty },
+            { "SchedulerJobs:TestJobException:RunImmediately", "true" },
+        };
 
-            var name = typeof(TestJob).Name;
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(dic).Build();
 
-            service.AddChangeTokenOptions<SchedulerOptions>("SchedulerJobs:TestJobException", name, _ => { });
+        var service = new ServiceCollection();
 
-            service.AddLogging(builder =>
-            {
-                builder.AddConsole();
-                builder.AddDebug();
-                builder.AddXunit(_output, LogLevel.Debug);
-            });
+        service.AddSingleton<IConfiguration>(configuration);
 
-            service.AddSingleton<SchedulerRegistration>();
+        service.AddOptions();
 
-            var sp = service.BuildServiceProvider();
+        var name = typeof(TestJob).Name;
 
-            var instance = sp.GetService<SchedulerRegistration>();
+        service.AddChangeTokenOptions<SchedulerOptions>("SchedulerJobs:TestJobException", name, _ => { });
 
-            using var logFactory = TestLoggerBuilder.Create(builder =>
-            {
-                builder.AddConsole();
-                builder.AddDebug();
-                builder.AddXunit(_output, LogLevel.Debug);
-            });
+        service.AddLogging(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDebug();
+            builder.AddXunit(_output, LogLevel.Debug);
+        });
 
-            var job = new TestJob(logFactory.CreateLogger<TestJob>());
-            var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(name);
+        service.AddSingleton<SchedulerRegistration>();
 
-            instance.AddOrUpdate(job.GetType().Name, job, options);
+        var sp = service.BuildServiceProvider();
 
-            Assert.Equal(1, instance.Jobs.Count);
+        var instance = sp.GetService<SchedulerRegistration>();
 
-            configuration.Providers.ToList()[0].Set("SchedulerJobs:TestJobException:CronSchedule", "*/1 * * * * *");
-            configuration.Reload();
+        using var logFactory = TestLoggerBuilder.Create(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDebug();
+            builder.AddXunit(_output, LogLevel.Debug);
+        });
 
-            _output.WriteLine(instance.Jobs.ToArray()[0].Value.Schedule.ToString());
-        }
+        var job = new TestJob(logFactory.CreateLogger<TestJob>());
+        var options = sp.GetRequiredService<IOptionsMonitor<SchedulerOptions>>().Get(name);
+
+        instance!.AddOrUpdate(job.GetType().Name, job, options);
+
+        Assert.Equal(1, instance.Jobs.Count);
+
+        configuration.Providers.ToList()[0].Set("SchedulerJobs:TestJobException:CronSchedule", "*/1 * * * * *");
+        configuration.Reload();
+
+        _output.WriteLine(instance.Jobs.ToArray()[0].Value.Schedule.ToString());
     }
 }

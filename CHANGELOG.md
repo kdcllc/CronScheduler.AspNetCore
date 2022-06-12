@@ -2,7 +2,28 @@
 Change Log
 ===============================================================================
 
+Version 3.1.0 (6/12/2022)
+
+* `SchedulerBuilder.UnobservedTaskExceptionHandler` marked as `Obsolete`;
+
+* Adds a function to create an event handler that handles unobserved task exceptions during the lifetime of the CRON job. Thanks to @stijnmoreels
+
+```csharp
+    builder.AddUnobservedTaskExceptionHandler(sp =>
+    {
+        var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
+
+        return
+            (sender, args) =>
+            {
+                logger?.LogError(args.Exception?.Message);
+                args.SetObserved();
+            };
+    });
+```
+
 Version 3.0.1
+
 * Fixed issue with Scheduled jobs that are added on the fly to the execution engine issue #43
 * Upgraded to the latest nuget packages
 
@@ -30,6 +51,7 @@ Version 1.0.9 (2019-02-18)
 * Removed `HostedServiceBase` class in favor of built-in `BackgroundService` class.
 
 Version 1.0.7 (2018-01-16)
+
 * Resolved issue #5 "Add support for SourceLink", to make use of this feature in Visual Studio.NET please deselect `Enable Just My Code` and select `Enable Source Link support` as shown per this image:
 ![enable](img/source_link_enable.JPG)
 

@@ -1,84 +1,67 @@
 <Project>
 
-  <PropertyGroup>
-    <AspNetCoreVersion>2.1.1</AspNetCoreVersion>
-    <ExtensionsVersion>2.1.1</ExtensionsVersion>
-    <EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
-    <BetCommon>3.1.11</BetCommon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<AspNetCoreVersion>[6.*, )</AspNetCoreVersion>
+		<ExtensionsVersion>[6.*, )</ExtensionsVersion>
+		<EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
+		<BetCommon>[4.*, )</BetCommon>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1' Or '$(TargetFramework)' == 'net5.0'">
-    <AspNetCoreVersion>5.0.*</AspNetCoreVersion>
-    <ExtensionsVersion>5.0.*</ExtensionsVersion>
-    <EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
-  </PropertyGroup>
+	<ItemGroup Label="CronScheduler">
+		<PackageReference Update="Cronos" Version="0.7.1" />
+		<PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
+		<PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="[1.*, )" />
+	</ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1' Or '$(TargetFramework)' == 'netstandard2.0'">
-    <AspNetCoreVersion>2.1.1</AspNetCoreVersion>
-    <ExtensionsVersion>2.1.1</ExtensionsVersion>
-    <EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
-  </PropertyGroup>
+	<ItemGroup Label="Websiste">
+		<PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(AspNetCoreVersion)"/>
+	</ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
-    <AspNetCoreVersion>[2.2.*, )</AspNetCoreVersion>
-    <EFCommonVersion>[2.2.*, )</EFCommonVersion>
-    <ExtensionsVersion>[2.2.*, )</ExtensionsVersion>
-  </PropertyGroup>
+	<ItemGroup Label="EF">
+		<PackageReference Update="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(EFCommonVersion)" />
+		<PackageReference Update="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(EFCommonVersion)" />
+		<PackageReference Update="Microsoft.AspNetCore.Identity.UI" Version="$(EFCommonVersion)" />
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' Or '$(TargetFramework)' == 'netcoreapp3.0' Or '$(TargetFramework)' == 'netstandard2.1'">
-    <AspNetCoreVersion>3.1.10</AspNetCoreVersion>
-    <ExtensionsVersion>3.1.10</ExtensionsVersion>
-    <EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
-  </PropertyGroup>
+		<PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCommonVersion)" />
+		<PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCommonVersion)" />
+		<PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCommonVersion)" />
+		<PackageReference Update="Microsoft.EntityFrameworkCore.Tools" Version="$(EFCommonVersion)"/>
+	</ItemGroup>
 
-  <ItemGroup Label="CronScheduler">
-    <PackageReference Update="Cronos" Version="0.7.0" />
-    <PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
-    <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
-    <PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
-  </ItemGroup>
+	<ItemGroup Label="Worker">
+		<PackageReference Update="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
+	</ItemGroup>
 
-  <ItemGroup Label="Websiste">
-    <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(ExtensionsVersion)" />
-    <PackageReference Update="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(AspNetCoreVersion)"/>
-  </ItemGroup>
+	<ItemGroup Label="Unit Tests">
+		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.*" />
+		<PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+		<PackageReference Update="Moq" Version="4.*" />
+		<PackageReference Update="xunit" Version="2.*" />
+		<PackageReference Update="xunit.runner.visualstudio" Version="2.*"  PrivateAssets="All" />
+	</ItemGroup>
 
-  <ItemGroup Label="EF">
-    <PackageReference Update="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(EFCommonVersion)" />
-    <PackageReference Update="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(EFCommonVersion)" />
-    <PackageReference Update="Microsoft.AspNetCore.Identity.UI" Version="$(EFCommonVersion)" />
+	<ItemGroup Label="Bet">
+		<PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
+		<PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
+	</ItemGroup>
 
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCommonVersion)" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCommonVersion)" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCommonVersion)" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Tools" Version="$(EFCommonVersion)"/>
-  </ItemGroup>
+	<ItemGroup Label="SourceLink">
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
+		<PackageReference Include="Bet.CodeAnalyzers" Version="1.0.12" PrivateAssets="All" />
+	</ItemGroup>
 
-  <ItemGroup Label="Worker">
-    <PackageReference Update="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="../../img/icon.png" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
 
-  <ItemGroup Label="Unit Tests">
-    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
-    <PackageReference Update="Moq" Version="4.15.2" />
-    <PackageReference Update="xunit" Version="2.4.1" />
-    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.3"  PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup Label="Bet">
-    <PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
-    <PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
-  </ItemGroup>
-
-  <ItemGroup Label="SourceLink">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.10" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="../../img/icon.png" Pack="true" Visible="false" PackagePath="" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="../../README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>

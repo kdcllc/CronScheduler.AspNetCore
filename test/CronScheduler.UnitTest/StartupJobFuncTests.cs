@@ -8,57 +8,56 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Xunit;
 
-namespace CronScheduler.UnitTest
+namespace CronScheduler.UnitTest;
+
+public class StartupJobFuncTests
 {
-    public class StartupJobFuncTests
+    [Fact]
+    public async Task RunJobs()
     {
-        [Fact]
-        public async Task RunJobs()
+        var cts = new CancellationTokenSource();
+
+        var builder = WebHost.CreateDefaultBuilder()
+           .UseStartup<TestStartup>()
+           .ConfigureServices(services =>
+           {
+               services.AddLogging();
+               services.AddStartupJob<TestStartupJob>();
+           })
+           .UseDefaultServiceProvider(options => options.ValidateScopes = false);
+
+        var host = builder.Build();
+
+        using (host)
         {
-            var cts = new CancellationTokenSource();
+            await host.RunStartupJobsAync(cts.Token);
 
-            var builder = WebHost.CreateDefaultBuilder()
-               .UseStartup<TestStartup>()
-               .ConfigureServices(services =>
-               {
-                   services.AddLogging();
-                   services.AddStartupJob<TestStartupJob>();
-               })
-               .UseDefaultServiceProvider(options => options.ValidateScopes = false);
+            cts.Cancel();
 
-            var host = builder.Build();
-
-            using (host)
-            {
-                await host.RunStartupJobsAync(cts.Token);
-
-                cts.Cancel();
-
-                await host.WaitForShutdownAsync(cts.Token);
-            }
-
-            cts.Dispose();
+            await host.WaitForShutdownAsync(cts.Token);
         }
 
-        [Fact]
-        public async Task RunDelegate()
-        {
-            async Task CompletedTask() => await Task.CompletedTask;
+        cts.Dispose();
+    }
 
-            var host = CreateHost(services => services.AddStartupJobInitializer(CompletedTask));
+    [Fact]
+    public async Task RunDelegate()
+    {
+        async Task CompletedTask() => await Task.CompletedTask;
 
-            await host.RunStartupJobsAync();
+        var host = CreateHost(services => services.AddStartupJobInitializer(CompletedTask));
 
-            host.Dispose();
-        }
+        await host.RunStartupJobsAync();
 
-        private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false)
-        {
-            return new WebHostBuilder()
-                    .UseStartup<TestStartup>()
-                    .ConfigureServices(configureServices)
-                    .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes)
-                    .Build();
-        }
+        host.Dispose();
+    }
+
+    private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false)
+    {
+        return new WebHostBuilder()
+                .UseStartup<TestStartup>()
+                .ConfigureServices(configureServices)
+                .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes)
+                .Build();
     }
 }

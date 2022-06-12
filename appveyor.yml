@@ -4,10 +4,10 @@ branches:
       - master
 pull_requests:
   do_not_increment_build_number: true
-image: Visual Studio 2017
-## temporary until 5.0.100 sdk is installed
+image: Visual Studio 2022
+## temporary until 6.0.300 sdk is installed
 install:
-  - ps: $urlCurrent = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/5.0.100/dotnet-sdk-5.0.100-win-x64.zip"
+  - ps: $urlCurrent = "https://dotnetcli.blob.core.windows.net/dotnet/Sdk/6.0.300/dotnet-sdk-6.0.300-win-x64.zip"
   - ps: $env:DOTNET_INSTALL_DIR = "$pwd\.dotnetsdk"
   - ps: mkdir $env:DOTNET_INSTALL_DIR -Force | Out-Null
   - ps: $tempFileCurrent = [System.IO.Path]::GetTempFileName()
@@ -33,6 +33,6 @@ deploy:
 - provider: NuGet
   artifact: /NuGet/
   api_key:
-    secure: hs4f+3xdpI1ANqvOB7J9BZx+aBdbZYzHmoYymDFA7YCt5AWLJSdNyv2nkrBn1V9q
+    secure: a8sCawSwgb2kYDJAN+xTUvy+MH5jdJR+DmKakUmc/Xom1c+uxyvV+yvpSTJs+ypF
   on:
     branch: master

@@ -15,64 +15,63 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace CronScheduler.UnitTest
+namespace CronScheduler.UnitTest;
+
+public class SchedulerRegistrationTests
 {
-    public class SchedulerRegistrationTests
+    private ITestOutputHelper _output;
+
+    public SchedulerRegistrationTests(ITestOutputHelper output)
     {
-        private ITestOutputHelper _output;
+        _output = output ?? throw new ArgumentNullException(nameof(output));
+    }
 
-        public SchedulerRegistrationTests(ITestOutputHelper output)
+    [Fact]
+    public async Task Successfully_Register_Two_Jobs_With_The_Same_Type()
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+
+        var services = new ServiceCollection();
+
+        services.AddSingleton<IConfiguration>(configuration);
+
+        services.AddLogging(builder =>
         {
-            _output = output ?? throw new ArgumentNullException(nameof(output));
-        }
+            builder.AddDebug();
+            builder.AddXunit(_output, LogLevel.Debug);
+        });
 
-        [Fact]
-        public async Task Successfully_Register_Two_Jobs_With_The_Same_Type()
+        services.AddScheduler();
+        services.AddHostedService<SchedulerHostedService>();
+
+        var sp = services.BuildServiceProvider();
+        var schedulerRegistration = sp.GetRequiredService<ISchedulerRegistration>();
+        var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+
+        var options1 = new CustomTestJobOptions
         {
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+            JobName = "Job1",
+            CronSchedule = "0/2 * * * * *",
+            RunImmediately = false,
+            DisplayText = "Every 2 seconds."
+        };
 
-            var services = new ServiceCollection();
+        var options2 = new CustomTestJobOptions
+        {
+            JobName = "Job2",
+            CronSchedule = "0/4 * * * * *",
+            RunImmediately = false,
+            DisplayText = "Every 4 seconds."
+        };
 
-            services.AddSingleton<IConfiguration>(configuration);
+        schedulerRegistration.AddOrUpdate(new CustomTestJob(options1, loggerFactory.CreateLogger<CustomTestJob>()), options1);
+        schedulerRegistration.AddOrUpdate(new CustomTestJob(options2, loggerFactory.CreateLogger<CustomTestJob>()), options2);
 
-            services.AddLogging(builder =>
-            {
-                builder.AddDebug();
-                builder.AddXunit(_output, LogLevel.Debug);
-            });
+        var backgroundService = sp.GetService<IHostedService>() as SchedulerHostedService;
+        await backgroundService!.StartAsync(CancellationToken.None);
 
-            services.AddScheduler();
-            services.AddHostedService<SchedulerHostedService>();
+        await Task.Delay(TimeSpan.FromSeconds(15));
 
-            var sp = services.BuildServiceProvider();
-            var schedulerRegistration = sp.GetRequiredService<ISchedulerRegistration>();
-            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
-
-            var options1 = new CustomTestJobOptions
-            {
-                JobName = "Job1",
-                CronSchedule = "0/2 * * * * *",
-                RunImmediately = false,
-                DisplayText = "Every 2 seconds."
-            };
-
-            var options2 = new CustomTestJobOptions
-            {
-                JobName = "Job2",
-                CronSchedule = "0/4 * * * * *",
-                RunImmediately = false,
-                DisplayText = "Every 4 seconds."
-            };
-
-            schedulerRegistration.AddOrUpdate(new CustomTestJob(options1, loggerFactory.CreateLogger<CustomTestJob>()), options1);
-            schedulerRegistration.AddOrUpdate(new CustomTestJob(options2, loggerFactory.CreateLogger<CustomTestJob>()), options2);
-
-            var backgroundService = sp.GetService<IHostedService>() as SchedulerHostedService;
-            await backgroundService.StartAsync(CancellationToken.None);
-
-            await Task.Delay(TimeSpan.FromSeconds(15));
-
-            await backgroundService.StopAsync(CancellationToken.None);
-        }
+        await backgroundService.StopAsync(CancellationToken.None);
     }
 }
