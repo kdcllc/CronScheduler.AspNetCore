@@ -1,41 +1,46 @@
-using System;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-namespace CronSchedulerWorker
+namespace CronSchedulerWorker;
+
+public sealed class Program
 {
-    public sealed class Program
+    public static async Task Main(string[] args)
     {
-        public static async Task Main(string[] args)
+        var host = CreateHostBuilder(args).Build();
+
+        await host.RunStartupJobsAync();
+
+        await host.RunAsync();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+        .ConfigureServices(services =>
         {
-            var host = CreateHostBuilder(args).Build();
+            services.AddStartupJob<TestStartupJob>();
 
-            await host.RunStartupJobsAync();
-
-            await host.RunAsync();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            return Host.CreateDefaultBuilder(args)
-            .ConfigureServices(services =>
+            services.AddScheduler(builder =>
             {
-                services.AddStartupJob<TestStartupJob>();
+                builder.AddJob<TestJob, TestJobOptions>();
 
-                services.AddScheduler(builder =>
+                // register a custom error processing for internal errors
+                builder.AddUnobservedTaskExceptionHandler(sp =>
                 {
-                    builder.AddJob<TestJob, TestJobOptions>();
-                    builder.UnobservedTaskExceptionHandler = UnobservedHandler;
+                    var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
+
+                    return
+                        (sender, args) =>
+                        {
+                            logger?.LogError(args.Exception?.Message);
+                            args.SetObserved();
+                        };
                 });
             });
-        }
-
-        private static void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs e)
-        {
-            Console.WriteLine(e.Exception?.GetBaseException());
-            e.SetObserved();
-        }
+        });
     }
 }

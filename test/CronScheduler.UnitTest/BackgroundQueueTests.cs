@@ -5,32 +5,31 @@ using CronScheduler.Extensions.BackgroundTask;
 
 using Xunit;
 
-namespace CronScheduler.UnitTest
+namespace CronScheduler.UnitTest;
+
+public class BackgroundQueueTests
 {
-    public class BackgroundQueueTests
+    [Fact]
+    public async Task Dequeue_With_Successful_WorkItemName()
     {
-        [Fact]
-        public async Task Dequeue_With_Successful_WorkItemName()
+        var workItemName = "TestItem";
+        var context = new BackgroundTaskContext();
+
+        var service = new BackgroundTaskQueue(context);
+
+        service.QueueBackgroundWorkItem(
+        async token =>
         {
-            var workItemName = "TestItem";
-            var context = new BackgroundTaskContext();
+            await Task.CompletedTask;
+        },
+        workItemName);
 
-            var service = new BackgroundTaskQueue(context);
+        var task = await service.DequeueAsync(CancellationToken.None);
 
-            service.QueueBackgroundWorkItem(
-            async token =>
-            {
-                await Task.CompletedTask;
-            },
-            workItemName);
+        await task.workItem(CancellationToken.None);
 
-            var task = await service.DequeueAsync(CancellationToken.None);
+        Assert.Equal(workItemName, task.workItemName);
 
-            await task.workItem(CancellationToken.None);
-
-            Assert.Equal(workItemName, task.workItemName);
-
-            service.Dispose();
-        }
+        service.Dispose();
     }
 }

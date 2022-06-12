@@ -6,60 +6,59 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-namespace CronScheduler.Extensions.StartupInitializer
+namespace CronScheduler.Extensions.StartupInitializer;
+
+public class StartupJobInitializer
 {
-    public class StartupJobInitializer
+    private readonly ILogger<StartupJobInitializer> _logger;
+    private readonly IEnumerable<IStartupJob> _startupJobs;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StartupJobInitializer"/> class.
+    /// </summary>
+    /// <param name="startupJobs"></param>
+    /// <param name="loggerFactory"></param>
+    public StartupJobInitializer(IEnumerable<IStartupJob> startupJobs, ILoggerFactory loggerFactory)
     {
-        private readonly ILogger<StartupJobInitializer> _logger;
-        private readonly IEnumerable<IStartupJob> _startupJobs;
+        _logger = loggerFactory.CreateLogger<StartupJobInitializer>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StartupJobInitializer"/> class.
-        /// </summary>
-        /// <param name="startupJobs"></param>
-        /// <param name="loggerFactory"></param>
-        public StartupJobInitializer(IEnumerable<IStartupJob> startupJobs, ILoggerFactory loggerFactory)
+        _startupJobs = startupJobs;
+    }
+
+    /// <summary>
+    /// Starts jobs for all of the registered <see cref="IStartupJob"/> instances.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task StartJobsAsync(CancellationToken cancellationToken)
+    {
+        try
         {
-            _logger = loggerFactory.CreateLogger<StartupJobInitializer>();
+            var jobCount = _startupJobs.ToList().Count;
 
-            _startupJobs = startupJobs;
-        }
+            _logger.LogInformation("{name} start queuing {count} jobs", nameof(StartupJobInitializer), jobCount);
 
-        /// <summary>
-        /// Starts jobs for all of the registered <see cref="IStartupJob"/> instances.
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public async Task StartJobsAsync(CancellationToken cancellationToken)
-        {
-            try
+            foreach (var job in _startupJobs)
             {
-                var jobCount = _startupJobs.ToList().Count;
+                cancellationToken.ThrowIfCancellationRequested();
 
-                _logger.LogInformation("{name} start queuing {count} jobs", nameof(StartupJobInitializer), jobCount);
-
-                foreach (var job in _startupJobs)
+                try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    try
-                    {
-                        await job.ExecuteAsync(cancellationToken);
-                        _logger.LogInformation("{jobName} completed", job.GetType());
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError("{jobName} failed with the following message {message}", job.GetType(), ex.Message);
-                    }
+                    await job.ExecuteAsync(cancellationToken);
+                    _logger.LogInformation("{jobName} completed", job.GetType());
                 }
+                catch (Exception ex)
+                {
+                    _logger.LogError("{jobName} failed with the following message {message}", job.GetType(), ex.Message);
+                }
+            }
 
-                _logger.LogInformation("{name} completed queuing {count} jobs", nameof(StartupJobInitializer), jobCount);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("{name} initialization failed with {ex}", nameof(StartupJobInitializer), ex.Message);
-                throw;
-            }
+            _logger.LogInformation("{name} completed queuing {count} jobs", nameof(StartupJobInitializer), jobCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("{name} initialization failed with {ex}", nameof(StartupJobInitializer), ex.Message);
+            throw;
         }
     }
 }

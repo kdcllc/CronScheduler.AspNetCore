@@ -1,9 +1,8 @@
 ﻿using CronScheduler.Extensions.Scheduler;
 
-namespace CronSchedulerApp.Jobs
+namespace CronSchedulerApp.Jobs;
+
+public class UserJobOptions : SchedulerOptions
 {
-    public class UserJobOptions : SchedulerOptions
-    {
-        public string ClaimName { get; set; } = string.Empty;
-    }
+    public string ClaimName { get; set; } = string.Empty;
 }

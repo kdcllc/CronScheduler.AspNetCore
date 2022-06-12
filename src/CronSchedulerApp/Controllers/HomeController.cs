@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using CronScheduler.Extensions.BackgroundTask;
 using CronScheduler.Extensions.Scheduler;
+
 using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Models;
 using CronSchedulerApp.Services;
@@ -78,6 +79,8 @@ namespace CronSchedulerApp.Controllers
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
+            ViewData["winTimeZone"] = TimeZoneInfo.FindSystemTimeZoneById("AUS Eastern Standard Time");
+            ViewData["linuxTimeZone"] = TimeZoneInfo.FindSystemTimeZoneById("Australia/Sydney");
 
             return View();
         }

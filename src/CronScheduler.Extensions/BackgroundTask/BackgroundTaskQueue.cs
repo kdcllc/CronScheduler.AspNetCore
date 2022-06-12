@@ -3,68 +3,67 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CronScheduler.Extensions.BackgroundTask
+namespace CronScheduler.Extensions.BackgroundTask;
+
+public class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
 {
-    public class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
+    private readonly ConcurrentQueue<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onExeption)>
+                _workItems = new ConcurrentQueue<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>();
+
+    private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
+    private readonly BackgroundTaskContext _context;
+
+    public BackgroundTaskQueue(BackgroundTaskContext context)
     {
-        private readonly ConcurrentQueue<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onExeption)>
-                    _workItems = new ConcurrentQueue<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>();
+        _context = context;
+    }
 
-        private readonly SemaphoreSlim _signal = new SemaphoreSlim(0);
-        private readonly BackgroundTaskContext _context;
+    /// <inheritdoc/>
+    public async Task<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>
+        DequeueAsync(CancellationToken cancellationToken)
+    {
+        await _signal.WaitAsync(cancellationToken);
+        _workItems.TryDequeue(out var workItem);
+        return workItem;
+    }
 
-        public BackgroundTaskQueue(BackgroundTaskContext context)
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    public void QueueBackgroundWorkItem(
+        Func<CancellationToken, Task> workItem,
+        string workItemName,
+        Action<Exception> onException)
+    {
+        if (workItem == null)
         {
-            _context = context;
+            throw new ArgumentNullException(nameof(workItem));
         }
 
-        /// <inheritdoc/>
-        public async Task<(Func<CancellationToken, Task> workItem, string workItemName, Action<Exception> onException)>
-            DequeueAsync(CancellationToken cancellationToken)
-        {
-            await _signal.WaitAsync(cancellationToken);
-            _workItems.TryDequeue(out var workItem);
-            return workItem;
-        }
+        _workItems.Enqueue((workItem, workItemName, onException));
+        _signal.Release();
+        _context.RegisterTask();
+    }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, Action<Exception> onException)
+    {
+        QueueBackgroundWorkItem(workItem, string.Empty, onException);
+    }
 
-        /// <inheritdoc/>
-        public void QueueBackgroundWorkItem(
-            Func<CancellationToken, Task> workItem,
-            string workItemName,
-            Action<Exception> onException)
-        {
-            if (workItem == null)
-            {
-                throw new ArgumentNullException(nameof(workItem));
-            }
+    public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, string workItemName = "")
+    {
+        QueueBackgroundWorkItem(workItem, workItemName, (x) => { });
+    }
 
-            _workItems.Enqueue((workItem, workItemName, onException));
-            _signal.Release();
-            _context.RegisterTask();
-        }
-
-        public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, Action<Exception> onException)
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            QueueBackgroundWorkItem(workItem, string.Empty, onException);
-        }
-
-        public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem, string workItemName = "")
-        {
-            QueueBackgroundWorkItem(workItem, workItemName, (x) => { });
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _signal?.Dispose();
-            }
+            _signal?.Dispose();
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using CronSchedulerApp.Data;
+﻿using CronSchedulerApp.Data;
 using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Services;
 
@@ -16,113 +14,110 @@ using Microsoft.Extensions.Logging;
 
 using Polly;
 
-namespace CronSchedulerApp
+namespace CronSchedulerApp;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        private ILogger<Startup>? _logger;
+        Configuration = configuration;
+    }
 
-        public Startup(IConfiguration configuration)
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<CookiePolicyOptions>(options =>
         {
-            Configuration = configuration;
-        }
+            // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            options.CheckConsentNeeded = context => true;
+            options.MinimumSameSitePolicy = SameSiteMode.None;
+        });
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        services.AddDbContext<ApplicationDbContext>(options =>
         {
-            services.Configure<CookiePolicyOptions>(options =>
+            if (Configuration["DatabaseProvider:Type"] == "Sqlite")
             {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                if (Configuration["DatabaseProvider:Type"] == "Sqlite")
-                {
-                    options.UseSqlite(Configuration.GetConnectionString("SqliteConnection"));
-                }
-
-                if (Configuration["DatabaseProvider:Type"] == "SqlServer")
-                {
-                    options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
-                }
-            });
-
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            services.AddControllersWithViews();
-
-            services.AddRazorPages();
-
-            services.AddScheduler(builder =>
-            {
-                // 1. Add Torah Quote Service and Job.
-                builder.Services.AddSingleton<TorahVerses>();
-
-                // Build a policy that will handle exceptions, 408s, and 500s from the remote server
-                builder.Services
-                    .AddHttpClient<TorahService>()
-                    .AddTransientHttpErrorPolicy(p => p.RetryAsync());
-
-                builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
-
-                // 2. Add User Service and Job
-                builder.Services.AddScoped<UserService>();
-                builder.AddJob<UserJob, UserJobOptions>();
-
-                builder.UnobservedTaskExceptionHandler = UnobservedHandler;
-            });
-
-            // services.AddScheduler((sender, args) =>
-            // {
-            //    _logger.LogError(args.Exception.Message);
-            //    args.SetObserved();
-            // });
-            services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete: true);
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
-        {
-            _logger = loggerFactory.CreateLogger<Startup>();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
+                options.UseSqlite(Configuration.GetConnectionString("SqliteConnection"));
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-
-            app.UseAuthentication();
-
-            app.UseRouting();
-
-            // https://devblogs.microsoft.com/aspnet/blazor-now-in-official-preview/
-            app.UseEndpoints(routes =>
+            if (Configuration["DatabaseProvider:Type"] == "SqlServer")
             {
-                routes.MapControllers();
-                routes.MapDefaultControllerRoute();
-                routes.MapRazorPages();
+                options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
+            }
+        });
+
+        services.AddDefaultIdentity<IdentityUser>()
+            .AddEntityFrameworkStores<ApplicationDbContext>();
+
+        services.AddControllersWithViews();
+
+        services.AddRazorPages();
+
+        services.AddScheduler(builder =>
+        {
+            // 1. Add Torah Quote Service and Job.
+            builder.Services.AddSingleton<TorahVerses>();
+
+            // Build a policy that will handle exceptions, 408s, and 500s from the remote server
+            builder.Services
+                .AddHttpClient<TorahService>()
+                .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+
+            builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
+
+            // 2. Add User Service and Job
+            builder.Services.AddScoped<UserService>();
+            builder.AddJob<UserJob, UserJobOptions>();
+
+            // register a custom error processing for internal errors
+            builder.AddUnobservedTaskExceptionHandler(sp =>
+            {
+                var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
+
+                return
+                    (sender, args) =>
+                    {
+                        logger?.LogError(args.Exception?.Message);
+                        args.SetObserved();
+                    };
             });
+        });
+
+        services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete: true);
+
+        services.AddDatabaseDeveloperPageExceptionFilter();
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.UseMigrationsEndPoint();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+            app.UseHsts();
         }
 
-        private void UnobservedHandler(object sender, UnobservedTaskExceptionEventArgs args)
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseCookiePolicy();
+
+        app.UseAuthentication();
+
+        app.UseRouting();
+
+        // https://devblogs.microsoft.com/aspnet/blazor-now-in-official-preview/
+        app.UseEndpoints(routes =>
         {
-            _logger?.LogError(args.Exception?.Message);
-            args.SetObserved();
-        }
+            routes.MapControllers();
+            routes.MapDefaultControllerRoute();
+            routes.MapRazorPages();
+        });
     }
 }

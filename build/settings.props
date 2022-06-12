@@ -1,12 +1,10 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>3.0.1-preview1</VersionPrefix>
+    <VersionPrefix>3.1.0-preview1</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
     <NoWarn>$(NoWarn);CS1591;NU1605;</NoWarn>
-    <TieredCompilation>true</TieredCompilation>
-    <AspNetCoreHostingModel>inprocess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,7 +26,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageLicense>https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/LICENSE</PackageLicense>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageTags>Cron, Quatz, HangFire, AspNetCore, DotNet, DotNetCore CronNET, Scheduler, Worker, Hosting, Kubernetes, Docker</PackageTags>
+    <PackageTags>CronScheduler.AspNetCore, CronScheduler.Extensions, Cron, Quatz, HangFire, AspNetCore, DotNet, DotNetCore CronNET, Scheduler, Worker, Hosting, Kubernetes, Docker</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
   </PropertyGroup>

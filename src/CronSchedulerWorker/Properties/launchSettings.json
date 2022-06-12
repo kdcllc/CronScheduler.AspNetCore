@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CronSchedulerWorker": {
+      "commandName": "Project"
+    },
+    "Docker (1)": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -4,15 +4,14 @@ using System.Threading.Tasks;
 
 using CronScheduler.Extensions.StartupInitializer;
 
-namespace CronScheduler.UnitTest
-{
-    public class TestStartupJob : IStartupJob
-    {
-        public async Task ExecuteAsync(CancellationToken cancellationToken = default)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(10));
+namespace CronScheduler.UnitTest;
 
-            await Task.CompletedTask;
-        }
+public class TestStartupJob : IStartupJob
+{
+    public async Task ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(10));
+
+        await Task.CompletedTask;
     }
 }

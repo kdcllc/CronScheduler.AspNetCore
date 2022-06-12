@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0;netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <Description>
-      The Cron based Scheduler for AspNetCore 2.x/3.x Applications in Kubernetes/Docker.
+      The Cron based Scheduler for AspNetCore 2.x/3.x/5.x/6.x Applications in Kubernetes/Docker.
       This is a lightweight alternative to Quarts Scheduler or HangFire.
     </Description>
   </PropertyGroup>
@@ -15,8 +15,9 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Hosting" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions"  Version="2.*"/>
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\CronScheduler.Extensions\CronScheduler.Extensions.csproj" />
   </ItemGroup>
