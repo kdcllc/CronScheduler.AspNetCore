@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<UserSecretsId>dotnet-CronScheduler-16DA7ECC-2C2F-42B2-943E-6F8486D62575</UserSecretsId>
 		<IsPackable>false</IsPackable>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
