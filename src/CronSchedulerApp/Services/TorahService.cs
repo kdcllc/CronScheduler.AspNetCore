@@ -50,7 +50,7 @@ public class TorahService
 
     /// <summary>
     /// Returns verses from the quotation.
-    ///  Utilizes QqueryHelpers: https://rehansaeed.com/asp-net-core-hidden-gem-queryhelpers/.
+    ///  Utilizes QueryHelpers: https://rehansaeed.com/asp-net-core-hidden-gem-queryhelpers/.
     /// </summary>
     /// <param name="exp"></param>
     /// <param name="cancellationToken"></param>

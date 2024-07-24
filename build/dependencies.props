@@ -1,8 +1,8 @@
 <Project>
 
 	<PropertyGroup>
-		<AspNetCoreVersion>[6.*, )</AspNetCoreVersion>
-		<ExtensionsVersion>[6.*, )</ExtensionsVersion>
+		<AspNetCoreVersion>[8.*, )</AspNetCoreVersion>
+		<ExtensionsVersion>[8.*, )</ExtensionsVersion>
 		<EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
 		<BetCommon>[4.*, )</BetCommon>
 	</PropertyGroup>

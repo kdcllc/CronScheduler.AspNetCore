@@ -1,6 +1,4 @@
 {
-    "dotnet-test-explorer.testProjectPath" : "test/**/*.csproj",
-
     "files.associations": {
         "Dockerfile*": "dockerfile"
     }
