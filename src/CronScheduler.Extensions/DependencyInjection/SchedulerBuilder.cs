@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using CronScheduler.Extensions.Scheduler;
@@ -178,14 +179,14 @@ namespace Microsoft.Extensions.DependencyInjection
             string name) where TJobOptions : SchedulerOptions, new()
         {
             // named options used within the job.
-            Services
-                .AddChangeTokenOptions<TJobOptions>(
-                $"{sectionName}:{name}",
-                name,
-                o =>
+            Services.AddOptions<TJobOptions>(name)
+                .Configure<IConfiguration>((options, configuration) =>
                 {
-                    configure?.Invoke(o);
-                    o.JobName = name;
+                    configure?.Invoke(options);
+                    options.JobName = name;
+                    // print all of the configurations
+                    // configuration.AsEnumerable().ToList().ForEach(c => Console.WriteLine($"{c.Key} : {c.Value}"));
+                    configuration.Bind($"{sectionName}:{name}", options);
                 });
 
             var so = new Action<SchedulerOptions, IServiceProvider>(

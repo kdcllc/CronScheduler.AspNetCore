@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ public sealed class Program
     {
         var host = CreateHostBuilder(args).Build();
 
-        await host.RunStartupJobsAync();
+        await host.RunStartupJobsAsync();
 
         await host.RunAsync();
     }
@@ -20,6 +21,7 @@ public sealed class Program
     public static IHostBuilder CreateHostBuilder(string[] args)
     {
         return Host.CreateDefaultBuilder(args)
+
         .ConfigureServices(services =>
         {
             services.AddStartupJob<TestStartupJob>();

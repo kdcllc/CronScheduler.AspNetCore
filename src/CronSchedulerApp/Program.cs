@@ -21,7 +21,7 @@ public sealed class Program
         // var host = CreateWebHostBuilder(args).Build();
         var host = CreateHostBuilder(args).Build();
 
-        await host.RunStartupJobsAync();
+        await host.RunStartupJobsAsync();
 
         await host.RunAsync();
     }
