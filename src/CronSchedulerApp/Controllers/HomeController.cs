@@ -48,7 +48,7 @@ namespace CronSchedulerApp.Controllers
 
             _schedulerRegistration.AddOrUpdate(new TestJob(jobOptions, _loggerFactory.CreateLogger<TestJob>()), jobOptions);
 
-            if (_torahVerses.Current != null)
+            if (_torahVerses?.Current.Count > 0)
             {
                 var text = _torahVerses.Current.Select(x => x.Text).Aggregate((i, j) => i + Environment.NewLine + j);
                 var bookName = _torahVerses.Current.Select(x => x.Bookname).Distinct().FirstOrDefault();

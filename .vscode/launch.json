@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/CronSchedulerApp/bin/Debug/netcoreapp3.0/CronSchedulerApp.dll",
+            "program": "${workspaceFolder}/src/CronSchedulerApp/bin/Debug/net8.0/CronSchedulerApp.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/",
             "console": "internalConsole",
