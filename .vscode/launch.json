@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Worker Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/CronSchedulerWorker/CronSchedulerWorker.csproj"
+        },
+        {
             "name": ".NET Core Launch Web",
             "type": "coreclr",
             "request": "launch",
