@@ -28,7 +28,7 @@ jobs:
       run: dotnet tool install -g GitVersion.Tool
 
     - name: Use GitVersion
-      run: gitversion /output json /showvariable SemVer
+      run: dotnet gitversion /output json /showvariable SemVer
       id: gitversion
 
     - name: Build
