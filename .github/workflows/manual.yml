@@ -31,16 +31,21 @@ jobs:
       run: dotnet tool install -g GitVersion.Tool
 
     - name: Use GitVersion
-      run: dotnet-gitversion /output json /showvariable SemVer
       id: gitversion
+      run: |
+        semver=$(dotnet-gitversion /output json /showvariable SemVer)
+        echo "::set-output name=semver::$semver"
+
+    - name: Print SemVer
+      run: echo "The SemVer is ${{ steps.gitversion.outputs.semver }}"
 
     - name: Build
-      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ steps.gitversion.outputs.SemVer }}
+      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ steps.gitversion.outputs.semver }}
 
     - name: Test
       run: dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj --no-build --verbosity normal
 
     - name: Publish NuGet package
       run: |
-        dotnet pack CronScheduler.sln --configuration Release --no-build /p:PackageVersion=${{ steps.gitversion.outputs.SemVer }}
+        dotnet pack CronScheduler.sln --configuration Release --no-build /p:PackageVersion=${{ steps.gitversion.outputs.semver }}
         dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/kdcllc/index.json --api-key ${{ secrets.NUGET_GITHUB_API_KEY }}
