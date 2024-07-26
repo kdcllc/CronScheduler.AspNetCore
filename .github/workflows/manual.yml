@@ -33,8 +33,9 @@ jobs:
     - name: Use GitVersion
       id: gitversion
       run: |
-        semver=$(dotnet-gitversion /output json /showvariable SemVer)
-
+        semver=$(dotnet gitversion /output json /showvariable SemVer)
+        echo "::set-output name=semver::$semver"
+        
     - name: Print SemVer
       run: echo "The SemVer is ${{ steps.gitversion.outputs.semver }}"
 
