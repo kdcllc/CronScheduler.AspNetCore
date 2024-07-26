@@ -10,7 +10,9 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
 
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
@@ -24,8 +26,13 @@ jobs:
       run: dotnet tool install -g GitVersion.Tool
 
     - name: Use GitVersion
-      run: dotnet-gitversion /output json /showvariable SemVer
       id: gitversion
+      run: |
+        semver=$(dotnet-gitversion /output json /showvariable SemVer)
+        echo "::set-output name=semver::$semver"
+
+    - name: Print SemVer
+      run: echo "The SemVer is ${{ steps.gitversion.outputs.semver }}"
 
     - name: Build
       run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ steps.gitversion.outputs.SemVer }}
