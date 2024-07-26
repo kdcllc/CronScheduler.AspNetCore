@@ -19,6 +19,18 @@ jobs:
       with:
           fetch-depth: 0
 
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+
+    - name: Determine Version
+      id: version # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v3.0.0
+
+    - name: Print SemVer
+      run: echo "The SemVer is ${{ env.GitVersion_FullSemVer }}"
+      
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
       with:
@@ -26,17 +38,6 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore CronScheduler.sln
-
-    - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.0.0
-      with:
-        versionSpec: '6.x'
-
-    - name: Determine Version
-      uses: gittools/actions/gitversion/execute@v3.0.0
-
-    - name: Print SemVer
-      run: echo "The SemVer is ${{ env.GitVersion_FullSemVer }}"
 
     - name: Build
       run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_FullSemVer }}
