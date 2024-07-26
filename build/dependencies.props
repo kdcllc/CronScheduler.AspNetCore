@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Label="CronScheduler">
-		<PackageReference Update="Cronos" Version="0.7.1" />
+		<PackageReference Update="Cronos" Version="0.8.*" />
 		<PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />

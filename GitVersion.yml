@@ -17,6 +17,9 @@ branches:
     regex: ^chore[/-]
     label: beta
     increment: None
-
+  pull-request:
+    regex: ^(pull|pr)[/-]
+    label: alpha
+    increment: Inherit
 commit-message-incrementing: Enabled
 major-version-bump-message: '\\+semver:\\s?(breaking|major)'
