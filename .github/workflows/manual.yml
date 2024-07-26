@@ -46,7 +46,7 @@ jobs:
       run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_FullSemVer }}
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj
+      run: dotnet test
 
     - name: Publish NuGet package
       run: |
