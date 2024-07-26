@@ -28,14 +28,14 @@ jobs:
       run: dotnet restore CronScheduler.sln
 
     - name: Install GitVersion
-      run: dotnet tool install -g GitVersion.Tool
+      run: dotnet tool restore
 
     - name: Use GitVersion
       id: gitversion
       run: |
-        semver=$(dotnet gitversion /output json /showvariable SemVer)
+        semver=$(dotnet-gitversion /output json /showvariable SemVer)
         echo "::set-output name=semver::$semver"
-        
+
     - name: Print SemVer
       run: echo "The SemVer is ${{ steps.gitversion.outputs.semver }}"
 
