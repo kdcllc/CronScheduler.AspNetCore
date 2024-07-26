@@ -17,10 +17,8 @@ public static class StartupJobHostExtensions
     /// <returns></returns>
     public static async Task RunStartupJobsAsync(this IHost host, CancellationToken cancellationToken = default)
     {
-        using (var scope = host.Services.CreateScope())
-        {
-            var jobInitializer = scope.ServiceProvider.GetRequiredService<StartupJobInitializer>();
-            await jobInitializer.StartJobsAsync(cancellationToken);
-        }
+        using var scope = host.Services.CreateScope();
+        var jobInitializer = scope.ServiceProvider.GetRequiredService<StartupJobInitializer>();
+        await jobInitializer.StartJobsAsync(cancellationToken);
     }
 }

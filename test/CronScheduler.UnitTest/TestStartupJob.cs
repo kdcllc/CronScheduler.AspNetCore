@@ -10,7 +10,7 @@ public class TestStartupJob : IStartupJob
 {
     public async Task ExecuteAsync(CancellationToken cancellationToken = default)
     {
-        await Task.Delay(TimeSpan.FromSeconds(10));
+        await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
 
         await Task.CompletedTask;
     }

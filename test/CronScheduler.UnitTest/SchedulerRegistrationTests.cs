@@ -17,15 +17,8 @@ using Xunit.Abstractions;
 
 namespace CronScheduler.UnitTest;
 
-public class SchedulerRegistrationTests
+public class SchedulerRegistrationTests(ITestOutputHelper output)
 {
-    private ITestOutputHelper _output;
-
-    public SchedulerRegistrationTests(ITestOutputHelper output)
-    {
-        _output = output ?? throw new ArgumentNullException(nameof(output));
-    }
-
     [Fact]
     public async Task Successfully_Register_Two_Jobs_With_The_Same_Type()
     {
@@ -38,7 +31,7 @@ public class SchedulerRegistrationTests
         services.AddLogging(builder =>
         {
             builder.AddDebug();
-            builder.AddXunit(_output, LogLevel.Debug);
+            builder.AddXunit(output, LogLevel.Debug);
         });
 
         services.AddScheduler();

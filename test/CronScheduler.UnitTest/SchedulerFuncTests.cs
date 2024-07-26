@@ -24,15 +24,8 @@ using Range = Moq.Range;
 
 namespace CronScheduler.UnitTest;
 
-public class SchedulerFuncTests
+public class SchedulerFuncTests(ITestOutputHelper output)
 {
-    private readonly ITestOutputHelper _output;
-
-    public SchedulerFuncTests(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
     [Fact]
     public async Task Job_RunImmediately_Factory_Successfully()
     {
@@ -41,7 +34,7 @@ public class SchedulerFuncTests
         {
             builder.AddConsole();
             builder.AddDebug();
-            builder.AddXunit(_output, LogLevel.Debug);
+            builder.AddXunit(output, LogLevel.Debug);
         });
 
         var mockLoggerTestJob = new Mock<ILogger<TestJob>>();
@@ -79,7 +72,7 @@ public class SchedulerFuncTests
             It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(TestJob))),
             It.IsAny<Exception>(),
-            It.Is<Func<object, Exception, string>>((v, t) => true)),
+            It.Is<Func<object, Exception?, string>>((v, t) => true)),
             Times.Between(1, 3, Range.Inclusive));
     }
 
@@ -140,7 +133,7 @@ public class SchedulerFuncTests
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
-                It.Is<Func<object, Exception, string>>((v, t) => true)),
+                It.Is<Func<object, Exception?, string>>((v, t) => true)),
                 Times.Between(2, 6, Range.Inclusive));
     }
 
@@ -176,7 +169,7 @@ public class SchedulerFuncTests
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
-                It.Is<Func<object, Exception, string>>((v, t) => true)),
+                It.Is<Func<object, Exception?, string>>((v, t) => true)),
                 Times.Between(1, 2, Range.Inclusive));
     }
 
@@ -219,7 +212,7 @@ public class SchedulerFuncTests
             It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(TestJob))),
             It.IsAny<Exception>(),
-            It.Is<Func<object, Exception, string>>((v, t) => true)),
+            It.Is<Func<object, Exception?, string>>((v, t) => true)),
             Times.Between(1, 2, Range.Inclusive));
     }
 
@@ -270,7 +263,7 @@ public class SchedulerFuncTests
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(Exception))),
                     It.IsAny<Exception>(),
-                    It.Is<Func<object, Exception, string>>((v, t) => true)),
+                    It.Is<Func<object, Exception?, string>>((v, t) => true)),
             Times.Between(1, 2, Range.Inclusive));
     }
 
@@ -320,7 +313,7 @@ public class SchedulerFuncTests
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(Exception))),
                 It.IsAny<Exception>(),
-                It.Is<Func<object, Exception, string>>((v, t) => true)),
+                It.Is<Func<object, Exception?, string>>((v, t) => true)),
             Times.Between(1, 3, Range.Inclusive));
     }
 
@@ -355,7 +348,7 @@ public class SchedulerFuncTests
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(Exception))),
                 It.IsAny<Exception>(),
-                It.Is<Func<object, Exception, string>>((v, t) => true)),
+                It.Is<Func<object, Exception?, string>>((v, t) => true)),
             Times.Between(1, 4, Range.Inclusive));
     }
 
@@ -387,7 +380,7 @@ public class SchedulerFuncTests
             .ConfigureTestServices(services =>
             {
                 configServices(services);
-                services.AddLogging(x => x.AddXunit(_output));
+                services.AddLogging(x => x.AddXunit(output));
             })
             .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes);
     }

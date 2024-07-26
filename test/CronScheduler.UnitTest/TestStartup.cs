@@ -31,10 +31,7 @@ public class TestStartup
     {
         app.Map("/hc", route =>
         {
-            route.Run(async context =>
-            {
-                await context.Response.WriteAsync("healthy");
-            });
+            route.Run(async context => await context.Response.WriteAsync("healthy"));
         });
     }
 }

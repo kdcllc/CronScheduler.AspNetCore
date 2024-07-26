@@ -7,11 +7,13 @@
 
 *Note: Pre-release packages are distributed via [feedz.io](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json).*
 
+![I Stand With Israel](./img/IStandWithIsrael.png)
+
 ## Summary
 
 The goal of this library was to design a simple Cron Scheduling engine that could be used with DotNetCore `IHost` or with AspNetCore `IWebHost`.
 
-It is much lighter than Quartz schedular or its alternatives. The `KISS` principle was at the heart of the development of this library. 
+It is much lighter than Quartz schedular or its alternatives. The `KISS` principle was at the heart of the development of this library.
 
 The `CronScheduler` can operate inside of any .NET Core GenericHost `IHost` thus makes it simpler to setup and configure but it always allow to be run inside of Kubernetes.
 
@@ -308,4 +310,4 @@ Then add sample async task to be executed by the Queued Hosted Service.
 
 ## License
 
-[MIT License Copyright (c) 2017-2022 King David Consulting LLC](./LICENSE)
+[MIT License](./LICENSE)

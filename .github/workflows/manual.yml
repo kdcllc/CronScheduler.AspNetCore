@@ -31,8 +31,8 @@ jobs:
     - name: Print GitVersion_FullSemVer
       run: echo "The GitVersion_FullSemVer is ${{ env.GitVersion_FullSemVer }}"
 
-    - name: Print GitVersion_semVer
-      run: echo "The GitVersion_semVer is ${{ env.GitVersion_semVer }}"
+    - name: Print GitVersion_SemVer
+      run: echo "The GitVersion_SemVer is ${{ env.GitVersion_SemVer }}"
 
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1

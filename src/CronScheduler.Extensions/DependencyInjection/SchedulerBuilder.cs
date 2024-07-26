@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 using CronScheduler.Extensions.Scheduler;
@@ -11,7 +10,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public class SchedulerBuilder
     {
-
         [Obsolete("User AddUnobservedTaskExceptionHandler() instead")]
         public EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskExceptionHandler;
 
