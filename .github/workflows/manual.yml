@@ -28,9 +28,12 @@ jobs:
       id: version # step id used as reference for output values
       uses: gittools/actions/gitversion/execute@v3.0.0
 
-    - name: Print SemVer
-      run: echo "The SemVer is ${{ env.GitVersion_FullSemVer }}"
-      
+    - name: Print GitVersion_FullSemVer
+      run: echo "The GitVersion_FullSemVer is ${{ env.GitVersion_FullSemVer }}"
+
+    - name: Print GitVersion_semVer
+      run: echo "The GitVersion_semVer is ${{ env.GitVersion_semVer }}"
+
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
       with:
@@ -43,7 +46,7 @@ jobs:
       run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_FullSemVer }}
 
     - name: Test
-      run: dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj
 
     - name: Publish NuGet package
       run: |
