@@ -305,3 +305,6 @@ dotnet_naming_rule.non_interface_types_must_be_pascal_case.style = pascal_case
 dotnet_naming_rule.interface_types_must_be_prefixed_with_i.severity = warning
 dotnet_naming_rule.interface_types_must_be_prefixed_with_i.symbols = interface_types
 dotnet_naming_rule.interface_types_must_be_prefixed_with_i.style = prefix_interface_interface_with_i
+
+# Default severity for analyzer diagnostics with category 'StyleCop.CSharp.SpacingRules'
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.SpacingRules.severity = none

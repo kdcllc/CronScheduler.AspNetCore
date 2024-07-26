@@ -4,7 +4,7 @@
     <VersionPrefix Condition="'$(Version)' == ''">3.1.0-preview1</VersionPrefix>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-    <NoWarn>$(NoWarn);CS1591;NU1605;</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;NU1605;NU5104;</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

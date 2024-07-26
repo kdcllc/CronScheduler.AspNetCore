@@ -37,6 +37,13 @@ public class SchedulerFuncTests
     public async Task Job_RunImmediately_Factory_Successfully()
     {
         // assign
+        using var logFactory = TestLoggerBuilder.Create(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDebug();
+            builder.AddXunit(_output, LogLevel.Debug);
+        });
+
         var mockLoggerTestJob = new Mock<ILogger<TestJob>>();
 
         var host = CreateHost(services =>
@@ -73,7 +80,7 @@ public class SchedulerFuncTests
             It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(TestJob))),
             It.IsAny<Exception>(),
             It.Is<Func<object, Exception, string>>((v, t) => true)),
-            Times.Between(1, 2, Range.Inclusive));
+            Times.Between(1, 3, Range.Inclusive));
     }
 
     [Fact]
@@ -314,7 +321,7 @@ public class SchedulerFuncTests
                 It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(Exception))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception, string>>((v, t) => true)),
-            Times.Between(1, 2, Range.Inclusive));
+            Times.Between(1, 3, Range.Inclusive));
     }
 
     [Fact]

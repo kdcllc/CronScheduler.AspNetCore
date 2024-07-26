@@ -5,8 +5,8 @@
 
   <PropertyGroup>
     <Description>
-      The Cron based Scheduler for AspNetCore 2.x/3.x/5.x/6.x Applications in Kubernetes/Docker.
-      This is a lightweight alternative to Quarts Scheduler or HangFire.
+      A lightweight Cron-based Scheduler for AspNetCore applications, designed for Kubernetes/Docker environments.
+      An efficient alternative to Quartz Scheduler and HangFire.
     </Description>
   </PropertyGroup>
 

@@ -26,7 +26,7 @@ public class UserService
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     }
 
-    public async Task<IdentityUser> GetUserByEmail(string email)
+    public async Task<IdentityUser?> GetUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email);
     }

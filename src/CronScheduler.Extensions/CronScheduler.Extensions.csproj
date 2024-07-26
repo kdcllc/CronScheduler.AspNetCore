@@ -5,8 +5,8 @@
 
 	<PropertyGroup>
 		<Description>
-			The Cron based Scheduler for DotNetCore 2.x/3.x/5.x/6.x Self-hosted Applications in Kubernetes/Docker or as WindowsService on Windows Machine.
-			This is a lightweight alternative to Quarts Scheduler or HangFire.
+			A powerful Cron-based Scheduler for .NET Core applications, optimized for Kubernetes/Docker and Windows Services.
+			A lightweight alternative to Quartz Scheduler and HangFire.
 		</Description>
 	</PropertyGroup>
 

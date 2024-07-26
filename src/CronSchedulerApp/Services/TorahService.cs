@@ -58,7 +58,7 @@ public class TorahService
     public async Task<IList<TorahVerses>> GetVersesAsync(string exp, CancellationToken cancellationToken)
     {
         // create query parameters
-        var args = new Dictionary<string, string>
+        var args = new Dictionary<string, string?>
         {
             { "type", "json" },
             { "passage", Uri.EscapeDataString(exp) }
