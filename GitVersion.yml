@@ -1,0 +1,21 @@
+mode: ContinuousDelivery
+branches:
+  main:
+    regex: ^main$
+    label: ''
+    increment: Patch
+    is-release-branch: true
+  feature:
+    regex: ^(feature|feat)[/-]
+    label: alpha
+    increment: Minor
+  bugfix:
+    regex: ^bugfix[/-]
+    label: alpha
+    increment: Patch
+  chore:
+    regex: ^chore[/-]
+    label: beta
+    increment: None
+commit-message-incrementing: Enabled
+major-version-bump-message: '\\+semver:\\s?(breaking|major)'

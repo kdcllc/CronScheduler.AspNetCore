@@ -35,12 +35,12 @@ jobs:
       run: echo "The SemVer is ${{ steps.gitversion.outputs.semver }}"
 
     - name: Build
-      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ steps.gitversion.outputs.SemVer }}
+      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ steps.gitversion.outputs.semver }}
 
     - name: Test
       run: dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj --no-build --verbosity normal
 
     - name: Publish NuGet package
       run: |
-        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ steps.gitversion.outputs.SemVer }}
+        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ steps.gitversion.outputs.semver }}
         dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
