@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,7 +34,6 @@ jobs:
       run: dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj --no-build --verbosity normal
 
     - name: Publish NuGet package
-      if: github.ref == 'refs/heads/master' && github.event_name == 'push'
       run: |
         dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ steps.gitversion.outputs.SemVer }}
         dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
