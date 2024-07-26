@@ -36,7 +36,6 @@ jobs:
       uses: gittools/actions/gitversion/execute@v3.0.0
       with:
         useConfigFile: true
-        configFilePath: 'GitVersion.yml'
 
     - name: Print SemVer
       run: echo "The SemVer is ${{ env.GitVersion_semVer }}"
