@@ -34,20 +34,17 @@ jobs:
 
     - name: Determine Version
       uses: gittools/actions/gitversion/execute@v3.0.0
-      with:
-        useConfigFile: true
-        configFilePath: '../../GitVersion.yml'
 
     - name: Print SemVer
-      run: echo "The SemVer is ${{ env.GitVersion_semVer }}"
+      run: echo "The SemVer is ${{ env.GitVersion_FullSemVer }}"
 
     - name: Build
-      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_semVer }}
+      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_FullSemVer }}
 
     - name: Test
       run: dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj --no-build --verbosity normal
 
     - name: Publish NuGet package
       run: |
-        dotnet pack CronScheduler.sln --configuration Release --no-build /p:PackageVersion=${{ env.GitVersion_semVer }}
+        dotnet pack CronScheduler.sln --configuration Release --no-build /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
         dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/kdcllc/index.json --api-key ${{ secrets.NUGET_GITHUB_API_KEY }}
