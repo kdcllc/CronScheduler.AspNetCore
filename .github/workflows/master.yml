@@ -24,11 +24,15 @@ jobs:
     - name: Install dependencies
       run: dotnet restore CronScheduler.sln
 
-    - name: Echo GitHub Run Number
-      run: echo ${{ github.run_number }}
+    - name: Install GitVersion
+      run: dotnet tool install -g GitVersion.Tool
+
+    - name: Use GitVersion
+      run: gitversion /output json /showvariable SemVer
+      id: gitversion
 
     - name: Build
-      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ github.run_number }}
+      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ steps.gitversion.outputs.SemVer }}
 
     - name: Test
       run: dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj --no-build --verbosity normal
@@ -36,5 +40,5 @@ jobs:
     - name: Publish NuGet package
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
       run: |
-        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ github.run_number }}
+        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ steps.gitversion.outputs.SemVer }}
         dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
