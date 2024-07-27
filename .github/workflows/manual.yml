@@ -50,5 +50,5 @@ jobs:
 
     - name: Publish NuGet package
       run: |
-        dotnet pack CronScheduler.sln --configuration Release --no-build /p:PackageVersion=${{ env.GitVersion_FullSemVer }}
-        dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/kdcllc/index.json --api-key ${{ secrets.NUGET_GITHUB_API_KEY }}
+        dotnet pack CronScheduler.sln --configuration Release --no-build /p:PackageVersion=${{ env.GitVersion_FullSemVer }} /p:Version=${{ env.GitVersion_FullSemVer }}
+        dotnet nuget push **/*.nupkg --source https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json  --api-key ${{ secrets.FEEDZ_API_KEY }}
