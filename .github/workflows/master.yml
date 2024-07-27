@@ -14,6 +14,17 @@ jobs:
       with:
           fetch-depth: 0
 
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+
+    - name: Determine Version
+      id: version # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v3.0.0
+
+    - name: Print GitVersion_SemVer
+      run: echo "The GitVersion_SemVer is ${{ env.GitVersion_SemVer }}"
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
       with:
@@ -22,25 +33,13 @@ jobs:
     - name: Install dependencies
       run: dotnet restore CronScheduler.sln
 
-    - name: Install GitVersion
-      run: dotnet tool install -g GitVersion.Tool
-
-    - name: Use GitVersion
-      id: gitversion
-      run: |
-        semver=$(dotnet-gitversion /output json /showvariable SemVer)
-        echo "::set-output name=semver::$semver"
-
-    - name: Print SemVer
-      run: echo "The SemVer is ${{ steps.gitversion.outputs.semver }}"
-
     - name: Build
-      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ steps.gitversion.outputs.semver }}
+      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_SemVer }}
 
     - name: Test
-      run: dotnet test test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj --no-build --verbosity normal
+      run: dotnet test
 
     - name: Publish NuGet package
       run: |
-        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ steps.gitversion.outputs.semver }}
-        dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ env.GitVersion_SemVer  }} /p:Version=${{ env.GitVersion_SemVer }}
+        dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
