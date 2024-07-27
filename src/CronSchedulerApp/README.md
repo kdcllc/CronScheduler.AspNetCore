@@ -1,6 +1,21 @@
 # CronSchedulerApp
 
+![master workflow](https://github.com/github/docs/actions/workflows/master.yml/badge.svg)
+[![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
+![Nuget](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore)
+[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/shield/CronScheduler.AspNetCore/latest)](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/packages/CronScheduler.AspNetCore/latest/download)
+
+*Note: Pre-release packages are distributed via [feedz.io](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json).*
+
 This ASP.NET Core web application demonstrates various scheduled jobs and how to use them. It includes examples of background tasks, startup jobs, and scheduled jobs using the CronScheduler library.
+
+![I Stand With Israel](../../img/IStandWithIsrael.png)
+
+[![buymeacoffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/vyve0og)
+
+## Give a Star! :star:
+
+If you like or are using this project to learn or start your solution, please give it a star. Thanks!
 
 ## Using Scheduled Jobs in ASP.NET Core Web Application
 
@@ -27,6 +42,7 @@ This job retrieves a random verse from the Torah and updates the current verses 
 ### Adding a Scheduled Job
 
 1. **Create a Job Class**: Implement the `IScheduledJob` interface in your job class. For example:
+
     ```csharp
     using System;
     using System.Threading;
@@ -55,6 +71,7 @@ This job retrieves a random verse from the Torah and updates the current verses 
     ```
 
 2. **Configure Job Options**: Create a class that inherits from `SchedulerOptions` to define job-specific options.
+
     ```csharp
     using CronScheduler.Extensions.Scheduler;
 
@@ -65,6 +82,7 @@ This job retrieves a random verse from the Torah and updates the current verses 
     ```
 
 3. **Register the Job**: In your `Program.cs` or `Startup.cs`, register the job and its options with the scheduler. Additionally, add a custom error processing for internal errors using an unobserved task exception handler.
+
     ```csharp
     services.AddScheduler(builder =>
     {
@@ -86,6 +104,7 @@ This job retrieves a random verse from the Torah and updates the current verses 
 ### Adding Jobs on the Fly
 
 Jobs can also be added on the fly and configured from a database class where the options are stored using the following syntax:
+
 ```csharp
 var jobOptions = await _dbContext.JobOptions.FindAsync("TestJob");
 _schedulerRegistration.AddOrUpdate(new TestJob(jobOptions, _loggerFactory.CreateLogger<TestJob>()), jobOptions);
@@ -123,7 +142,24 @@ Below are sample options for configuring the jobs in the `appsettings.json` file
 
 ### Running the Application
 
+#### Docker Container
+
+1. **Build the Docker Image**: Use the following command to build the Docker image.
+
+    ```bash
+    docker build --pull --rm -f "src/CronSchedulerApp/Dockerfile" -t cronscheduler:latest .
+    ```
+
+2. **Run the Docker Container**: Use the following command to run the Docker container.
+
+    ```bash
+    docker run --rm -d -p 4443:443/tcp -p 8080:80/tcp cronscheduler:latest
+    ```
+
+#### Run `dotnet`
+
 1. **Build and Run**: Build and run your application using the following commands. The scheduled jobs will be executed based on their configured schedules.
+
     ```bash
     # Navigate to the project directory
     cd src/CronSchedulerApp
@@ -134,5 +170,3 @@ Below are sample options for configuring the jobs in the `appsettings.json` file
     # Run the project
     dotnet run
     ```
-
-2. **Monitoring Jobs**: Use logging to monitor the execution of your jobs. Ensure that your logging configuration captures the necessary information to debug and track job execution.
