@@ -333,3 +333,4 @@ ASALocalRun/
 .mfractor/
 src/CronSchedulerApp/app.db-shm
 src/CronSchedulerApp/app.db-wal
+.aider*

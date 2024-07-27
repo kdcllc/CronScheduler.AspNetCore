@@ -1,72 +1,103 @@
-﻿using System;
-using System.Threading.Tasks;
-
+using CronSchedulerApp.Data;
+using CronSchedulerApp.Jobs;
 using CronSchedulerApp.Jobs.Startup;
-
-using Microsoft.AspNetCore;
+using CronSchedulerApp.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Polly;
 
-namespace CronSchedulerApp;
+#pragma warning disable SA1516 // ElementsMustBeSeparatedByBlankLine
+var builder = WebApplication.CreateBuilder(args);
 
-public sealed class Program
+// Add services to the container.
+builder.Services.Configure<CookiePolicyOptions>(options =>
 {
-    public static async Task Main(string[] args)
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    if (builder.Configuration["DatabaseProvider:Type"] == "Sqlite")
     {
-        // run async jobs before the IWebHost run
-        // AspNetCore 2.x syntax of the registration.
-        // var host = CreateWebHostBuilder(args).Build();
-        var host = CreateHostBuilder(args).Build();
-
-        await host.RunStartupJobsAsync();
-
-        await host.RunAsync();
+        options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
+    if (builder.Configuration["DatabaseProvider:Type"] == "SqlServer")
     {
-        return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-
-                    webBuilder.ConfigureServices(services =>
-                    {
-                        services.AddStartupJob<SeedDatabaseStartupJob>();
-                        services.AddStartupJob<TestStartupJob>();
-                    });
-                })
-                .ConfigureLogging((context, logger) =>
-                {
-                    logger.AddConsole();
-                    logger.AddDebug();
-                    logger.AddConfiguration(context.Configuration.GetSection("Logging"));
-                });
+        options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"));
     }
+});
 
-    /// <summary>
-    /// AspNetCore 2.x syntax of the registration.
-    /// </summary>
-    /// <param name="args"></param>
-    /// <returns></returns>
-    public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+builder.Services.AddDefaultIdentity<IdentityUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+builder.Services.AddScheduler(builder =>
+{
+    builder.Services.AddSingleton<TorahVerses>();
+    builder.Services
+        .AddHttpClient<TorahService>()
+        .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+
+    builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
+    builder.Services.AddScoped<UserService>();
+    builder.AddJob<UserJob, UserJobOptions>();
+
+    builder.AddUnobservedTaskExceptionHandler(sp =>
     {
-        return WebHost.CreateDefaultBuilder(args)
-                .ConfigureServices(services =>
-                {
-                    services.AddStartupJob<SeedDatabaseStartupJob>();
-                    services.AddStartupJob<TestStartupJob>();
-                })
-                .ConfigureLogging((context, logger) =>
-                {
-                    logger.AddConsole();
-                    logger.AddDebug();
-                    logger.AddConfiguration(context.Configuration.GetSection("Logging"));
-                })
-                .UseShutdownTimeout(TimeSpan.FromSeconds(10)) // default is 5 seconds.
-                .UseStartup<Startup>();
-    }
+        var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
+        return (sender, args) =>
+        {
+            logger?.LogError(args.Exception?.Message);
+            args.SetObserved();
+        };
+    });
+});
+
+builder.Services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete: true);
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddStartupJob<SeedDatabaseStartupJob>();
+builder.Services.AddStartupJob<TestStartupJob>();
+
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseRouting();
+
+app.MapControllers();
+app.MapDefaultControllerRoute();
+app.MapRazorPages();
+
+await app.RunStartupJobsAsync();
+await app.RunAsync();
+#pragma warning restore SA1516 // ElementsMustBeSeparatedByBlankLine
