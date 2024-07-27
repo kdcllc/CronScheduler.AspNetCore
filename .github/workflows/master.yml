@@ -23,8 +23,8 @@ jobs:
       id: version # step id used as reference for output values
       uses: gittools/actions/gitversion/execute@v3.0.0
 
-    - name: Print GitVersion_SemVer
-      run: echo "The GitVersion_SemVer is ${{ env.GitVersion_SemVer }}"
+    - name: Print GitVersion_MajorMinorPatch
+      run: echo "The GitVersion_MajorMinorPatch is ${{ env.GitVersion_MajorMinorPatch }}"
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
       with:
@@ -34,12 +34,12 @@ jobs:
       run: dotnet restore CronScheduler.sln
 
     - name: Build
-      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_SemVer }}
+      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_MajorMinorPatch }}
 
     - name: Test
       run: dotnet test
 
     - name: Publish NuGet package
       run: |
-        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ env.GitVersion_SemVer  }} /p:Version=${{ env.GitVersion_SemVer }}
+        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ env.GitVersion_MajorMinorPatch  }} /p:Version=${{ env.GitVersion_MajorMinorPatch }}
         dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

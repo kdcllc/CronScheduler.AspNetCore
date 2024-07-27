@@ -1,7 +1,7 @@
 mode: ContinuousDelivery
 branches:
   main:
-    regex: ^main$
+    regex: ^master$
     label: ''
     increment: Patch
     is-release-branch: true
@@ -17,6 +17,11 @@ branches:
     regex: ^chore[/-]
     label: beta
     increment: None
+    # Fallback configuration for any branch not matching the above patterns
+  other:
+    regex: .*
+    label: ''
+    increment: Patch
   pull-request:
     regex: ^(pull|pr)[/-]
     label: alpha
