@@ -41,5 +41,5 @@ jobs:
 
     - name: Publish NuGet package
       run: |
-        dotnet pack src/YourProject/YourProject.csproj --configuration Release --output ./nupkg /p:Version=${{ env.GitVersion_MajorMinorPatch  }} /p:Version=${{ env.GitVersion_MajorMinorPatch }}
+        dotnet pack CronScheduler.sln --configuration Release --no-build --output ./nupkg /p:Version=${{ env.GitVersion_MajorMinorPatch  }} /p:Version=${{ env.GitVersion_MajorMinorPatch }}
         dotnet nuget push ./nupkg/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

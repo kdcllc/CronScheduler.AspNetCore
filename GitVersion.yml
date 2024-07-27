@@ -17,14 +17,11 @@ branches:
     regex: ^chore[/-]
     label: beta
     increment: None
-    # Fallback configuration for any branch not matching the above patterns
-  other:
-    regex: .*
-    label: ''
-    increment: Patch
   pull-request:
     regex: ^(pull|pr)[/-]
     label: alpha
     increment: Inherit
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
 commit-message-incrementing: Enabled
-major-version-bump-message: '\\+semver:\\s?(breaking|major)'
