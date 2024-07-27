@@ -30,7 +30,7 @@ public class StartupJobFuncTests
 
         using (host)
         {
-            await host.RunStartupJobsAync(cts.Token);
+            await host.RunStartupJobsAsync(cts.Token);
 
             cts.Cancel();
 
@@ -47,7 +47,7 @@ public class StartupJobFuncTests
 
         var host = CreateHost(services => services.AddStartupJobInitializer(CompletedTask));
 
-        await host.RunStartupJobsAync();
+        await host.RunStartupJobsAsync();
 
         host.Dispose();
     }

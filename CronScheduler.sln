@@ -13,15 +13,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C00CEBF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CronSchedulerApp", "src\CronSchedulerApp\CronSchedulerApp.csproj", "{71B7EDED-F26D-4545-9E9B-1F6500AA589C}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CFB990F3-58B7-4C9A-AF62-CC13454162B2}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solutions Items", "Solutions Items", "{998E5783-A784-44C5-88BF-06884943BD6C}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
 		.env = .env
 		.gitignore = .gitignore
-		appveyor.yml = appveyor.yml
 		CHANGELOG.md = CHANGELOG.md
 		clean.sh = clean.sh
 		Directory.Build.props = Directory.Build.props

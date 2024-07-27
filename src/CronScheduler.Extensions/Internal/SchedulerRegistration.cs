@@ -33,10 +33,10 @@ internal class SchedulerRegistration : ISchedulerRegistration
 
         _optionsMonitor.OnChange((o, n) =>
         {
-            if (_jobs.TryGetValue(n, out var job)
-                && _wrappedJobs.ContainsKey(n))
+            if (!string.IsNullOrEmpty(n) && _jobs.TryGetValue(n!, out var job)
+                && _wrappedJobs.ContainsKey(n!))
             {
-                AddJob(n, job, o);
+                AddJob(n!, job, o);
             }
         });
     }

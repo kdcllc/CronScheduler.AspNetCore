@@ -4,6 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 *.db
+app.db
 
 # User-specific files
 *.suo
@@ -330,3 +331,6 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
+src/CronSchedulerApp/app.db-shm
+src/CronSchedulerApp/app.db-wal
+.aider*

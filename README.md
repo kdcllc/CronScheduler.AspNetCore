@@ -1,25 +1,43 @@
 # CronScheduler.AspNetCore
 
-[![Build status](https://ci.appveyor.com/api/projects/status/wrme1wr6kgjp3a0o?svg=true)](https://ci.appveyor.com/project/kdcllc/cronscheduler-aspnetcore)
+![master workflow](https://github.com/github/docs/actions/workflows/master.yml/badge.svg)
 [![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
 ![Nuget](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore)
 [![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/shield/CronScheduler.AspNetCore/latest)](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/packages/CronScheduler.AspNetCore/latest/download)
 
 *Note: Pre-release packages are distributed via [feedz.io](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json).*
 
+![I Stand With Israel](./img/IStandWithIsrael.png)
+
 ## Summary
 
-The goal of this library was to design a simple Cron Scheduling engine that could be used with DotNetCore `IHost` or with AspNetCore `IWebHost`.
+**Unlock the Power of Simplified Cron Scheduling in Your .NET Core Apps**
 
-It is much lighter than Quartz schedular or its alternatives. The `KISS` principle was at the heart of the development of this library. 
+Are you tired of complex scheduling libraries holding you back from building scalable and efficient applications? Look no further! Introducing **CronScheduler**, a lightweight and easy-to-use library designed specifically for .NET Core `IHost` or `IWebHost`.
 
-The `CronScheduler` can operate inside of any .NET Core GenericHost `IHost` thus makes it simpler to setup and configure but it always allow to be run inside of Kubernetes.
+Built with the KISS principle in mind, CronScheduler is a simplified alternative to Quartz Scheduler and its alternatives. With CronScheduler, you can easily schedule tasks using cron syntax and operate within any .NET Core GenericHost `IHost`, making setup and configuration a breeze.
 
-In addition `IStartupJob` was added to support async initialization of critical process before the `IHost` is ready to start.
+But that's not all! We've also introduced **IStartupJob**, allowing for async initialization of critical processes before the host is ready to start. This means you can ensure your application is properly initialized and running smoothly, even in complex Kubernetes environments.
 
-> 
+**Benefits:**
+
+* Lightweight and easy-to-use library
+* Simplified scheduling with cron syntax
+* Operates within .NET Core GenericHost `IHost` or `IWebHost`
+* Async initialization support for critical processes with IStartupJob
+
+**Join the CronScheduler community today and start simplifying your application's scheduling needs!**
+
+>
 > **Please refer to [Migration Guide](./Migration.md) for the upgrade.**
 >
+[![buymeacoffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/vyve0og)
+
+## Give a Star! :star:
+
+If you like or are using this project to learn or start your solution, please give it a star. Thanks!
+
+## Installation
 
 - Install package for `AspNetCore` hosting .NET CLI
 
@@ -39,6 +57,8 @@ This library supports up to 5 seconds job intervals in the Crontab format thank 
 
 You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
 
+### Cron format
+
 Cron expression is a mask to define fixed times, dates and intervals. The mask consists of second (optional), minute, hour, day-of-month, month and day-of-week fields. All of the fields allow you to specify multiple values, and any given date/time will satisfy the specified Cron expression, if all the fields contain a matching value.
 
                                            Allowed values    Allowed special characters   Comment
@@ -51,12 +71,6 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
     │ │ │ │ │ ┌───────────── day of week   0-6  or SUN-SAT   * , - / # L ?                Both 0 and 7 means SUN
     │ │ │ │ │ │
     * * * * * *
-
-[![buymeacoffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/vyve0og)
-
-## Give a Star! :star:
-
-If you like or are using this project to learn or start your solution, please give it a star. Thanks!
 
 ## Demo Applications
 
@@ -150,130 +164,93 @@ This job registration is assuming that the name of the job and options name are 
     }
 ```
 
-Then register this service within the `Startup.cs`
-The sample uses `Microsoft.Extensions.Http.Polly` extension library to make http calls every 10 seconds.
+Then register this service within the `Program.cs`:
 
 ```csharp
-    services.AddScheduler(builder =>
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddScheduler(builder =>
+{
+    builder.Services.AddSingleton<TorahVerses>();
+    builder.Services
+        .AddHttpClient<TorahService>()
+        .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+
+    builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
+    builder.Services.AddScoped<UserService>();
+    builder.AddJob<UserJob, UserJobOptions>();
+
+    builder.AddUnobservedTaskExceptionHandler(sp =>
     {
-        builder.Services.AddSingleton<TorahVerses>();
-
-        // Build a policy that will handle exceptions, 408s, and 500s from the remote server
-        builder.Services.AddHttpClient<TorahService>()
-            .AddTransientHttpErrorPolicy(p => p.RetryAsync());
-        builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
-        
-        // register a custom error processing for internal errors
-        builder.AddUnobservedTaskExceptionHandler(sp =>
+        var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
+        return (sender, args) =>
         {
-            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
-
-            return
-                (sender, args) =>
-                {
-                    logger?.LogError(args.Exception?.Message);
-                    args.SetObserved();
-                };
-        });
+            logger?.LogError(args.Exception?.Message);
+            args.SetObserved();
+        };
     });
+});
+
+builder.Services.AddBackgroundQueuedService(applicationOnStopWaitForTasksToComplete: true);
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddStartupJob<SeedDatabaseStartupJob>();
+builder.Services.AddStartupJob<TestStartupJob>();
+
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseRouting();
+
+app.MapControllers();
+app.MapDefaultControllerRoute();
+app.MapRazorPages();
+
+await app.RunStartupJobsAsync();
+await app.RunAsync();
 ```
 
-## Sample code for Scoped or Transient Schedule Job and its dependencies
-
-```csharp
-    public class UserJob : IScheduledJob
-    {
-        private readonly UserJobOptions _options;
-        private readonly IServiceProvider _provider;
-
-        public UserJob(
-            IServiceProvider provider,
-            IOptionsMonitor<UserJobOptions> options)
-        {
-            _options = options.Get(Name);
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-        }
-
-        public string Name { get; } = nameof(UserJob);
-
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-2.2&tabs=visual-studio#consuming-a-scoped-service-in-a-background-task
-            using var scope = _provider.CreateScope();
-            var userService = scope.ServiceProvider.GetRequiredService<UserService>();
-
-            var users = userService.GetUsers();
-
-            foreach (var user in users)
-            {
-                await userService.AddClaimAsync(user, new Claim(_options.ClaimName, DateTime.UtcNow.ToString()));
-            }
-        }
-    }
-```
-
-Then register this service within the `Startup.cs`
-
-```csharp
-        services.AddScheduler(builder =>
-        {
-            builder.Services.AddScoped<UserService>();
-            builder.AddJob<UserJob, UserJobOptions>();
-
-        // register a custom error processing for internal errors
-        builder.AddUnobservedTaskExceptionHandler(sp =>
-        {
-            var logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("CronJobs");
-
-            return
-                (sender, args) =>
-                {
-                    logger?.LogError(args.Exception?.Message);
-                    args.SetObserved();
-                };
-        });
-        });
-```
 
 ## `IStartupJobs` to assist with async jobs initialization before the application starts
 
-There are many case scenarios to use StartupJobs for the IWebHost interface or IGenericHost. Most common case scenario is to make sure that database is created and updated.
+There are many case scenarios to use StartupJobs for the `IWebHost` interface or `IGenericHost`. The most common case scenario is to make sure that the database is created and updated.
 This library makes it possible by simply doing the following:
 
-- In the Program.cs file add the following:
+- In the `Program.cs` file add the following:
 
 ```csharp
-        public static async Task Main(string[] args)
-        {
-            var host = CreateWebHostBuilder(args).Build();
+var builder = WebApplication.CreateBuilder(args);
 
-            // process any async jobs required to get the site up and running
-            await host.RunStartupJobsAync();
+// Add services to the container.
+builder.Services.AddStartupJob<SeedDatabaseStartupJob>();
+builder.Services.AddStartupJob<TestStartupJob>();
 
-            host.Run();
-        }
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+await app.RunStartupJobsAsync();
+await app.RunAsync();
 ```
-
-- Register the startup job in `Program.cs` or in `Startup.cs` file.
-
-```csharp
-public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-{
-    return WebHost.CreateDefaultBuilder(args)
-            .ConfigureServices(services =>
-            {
-                services.AddStartupJob<SeedDatabaseJob>();
-            })
-            .ConfigureLogging((context, logger) =>
-            {
-                logger.AddConsole();
-                logger.AddDebug();
-                logger.AddConfiguration(context.Configuration.GetSection("Logging"));
-            })
-            .UseStartup<Startup>();
-}
-```
-
 ## Background Queues
 
 In some instances of the application the need for queuing of the tasks is required. In order to enable this add the following in `Startup.cs`.
@@ -308,4 +285,4 @@ Then add sample async task to be executed by the Queued Hosted Service.
 
 ## License
 
-[MIT License Copyright (c) 2017-2022 King David Consulting LLC](./LICENSE)
+[MIT License](./LICENSE)

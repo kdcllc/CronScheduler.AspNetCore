@@ -5,20 +5,27 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Worker Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/src/CronSchedulerWorker/CronSchedulerWorker.csproj"
+        },
+        {
             "name": ".NET Core Launch Web",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/CronSchedulerApp/bin/Debug/netcoreapp3.0/CronSchedulerApp.dll",
+            "program": "${workspaceFolder}/src/CronSchedulerApp/bin/Debug/net8.0/CronSchedulerApp.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/",
+            "cwd": "${workspaceFolder}/src/CronSchedulerApp/",
             "console": "internalConsole",
             "stopAtEntry": false,
+            "justMyCode": true,
 
-            // "env": {
-            //     "ASPNETCORE_ENVIRONMENT": "Development",
-            //     "ASPNETCORE_URLS": "https://localhost:50001"
-            // },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "https://localhost:51440"
+            },
 
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"

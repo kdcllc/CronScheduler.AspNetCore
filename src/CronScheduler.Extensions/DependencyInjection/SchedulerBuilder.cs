@@ -10,13 +10,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public class SchedulerBuilder
     {
-#pragma warning disable CA1051 // Do not declare visible instance fields
-#pragma warning disable SA1401 // Fields should be private
-        [Obsolete("User AddUnobservedTaskExceptionHandler() instead")]
-        public EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskExceptionHandler;
-#pragma warning restore SA1401 // Fields should be private
-#pragma warning restore CA1051 // Do not declare visible instance fields
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SchedulerBuilder"/> class.
         /// </summary>
@@ -178,14 +171,15 @@ namespace Microsoft.Extensions.DependencyInjection
             string name) where TJobOptions : SchedulerOptions, new()
         {
             // named options used within the job.
-            Services
-                .AddChangeTokenOptions<TJobOptions>(
-                $"{sectionName}:{name}",
-                name,
-                o =>
+            Services.AddOptions<TJobOptions>(name)
+                .Configure<IConfiguration>((options, configuration) =>
                 {
-                    configure?.Invoke(o);
-                    o.JobName = name;
+                    configure?.Invoke(options);
+                    options.JobName = name;
+
+                    // print all of the configurations
+                    // configuration.AsEnumerable().ToList().ForEach(c => Console.WriteLine($"{c.Key} : {c.Value}"));
+                    configuration.Bind($"{sectionName}:{name}", options);
                 });
 
             var so = new Action<SchedulerOptions, IServiceProvider>(

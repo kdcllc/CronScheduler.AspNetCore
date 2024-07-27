@@ -2,6 +2,11 @@
 Change Log
 ===============================================================================
 
+Version 3.2.0 (07/26/2024)
+
+- removed obsolete methods
+- fixed RunStartupJobsAsync
+
 Version 3.1.0 (6/12/2022)
 
 * `SchedulerBuilder.UnobservedTaskExceptionHandler` marked as `Obsolete`;

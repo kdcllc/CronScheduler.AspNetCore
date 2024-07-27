@@ -18,10 +18,7 @@ public class BackgroundQueueTests
         var service = new BackgroundTaskQueue(context);
 
         service.QueueBackgroundWorkItem(
-        async token =>
-        {
-            await Task.CompletedTask;
-        },
+        async token => await Task.CompletedTask,
         workItemName);
 
         var task = await service.DequeueAsync(CancellationToken.None);

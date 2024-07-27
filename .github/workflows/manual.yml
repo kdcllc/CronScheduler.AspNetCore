@@ -1,0 +1,54 @@
+name: manual
+
+on:
+  pull_request:
+    branches:
+      - master
+      - feat/*
+      - feature/*
+      - release/*
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+          fetch-depth: 0
+
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3.0.0
+      with:
+        versionSpec: '6.x'
+
+    - name: Determine Version
+      id: version # step id used as reference for output values
+      uses: gittools/actions/gitversion/execute@v3.0.0
+
+    - name: Print GitVersion_FullSemVer
+      run: echo "The GitVersion_FullSemVer is ${{ env.GitVersion_FullSemVer }}"
+
+    - name: Print GitVersion_SemVer
+      run: echo "The GitVersion_SemVer is ${{ env.GitVersion_SemVer }}"
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Install dependencies
+      run: dotnet restore CronScheduler.sln
+
+    - name: Build
+      run: dotnet build CronScheduler.sln --configuration Release --no-restore /p:Version=${{ env.GitVersion_FullSemVer }}
+
+    - name: Test
+      run: dotnet test
+
+    - name: Publish NuGet package
+      run: |
+        dotnet pack CronScheduler.sln --configuration Release --no-build /p:PackageVersion=${{ env.GitVersion_FullSemVer }} /p:Version=${{ env.GitVersion_FullSemVer }}
+        dotnet nuget push **/*.nupkg --source https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json  --api-key ${{ secrets.FEEDZ_API_KEY }} --skip-duplicate

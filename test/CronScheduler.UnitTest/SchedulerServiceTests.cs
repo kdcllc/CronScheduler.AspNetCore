@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using Bet.Extensions.Testing.Logging;
@@ -17,19 +16,12 @@ using Xunit.Abstractions;
 
 namespace CronScheduler.UnitTest;
 
-public class SchedulerServiceTests
+public class SchedulerServiceTests(ITestOutputHelper output)
 {
-    private readonly ITestOutputHelper _output;
-
-    public SchedulerServiceTests(ITestOutputHelper output)
-    {
-        _output = output ?? throw new ArgumentNullException(nameof(output));
-    }
-
     [Fact]
     public void Add_Job_Successfully()
     {
-        var dic = new Dictionary<string, string>
+        var dic = new Dictionary<string, string?>
         {
             { "SchedulerJobs:TestJobException:CronSchedule", "*/10 * * * * *" },
             { "SchedulerJobs:TestJobException:CronTimeZone", string.Empty },
@@ -56,7 +48,7 @@ public class SchedulerServiceTests
         {
             builder.AddConsole();
             builder.AddDebug();
-            builder.AddXunit(_output, LogLevel.Debug);
+            builder.AddXunit(output, LogLevel.Debug);
         });
 
         services.AddSingleton<SchedulerRegistration>();
@@ -69,7 +61,7 @@ public class SchedulerServiceTests
         {
             builder.AddConsole();
             builder.AddDebug();
-            builder.AddXunit(_output, LogLevel.Debug);
+            builder.AddXunit(output, LogLevel.Debug);
         });
 
         var job = new TestJob(logFactory.CreateLogger<TestJob>());
@@ -83,7 +75,7 @@ public class SchedulerServiceTests
     [Fact]
     public void Add_Job_Successfully_1()
     {
-        var dic = new Dictionary<string, string>
+        var dic = new Dictionary<string, string?>
         {
             { "SchedulerJobs:TestJobException:CronSchedule", "*/10 * * * * *" },
             { "SchedulerJobs:TestJobException:CronTimeZone", string.Empty },
@@ -106,7 +98,7 @@ public class SchedulerServiceTests
         {
             builder.AddConsole();
             builder.AddDebug();
-            builder.AddXunit(_output, LogLevel.Debug);
+            builder.AddXunit(output, LogLevel.Debug);
         });
 
         service.AddSingleton<SchedulerRegistration>();
@@ -119,7 +111,7 @@ public class SchedulerServiceTests
         {
             builder.AddConsole();
             builder.AddDebug();
-            builder.AddXunit(_output, LogLevel.Debug);
+            builder.AddXunit(output, LogLevel.Debug);
         });
 
         var job = new TestJob(logFactory.CreateLogger<TestJob>());
@@ -127,11 +119,11 @@ public class SchedulerServiceTests
 
         instance!.AddOrUpdate(job.GetType().Name, job, options);
 
-        Assert.Equal(1, instance.Jobs.Count);
+        Assert.Single(instance.Jobs);
 
         configuration.Providers.ToList()[0].Set("SchedulerJobs:TestJobException:CronSchedule", "*/1 * * * * *");
         configuration.Reload();
 
-        _output.WriteLine(instance.Jobs.ToArray()[0].Value.Schedule.ToString());
+        output.WriteLine(instance.Jobs.ToArray()[0].Value.Schedule.ToString());
     }
 }

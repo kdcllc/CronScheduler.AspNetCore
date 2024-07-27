@@ -1,14 +1,14 @@
 <Project>
 
 	<PropertyGroup>
-		<AspNetCoreVersion>[6.*, )</AspNetCoreVersion>
-		<ExtensionsVersion>[6.*, )</ExtensionsVersion>
+		<AspNetCoreVersion>[8.*, )</AspNetCoreVersion>
+		<ExtensionsVersion>[8.*, )</ExtensionsVersion>
 		<EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
 		<BetCommon>[4.*, )</BetCommon>
 	</PropertyGroup>
 
 	<ItemGroup Label="CronScheduler">
-		<PackageReference Update="Cronos" Version="0.7.1" />
+		<PackageReference Update="Cronos" Version="0.8.*" />
 		<PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
@@ -53,7 +53,7 @@
 
 	<ItemGroup Label="SourceLink">
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
-		<PackageReference Include="Bet.CodeAnalyzers" Version="1.0.12" PrivateAssets="All" />
+		<!-- <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.12" PrivateAssets="All" /> -->
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,10 +1,10 @@
 <Project>
 
   <PropertyGroup Label="Basic Settings">
-    <VersionPrefix>3.1.0-preview1</VersionPrefix>
+    <Version>3.1.0-preview1</Version>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-    <NoWarn>$(NoWarn);CS1591;NU1605;</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;NU1605;NU5104</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
