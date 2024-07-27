@@ -10,9 +10,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public class SchedulerBuilder
     {
-        [Obsolete("User AddUnobservedTaskExceptionHandler() instead")]
-        public EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskExceptionHandler;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SchedulerBuilder"/> class.
         /// </summary>

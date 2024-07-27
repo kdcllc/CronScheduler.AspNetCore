@@ -67,7 +67,7 @@ public static class SchedulerServiceCollectionExtensions
         var builder = new SchedulerBuilder(services);
         config(builder);
 
-        CreateInstance(builder.Services, sp => builder.UnobservedTaskExceptionHandler ?? builder.CreateUnobservedTaskExceptionHandler?.Invoke(sp));
+        CreateInstance(builder.Services, sp => builder.CreateUnobservedTaskExceptionHandler?.Invoke(sp));
 
         return builder.Services;
     }

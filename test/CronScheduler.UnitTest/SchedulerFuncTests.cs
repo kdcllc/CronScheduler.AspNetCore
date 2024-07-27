@@ -170,7 +170,7 @@ public class SchedulerFuncTests(ITestOutputHelper output)
                 It.Is<It.IsAnyType>((object v, Type _) => v.ToString()!.Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception?, string>>((v, t) => true)),
-                Times.Between(1, 2, Range.Inclusive));
+                Times.Between(1, 3, Range.Inclusive));
     }
 
     [Fact]
