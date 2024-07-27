@@ -19,9 +19,16 @@ The `CronScheduler` can operate inside of any .NET Core GenericHost `IHost` thus
 
 In addition `IStartupJob` was added to support async initialization of critical process before the `IHost` is ready to start.
 
-> 
+>
 > **Please refer to [Migration Guide](./Migration.md) for the upgrade.**
 >
+[![buymeacoffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/vyve0og)
+
+## Give a Star! :star:
+
+If you like or are using this project to learn or start your solution, please give it a star. Thanks!
+
+## Installation
 
 - Install package for `AspNetCore` hosting .NET CLI
 
@@ -41,6 +48,8 @@ This library supports up to 5 seconds job intervals in the Crontab format thank 
 
 You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
 
+### Cron format
+
 Cron expression is a mask to define fixed times, dates and intervals. The mask consists of second (optional), minute, hour, day-of-month, month and day-of-week fields. All of the fields allow you to specify multiple values, and any given date/time will satisfy the specified Cron expression, if all the fields contain a matching value.
 
                                            Allowed values    Allowed special characters   Comment
@@ -53,12 +62,6 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
     │ │ │ │ │ ┌───────────── day of week   0-6  or SUN-SAT   * , - / # L ?                Both 0 and 7 means SUN
     │ │ │ │ │ │
     * * * * * *
-
-[![buymeacoffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/vyve0og)
-
-## Give a Star! :star:
-
-If you like or are using this project to learn or start your solution, please give it a star. Thanks!
 
 ## Demo Applications
 
@@ -152,7 +155,7 @@ This job registration is assuming that the name of the job and options name are 
     }
 ```
 
-Then register this service within the `Startup.cs`
+Then register this service within the `Program.cs`
 The sample uses `Microsoft.Extensions.Http.Polly` extension library to make http calls every 10 seconds.
 
 ```csharp
@@ -214,7 +217,7 @@ The sample uses `Microsoft.Extensions.Http.Polly` extension library to make http
     }
 ```
 
-Then register this service within the `Startup.cs`
+Then register this service within the `Program.cs`
 
 ```csharp
         services.AddScheduler(builder =>
@@ -239,41 +242,23 @@ Then register this service within the `Startup.cs`
 
 ## `IStartupJobs` to assist with async jobs initialization before the application starts
 
-There are many case scenarios to use StartupJobs for the IWebHost interface or IGenericHost. Most common case scenario is to make sure that database is created and updated.
+There are many case scenarios to use StartupJobs for the `IWebHost` interface or `IGenericHost`. The most common case scenario is to make sure that the database is created and updated.
 This library makes it possible by simply doing the following:
 
-- In the Program.cs file add the following:
+- In the `Program.cs` file add the following:
 
 ```csharp
-        public static async Task Main(string[] args)
-        {
-            var host = CreateWebHostBuilder(args).Build();
+var builder = WebApplication.CreateBuilder(args);
 
-            // process any async jobs required to get the site up and running
-            await host.RunStartupJobsAync();
+// Add services to the container.
+builder.Services.AddStartupJob<SeedDatabaseStartupJob>();
+builder.Services.AddStartupJob<TestStartupJob>();
 
-            host.Run();
-        }
-```
+var app = builder.Build();
 
-- Register the startup job in `Program.cs` or in `Startup.cs` file.
-
-```csharp
-public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-{
-    return WebHost.CreateDefaultBuilder(args)
-            .ConfigureServices(services =>
-            {
-                services.AddStartupJob<SeedDatabaseJob>();
-            })
-            .ConfigureLogging((context, logger) =>
-            {
-                logger.AddConsole();
-                logger.AddDebug();
-                logger.AddConfiguration(context.Configuration.GetSection("Logging"));
-            })
-            .UseStartup<Startup>();
-}
+// Configure the HTTP request pipeline.
+await app.RunStartupJobsAsync();
+await app.RunAsync();
 ```
 
 ## Background Queues
