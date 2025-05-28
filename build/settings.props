@@ -24,7 +24,7 @@
     <PackageProjectUrl>https://github.com/kdcllc/CronScheduler.AspNetCore</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kdcllc/CronScheduler.AspNetCore.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageLicense>https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/LICENSE</PackageLicense>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>icon.png</PackageIcon>
     <PackageTags>CronScheduler.AspNetCore, CronScheduler.Extensions, Cron, Quatz, HangFire, AspNetCore, DotNet, DotNetCore CronNET, Scheduler, Worker, Hosting, Kubernetes, Docker</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
