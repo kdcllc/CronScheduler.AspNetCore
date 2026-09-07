@@ -59,11 +59,11 @@ public class HomeController : Controller
 
             if (versesArray.Length > 1)
             {
-                verses = $"{versesArray.FirstOrDefault()}-{versesArray.Reverse().FirstOrDefault()}";
+                verses = $"{versesArray[0]}-{versesArray[^1]}";
             }
             else
             {
-                verses = versesArray.FirstOrDefault();
+                verses = versesArray[0];
             }
 
             ViewBag.Text = text;

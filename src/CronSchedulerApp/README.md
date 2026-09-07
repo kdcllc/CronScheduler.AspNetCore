@@ -133,12 +133,17 @@ Below are sample options for configuring the jobs in the `appsettings.json` file
     },
     "UserJob": {
       "RunImmediately": true,
-      "CronSchedule": "2 9 * * *",
+      "CronSchedule": "H 9 * * *",
+      "CronJitterSeed": 1207,
       "ClaimName": "TestClaim"
     }
   }
 }
 ```
+
+`CronJitterSeed` enables Cronos 0.13.0 deterministic jitter for schedules containing `H`. This example runs `UserJob` once each day during the 9:00 hour at a stable, seed-derived minute. Use the same seed to keep the selected time stable across restarts. Five-field, six-field, macro, time-zone, and Cronos special-character schedules remain supported.
+
+To inspect a registered job's schedule without changing it, use `schedulerRegistration.Jobs[jobName].GetPreviousOccurrence(DateTimeOffset.UtcNow)`.
 
 ### Running the Application
 

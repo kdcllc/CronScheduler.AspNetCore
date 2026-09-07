@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using Xunit;
 
@@ -15,29 +14,19 @@ public class StartupJobFuncTests
     [Fact]
     public async Task RunJobs()
     {
-        var cts = new CancellationTokenSource();
+        using var host = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(builder => builder
+                .UseStartup<TestStartup>()
+                .ConfigureServices(services =>
+                {
+                    services.AddLogging();
+                    services.AddStartupJob<TestStartupJob>();
+                }))
+            .UseDefaultServiceProvider(options => options.ValidateScopes = false)
+            .Build();
 
-        var builder = WebHost.CreateDefaultBuilder()
-           .UseStartup<TestStartup>()
-           .ConfigureServices(services =>
-           {
-               services.AddLogging();
-               services.AddStartupJob<TestStartupJob>();
-           })
-           .UseDefaultServiceProvider(options => options.ValidateScopes = false);
-
-        var host = builder.Build();
-
-        using (host)
-        {
-            await host.RunStartupJobsAsync(cts.Token);
-
-            cts.Cancel();
-
-            await host.WaitForShutdownAsync(cts.Token);
-        }
-
-        cts.Dispose();
+        await host.RunStartupJobsAsync(TestContext.Current.CancellationToken);
+        await host.StopAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -47,17 +36,18 @@ public class StartupJobFuncTests
 
         var host = CreateHost(services => services.AddStartupJobInitializer(CompletedTask));
 
-        await host.RunStartupJobsAsync();
+        await host.RunStartupJobsAsync(TestContext.Current.CancellationToken);
 
         host.Dispose();
     }
 
-    private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false)
+    private static IHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false)
     {
-        return new WebHostBuilder()
+        return Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(builder => builder
                 .UseStartup<TestStartup>()
-                .ConfigureServices(configureServices)
-                .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes)
-                .Build();
+                .ConfigureServices(configureServices))
+            .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes)
+            .Build();
     }
 }

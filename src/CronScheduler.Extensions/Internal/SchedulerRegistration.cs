@@ -114,16 +114,13 @@ internal class SchedulerRegistration : ISchedulerRegistration
 
         _logger.TimeZone(jobName, timeZone.Id);
 
-        CronExpression crontabSchedule;
+        var format = options.CronSchedule.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length == 6
+            ? CronFormat.IncludeSeconds
+            : CronFormat.Standard;
 
-        if (options.CronSchedule.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length == 6)
-        {
-            crontabSchedule = CronExpression.Parse(options.CronSchedule, CronFormat.IncludeSeconds);
-        }
-        else
-        {
-            crontabSchedule = CronExpression.Parse(options.CronSchedule, CronFormat.Standard);
-        }
+        var crontabSchedule = options.CronJitterSeed.HasValue
+            ? CronExpression.Parse(options.CronSchedule, format, options.CronJitterSeed.Value)
+            : CronExpression.Parse(options.CronSchedule, format);
 
         var nextRunTime = options.RunImmediately ? currentTimeUtc : crontabSchedule.GetNextOccurrence(currentTimeUtc, timeZone)!.Value;
 

@@ -107,11 +107,16 @@ Below are sample options for configuring the jobs in the `appsettings.json` file
   "SchedulerJobs": {
     "TestJob": {
       "RunImmediately": true,
-      "CronSchedule": "0/10 * * * * *"
+      "CronSchedule": "H/10 * * * * *",
+      "CronJitterSeed": 1207
     }
   }
 }
 ```
+
+Cronos 0.13.0 uses `CronJitterSeed` with the `H` character to choose deterministic offsets. The example distributes the worker's ten-second schedule while keeping the result stable across restarts. Existing five-field, six-field, macro, time-zone, and special-character expressions remain compatible.
+
+Registered schedules also support reverse lookup through `schedulerRegistration.Jobs[jobName].GetPreviousOccurrence(DateTimeOffset.UtcNow)`.
 
 ### Running the Application
 

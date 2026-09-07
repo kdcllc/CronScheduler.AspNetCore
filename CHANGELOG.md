@@ -2,6 +2,15 @@
 Change Log
 ===============================================================================
 
+Version 3.3.0 (09/07/2026)
+
+- Added .NET 10 support while retaining .NET 8 and .NET Standard 2.0 compatibility for shared libraries.
+- Upgraded Cronos from 0.8.x to 0.13.0.
+- Added deterministic schedule jitter through `SchedulerOptions.CronJitterSeed` and Cronos `H` expressions.
+- Added previous-occurrence lookup through `SchedulerTaskWrapper.GetPreviousOccurrence`.
+- Migrated tests to xUnit v3 and Microsoft Testing Platform; all 15 tests pass.
+- Updated ASP.NET Core, Worker Service, package, sample, migration, and README documentation.
+
 Version 3.2.0 (07/26/2024)
 
 - removed obsolete methods

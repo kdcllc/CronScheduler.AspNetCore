@@ -3,8 +3,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Testing.Logging;
-
 using CronScheduler.Extensions.Scheduler;
 
 using Microsoft.AspNetCore.Hosting;
@@ -18,23 +16,21 @@ using Microsoft.Extensions.Options;
 using Moq;
 
 using Xunit;
-using Xunit.Abstractions;
 
 using Range = Moq.Range;
 
 namespace CronScheduler.UnitTest;
 
-public class SchedulerFuncTests(ITestOutputHelper output)
+public class SchedulerFuncTests
 {
     [Fact]
     public async Task Job_RunImmediately_Factory_Successfully()
     {
         // assign
-        using var logFactory = TestLoggerBuilder.Create(builder =>
+        using var logFactory = LoggerFactory.Create(builder =>
         {
             builder.AddConsole();
             builder.AddDebug();
-            builder.AddXunit(output, LogLevel.Debug);
         });
 
         var mockLoggerTestJob = new Mock<ILogger<TestJob>>();
@@ -56,15 +52,15 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             });
         });
 
-        var client = new TestServer(host).CreateClient();
+        var client = host.GetTestClient();
 
         // act
-        var response = await client.GetAsync("/hc");
+        var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6));
+        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         mockLoggerTestJob.Verify(
             l => l.Log(
@@ -117,15 +113,15 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             });
         });
 
-        var client = new TestServer(host).CreateClient();
+        var client = host.GetTestClient();
 
         // act
-        var response = await client.GetAsync("/hc");
+        var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6));
+        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         mockLoggerTestJob.Verify(
                 l => l.Log(
@@ -153,15 +149,15 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             services.AddTransient(x => mockLoggerTestJob.Object);
         });
 
-        var client = new TestServer(host).CreateClient();
+        var client = host.GetTestClient();
 
         // act
-        var response = await client.GetAsync("/hc");
+        var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6));
+        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         mockLoggerTestJob.Verify(
                 l => l.Log(
@@ -195,15 +191,15 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             });
         });
 
-        var client = new TestServer(host).CreateClient();
+        var client = host.GetTestClient();
 
         // act
-        var response = await client.GetAsync("/hc");
+        var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6));
+        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         // fixed moq and log according to https://github.com/moq/moq4/issues/918#issuecomment-535060645
         mockLogger.Verify(
@@ -247,15 +243,15 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             });
         });
 
-        var client = new TestServer(host).CreateClient();
+        var client = host.GetTestClient();
 
         // act
-        var response = await client.GetAsync("/hc");
+        var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6));
+        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         mockLogger.Verify(
             l => l.Log(
@@ -297,15 +293,15 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             });
         });
 
-        var client = new TestServer(host).CreateClient();
+        var client = host.GetTestClient();
 
         // act
-        var response = await client.GetAsync("/hc");
+        var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6));
+        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         mockLogger.Verify(
             l => l.Log(
@@ -332,15 +328,15 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             services.AddSchedulerJob<TestJobException, TestJobExceptionOptions>();
         });
 
-        var client = new TestServer(host).CreateClient();
+        var client = host.GetTestClient();
 
         // act
-        var response = await client.GetAsync("/hc");
+        var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(3));
+        await Task.Delay(TimeSpan.FromSeconds(3), TestContext.Current.CancellationToken);
 
         // assert
-        Assert.Equal("healthy", await response.Content.ReadAsStringAsync());
+        Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
 
         mockLogger.Verify(
             l => l.Log(
@@ -352,37 +348,44 @@ public class SchedulerFuncTests(ITestOutputHelper output)
             Times.Between(1, 4, Range.Inclusive));
     }
 
-    private IWebHostBuilder CreateHost(
+    private IHost CreateHost(
         Action<IServiceCollection> configServices,
         bool validateScopes = false)
     {
-        return new WebHostBuilder()
-            .UseContentRoot(Directory.GetCurrentDirectory())
-            .ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                var env = hostingContext.HostingEnvironment;
-
-                config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                      .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
-
-                if (env.IsDevelopment())
+        var host = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(builder => builder
+                .UseTestServer()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .ConfigureServices(services => services.AddLogging())
+                .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
-                    if (appAssembly != null)
-                    {
-                        config.AddUserSecrets(appAssembly, optional: true);
-                    }
-                }
+                    var env = hostingContext.HostingEnvironment;
 
-                config.AddEnvironmentVariables();
-            })
-            .UseStartup<TestStartup>()
-            .ConfigureTestServices(services =>
-            {
-                configServices(services);
-                services.AddLogging(x => x.AddXunit(output));
-            })
-            .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes);
+                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+                    if (env.IsDevelopment())
+                    {
+                        var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
+                        if (appAssembly != null)
+                        {
+                            config.AddUserSecrets(appAssembly, optional: true);
+                        }
+                    }
+
+                    config.AddEnvironmentVariables();
+                })
+                .UseStartup<TestStartup>()
+                .ConfigureTestServices(services =>
+                {
+                    configServices(services);
+                    services.AddLogging(x => x.AddDebug());
+                }))
+            .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes)
+            .Build();
+
+        host.StartAsync(TestContext.Current.CancellationToken).GetAwaiter().GetResult();
+        return host;
     }
 
     private void UnobservedTaskExceptionHandler(IServiceProvider sp, UnobservedTaskExceptionEventArgs e)

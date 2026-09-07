@@ -1,21 +1,21 @@
 <Project>
 
 	<PropertyGroup>
-		<AspNetCoreVersion>[8.*, )</AspNetCoreVersion>
+		<AspNetCoreVersion>10.0.11</AspNetCoreVersion>
 		<ExtensionsVersion>[8.*, )</ExtensionsVersion>
+		<ExtensionsVersion Condition="'$(TargetFramework)' == 'net10.0'">10.0.11</ExtensionsVersion>
 		<EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
 		<BetCommon>[4.*, )</BetCommon>
 	</PropertyGroup>
 
 	<ItemGroup Label="CronScheduler">
-		<PackageReference Update="Cronos" Version="0.8.*" />
+		<PackageReference Update="Cronos" Version="0.13.0" />
 		<PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(ExtensionsVersion)" />
-		<PackageReference Update="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="[1.*, )" />
 	</ItemGroup>
 
 	<ItemGroup Label="Websiste">
@@ -39,16 +39,15 @@
 	</ItemGroup>
 
 	<ItemGroup Label="Unit Tests">
-		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.*" />
+		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="18.9.0" />
 		<PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
 		<PackageReference Update="Moq" Version="4.*" />
-		<PackageReference Update="xunit" Version="2.*" />
-		<PackageReference Update="xunit.runner.visualstudio" Version="2.*"  PrivateAssets="All" />
+		<PackageReference Update="xunit.v3" Version="4.0.0" />
+		<PackageReference Update="xunit.runner.visualstudio" Version="4.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup Label="Bet">
 		<PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
-		<PackageReference Update="Bet.Extensions.Testing" Version="$(BetCommon)" />
 	</ItemGroup>
 
 	<ItemGroup Label="SourceLink">

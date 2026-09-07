@@ -13,7 +13,7 @@
 
 **Unlock the Power of Simplified Cron Scheduling in Your .NET Core Apps**
 
-Are you tired of complex scheduling libraries holding you back from building scalable and efficient applications? Look no further! Introducing **CronScheduler**, a lightweight and easy-to-use library designed specifically for .NET Core `IHost` or `IWebHost`.
+Introducing **CronScheduler**, a lightweight and easy-to-use library designed for modern .NET `IHost` applications.
 
 Built with the KISS principle in mind, CronScheduler is a simplified alternative to Quartz Scheduler and its alternatives. With CronScheduler, you can easily schedule tasks using cron syntax and operate within any .NET Core GenericHost `IHost`, making setup and configuration a breeze.
 
@@ -23,8 +23,10 @@ But that's not all! We've also introduced **IStartupJob**, allowing for async in
 
 * Lightweight and easy-to-use library
 * Simplified scheduling with cron syntax
-* Operates within .NET Core GenericHost `IHost` or `IWebHost`
-* Async initialization support for critical processes with IStartupJob
+* Operates within the .NET Generic Host (`IHost`)
+* Async initialization support for critical processes with `IStartupJob`
+* Deterministic schedule jitter to distribute load across jobs and instances
+* Previous-occurrence lookup for schedule inspection and diagnostics
 
 **Join the CronScheduler community today and start simplifying your application's scheduling needs!**
 
@@ -51,11 +53,11 @@ If you like or are using this project to learn or start your solution, please gi
     dotnet add package CronScheduler.Extensions
 ```
 
-## Uses Crontab format for Jobs/Tasks schedules
+## Cron schedules
 
-This library supports up to 5 seconds job intervals in the Crontab format thank to [HangfireIO/Cronos](https://github.com/HangfireIO/Cronos) library.
+CronScheduler uses [Cronos 0.13.0](https://github.com/HangfireIO/Cronos) to parse schedules and calculate occurrences. It supports standard five-field expressions, six-field expressions with seconds, macros, time zones, reversed ranges, `L`, `W`, `#`, and deterministic jitter with `H`.
 
-You can use [https://crontab-generator.org/](https://crontab-generator.org/) to generated needed job/task schedule.
+Existing five-field and six-field schedules remain compatible. Use [crontab-generator.org](https://crontab-generator.org/) to generate basic expressions, and consult the [Cronos format reference](https://github.com/HangfireIO/Cronos#cron-format) for extended syntax.
 
 ### Cron format
 
@@ -63,14 +65,47 @@ Cron expression is a mask to define fixed times, dates and intervals. The mask c
 
                                            Allowed values    Allowed special characters   Comment
 
-    ┌───────────── second (optional)       0-59              * , - /                      
-    │ ┌───────────── minute                0-59              * , - /                      
-    │ │ ┌───────────── hour                0-23              * , - /                      
-    │ │ │ ┌───────────── day of month      1-31              * , - / L W ?                
-    │ │ │ │ ┌───────────── month           1-12 or JAN-DEC   * , - /                      
-    │ │ │ │ │ ┌───────────── day of week   0-6  or SUN-SAT   * , - / # L ?                Both 0 and 7 means SUN
+    ┌───────────── second (optional)       0-59              * , - / H
+    │ ┌───────────── minute                0-59              * , - / H
+    │ │ ┌───────────── hour                0-23              * , - / H
+    │ │ │ ┌───────────── day of month      1-31              * , - / H L W ?
+    │ │ │ │ ┌───────────── month           1-12 or JAN-DEC   * , - / H
+    │ │ │ │ │ ┌───────────── day of week   0-6 or SUN-SAT    * , - / H # L ?              Both 0 and 7 mean SUN
     │ │ │ │ │ │
     * * * * * *
+
+Cronos also supports macros: `@every_second`, `@every_minute`, `@hourly`, `@daily`, `@midnight`, `@weekly`, `@monthly`, `@yearly`, and `@annually`.
+
+### Deterministic schedule jitter
+
+Cronos 0.13.0 supports the `H` character to deterministically distribute execution times. Configure `CronJitterSeed` whenever an expression contains `H`. The same expression and seed always produce the same schedule, making it suitable for spreading load without random behavior on restart.
+
+```json
+{
+  "SchedulerJobs": {
+    "TelemetryJob": {
+      "CronSchedule": "H H * * * *",
+      "CronJitterSeed": 1207,
+      "CronTimeZone": "UTC",
+      "RunImmediately": false
+    }
+  }
+}
+```
+
+The seed also adds jitter to supported macros. For example, `@hourly` with a seed runs once per hour at deterministic minute and second offsets. Using `H` without `CronJitterSeed` is invalid and Cronos throws `MissingSeedException` during registration.
+
+### Previous occurrences
+
+Cronos 0.13.0 can calculate occurrences in reverse. Registered jobs expose this through `SchedulerTaskWrapper.GetPreviousOccurrence`:
+
+```csharp
+var registration = services.GetRequiredService<ISchedulerRegistration>();
+var job = registration.Jobs[nameof(TelemetryJob)];
+var previousRun = job.GetPreviousOccurrence(DateTimeOffset.UtcNow);
+```
+
+The calculation uses the job's configured time zone and does not change scheduler state.
 
 ## Demo Applications
 
@@ -233,7 +268,7 @@ await app.RunAsync();
 
 ## `IStartupJobs` to assist with async jobs initialization before the application starts
 
-There are many case scenarios to use StartupJobs for the `IWebHost` interface or `IGenericHost`. The most common case scenario is to make sure that the database is created and updated.
+Startup jobs run against the modern `IHost` abstraction. A common use case is ensuring a database is created and migrated before the application begins serving requests.
 This library makes it possible by simply doing the following:
 
 - In the `Program.cs` file add the following:

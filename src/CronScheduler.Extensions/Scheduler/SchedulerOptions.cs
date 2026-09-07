@@ -4,9 +4,17 @@ public class SchedulerOptions
 {
     /// <summary>
     /// Specify the CRON schedule.
-    /// <see cref="!:https://github.com/HangfireIO/Cronos/blob/f512241dfc9a0acd65f835cb8f4eab91053efcd5/README.md#cron-format"/>.
+    /// Supports standard five-field expressions, optional seconds, macros, and Cronos special characters.
+    /// <see href="https://github.com/HangfireIO/Cronos#cron-format">Cronos cron format</see>.
     /// </summary>
     public string CronSchedule { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the optional deterministic seed used by Cronos schedule jitter.
+    /// Set this value when <see cref="CronSchedule"/> contains the <c>H</c> character or when
+    /// using a macro whose execution time should be distributed across scheduler instances.
+    /// </summary>
+    public int? CronJitterSeed { get; set; }
 
     /// <summary>
     /// Time Zone for the Scheduler to run. Default is null, sets it to local time zone.
@@ -17,7 +25,7 @@ public class SchedulerOptions
     /// <summary>
     /// Specify if the Job to be run immediately. Default value is false.
     /// </summary>
-    public bool RunImmediately { get; set; } = false;
+    public bool RunImmediately { get; set; }
 
     /// <summary>
     /// The name of the job that this options is associated with.

@@ -189,6 +189,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                         o.CronSchedule = options.CronSchedule;
                         o.CronTimeZone = options.CronTimeZone;
+                        o.CronJitterSeed = options.CronJitterSeed;
                         o.RunImmediately = options.RunImmediately;
                         o.JobName = options.JobName;
                     });
