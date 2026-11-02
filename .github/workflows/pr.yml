@@ -23,4 +23,7 @@ jobs:
         run: dotnet build CronScheduler.sln -c Release --no-restore
 
       - name: Test
-        run: dotnet test CronScheduler.sln -c Release --no-build
+        run: dotnet test CronScheduler.sln -c Release --no-build --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+
+      - name: Coverage gate
+        run: python3 build/coverage-check.py "TestResults/coverage.cobertura.xml" --min 80 --summary "$GITHUB_STEP_SUMMARY"
