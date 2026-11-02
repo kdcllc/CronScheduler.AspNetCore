@@ -37,6 +37,17 @@ public sealed class SchedulerTaskWrapper
 
     public TimeZoneInfo TimeZoneInfo { get; set; }
 
+    /// <summary>
+    /// Gets the most recent occurrence before the specified instant.
+    /// </summary>
+    /// <param name="from">The instant from which to search backward.</param>
+    /// <param name="inclusive">Whether an occurrence exactly at <paramref name="from"/> should be returned.</param>
+    /// <returns>The previous occurrence in the scheduler's configured time zone, or <see langword="null"/> when none exists.</returns>
+    public DateTimeOffset? GetPreviousOccurrence(DateTimeOffset from, bool inclusive = false)
+    {
+        return Schedule.GetPreviousOccurrence(from, TimeZoneInfo, inclusive);
+    }
+
     public void Increment()
     {
         LastRunTime = NextRunTime;

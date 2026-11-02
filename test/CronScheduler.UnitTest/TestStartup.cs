@@ -3,20 +3,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace CronScheduler.UnitTest;
 
 public class TestStartup
 {
-    private readonly ILogger<TestStartup> _logger;
-
-    public TestStartup(
-        IConfiguration configuration,
-        ILogger<TestStartup> logger)
+    public TestStartup(IConfiguration configuration)
     {
         Configuration = configuration;
-        _logger = logger;
     }
 
     public IConfiguration Configuration { get; }

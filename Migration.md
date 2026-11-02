@@ -2,6 +2,26 @@
 
 This document provide with direction for migration between different version of the library.
 
+## Cronos 0.13.0
+
+CronScheduler now uses Cronos 0.13.0 instead of 0.8.x. Existing five-field and six-field expressions remain compatible. The upgrade adds:
+
+- Deterministic schedule jitter using `H` and the optional `SchedulerOptions.CronJitterSeed` property.
+- Cron macros such as `@hourly` and `@daily`, including jittered macro schedules when a seed is configured.
+- Reverse schedule inspection through `SchedulerTaskWrapper.GetPreviousOccurrence`.
+- Cronos fixes from versions 0.9 through 0.13, including nullable annotations, strong-named assemblies, expanded date ranges, and occurrence edge-case corrections.
+
+To adopt jitter, add a stable integer seed and use `H` in the expression:
+
+```json
+{
+  "CronSchedule": "H H * * * *",
+  "CronJitterSeed": 1207
+}
+```
+
+No configuration change is required for existing schedules. Do not use `H` without a seed; Cronos rejects that configuration.
+
 ## Migration from 2.x to 3.x version
 
 - `ScheduledJob` class is removed from the library.
