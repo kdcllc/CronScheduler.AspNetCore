@@ -94,7 +94,8 @@ The orchestrator's prompt tells you which mode you are in:
 
 - Re-implemented scheduling, registration or queue plumbing instead of reusing `SchedulerRegistration`, `SchedulerHostedService`, `BackgroundTaskQueue`
 - Public API of `CronScheduler.Extensions` / `CronScheduler.AspNetCore` changed or removed without a `Migration.md` entry
-- Code that does not compile for `netstandard2.0` (net8-only APIs without `#if`)
+- Code that does not compile for `netstandard2.0` (net10-only APIs without `#if`)
+- A project targeting an end-of-life TFM, or a deprecated/vulnerable/end-of-life NuGet dependency (direct or transitive) left without a stated reason
 - Swallowed job exceptions (no logging, no `UnobservedTaskExceptionHandler` path)
 - Sync-over-async (`.Result`, `.Wait()`), missing `CancellationToken` propagation, or `async void`
 - Tests that depend on wall-clock timing or real delays and are flaky

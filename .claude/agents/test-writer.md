@@ -19,9 +19,9 @@ test is a failed task.
 - **Assert outcomes.** A test must fail if the behavior regresses. Asserting "no
   exception was raised" or mocking the unit under test itself are auto-fails.
 - **Mock all external services.** No test may hit the network or a live service.
-Mock at the job and service boundary: fake `IScheduledJob` / `IStartupJob` implementations (see `TestJob`, `TestJobException`, `CustomTestJob` in the test project), Moq for collaborators, and in-memory `ConfigurationBuilder().AddInMemoryCollection(...)` for options. Use `Microsoft.AspNetCore.TestHost` for host-level tests and `Bet.Extensions.Testing` logging helpers with `ITestOutputHelper`. Never call labs.bible.org or a real database; mock `HttpMessageHandler` for typed HttpClients.
+Mock at the job and service boundary: fake `IScheduledJob` / `IStartupJob` implementations (see `TestJob`, `TestJobException`, `CustomTestJob` in the test project), Moq for collaborators, and in-memory `ConfigurationBuilder().AddInMemoryCollection(...)` for options. Use `Microsoft.AspNetCore.TestHost` for host-level tests and xUnit v3 `TestContext.Current` / `ITestOutputHelper`. Never call labs.bible.org or a real database; mock `HttpMessageHandler` for typed HttpClients.
 - **Follow the project's test conventions.** Read existing tests first and match their
-  structure, naming, and fixture usage. Test framework(s): xUnit 2 with Moq, Microsoft.AspNetCore.TestHost and Bet.Extensions.Testing (logging test helpers).
+  structure, naming, and fixture usage. Test framework(s): xUnit v3 (Microsoft.Testing.Platform runner) with Moq and Microsoft.AspNetCore.TestHost.
 - **Use the file-read tool.** Where your harness has a file-read tool, read files with it rather than `cat`/`head`/`sed` through the shell (running a criterion's or test's command is still fine); at least one harness loads path-scoped rules only on file-read tool reads.
 - **Rules before placement.** Before creating or moving a file, read every path-scoped rule file in "Files to Read" whose globs match it; if no listed rule covers an area where you create files, say so in your report.
 - **Run what you write.** Climb rungs 1–2 of the `test-ladder` skill only

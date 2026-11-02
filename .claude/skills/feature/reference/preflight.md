@@ -10,7 +10,8 @@ It produces **no score or verdict** and **never replaces** the evaluator.
 
 - Any public API change in `src/CronScheduler.Extensions` or `src/CronScheduler.AspNetCore` has a task that updates `Migration.md` and README.md
 - New NuGet dependencies are versioned in `build/dependencies.props`, not inline in a `.csproj`
-- Library changes compile for both `netstandard2.0` and `net8.0`
+- Library changes compile for both `netstandard2.0` and `net10.0`; no project targets an end-of-life TFM
+- Every NuGet dependency (transitive included) is current, supported, not deprecated and not vulnerable
 
 ## Checks (stack-agnostic)
 
