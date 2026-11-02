@@ -1,15 +1,15 @@
 <Project>
 
 	<PropertyGroup>
-		<AspNetCoreVersion>10.0.13</AspNetCoreVersion>
-		<ExtensionsVersion>10.0.13</ExtensionsVersion>
+		<AspNetCoreVersion>10.0.14</AspNetCoreVersion>
+		<ExtensionsVersion>10.0.14</ExtensionsVersion>
 		<EFCommonVersion>$(AspNetCoreVersion)</EFCommonVersion>
-		<BetCommon>[4.*, )</BetCommon>
+		<BetCommon>4.0.1</BetCommon>
 	</PropertyGroup>
 
 	<ItemGroup Label="CronScheduler">
 		<PackageReference Update="Cronos" Version="0.13.0" />
-		<PackageReference Update="Microsoft.AspNetCore.Hosting" Version="$(AspNetCoreVersion)" />
+		<PackageReference Update="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.13" />
 		<PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
 		<PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
@@ -18,8 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup Label="Websiste">
-		<PackageReference Update="Microsoft.Extensions.Http.Polly" Version="$(ExtensionsVersion)" />
-		<PackageReference Update="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="$(AspNetCoreVersion)"/>
+		<PackageReference Update="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
 	</ItemGroup>
 
 	<ItemGroup Label="EF">
@@ -31,7 +30,7 @@
 		<PackageReference Update="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EFCommonVersion)" />
 		<PackageReference Update="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCommonVersion)" />
 		<PackageReference Update="Microsoft.EntityFrameworkCore.Tools" Version="$(EFCommonVersion)"/>
-		<PackageReference Update="System.Security.Cryptography.Pkcs" Version="10.0.13" />
+		<PackageReference Update="System.Security.Cryptography.Pkcs" Version="10.0.14" />
 	</ItemGroup>
 
 	<ItemGroup Label="Worker">
@@ -41,17 +40,91 @@
 	<ItemGroup Label="Unit Tests">
 		<PackageReference Update="Microsoft.NET.Test.Sdk" Version="18.11.0" />
 		<PackageReference Update="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
-		<PackageReference Update="Moq" Version="4.*" />
+		<PackageReference Update="Moq" Version="4.21.0" />
 		<PackageReference Update="xunit.v3" Version="4.0.2" />
 		<PackageReference Update="xunit.runner.visualstudio" Version="4.0.1" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup Label="Bet">
 		<PackageReference Update="Bet.Extensions.Options" Version="$(BetCommon)" />
+		<!-- Transitive pin: Bet.Extensions.Options 4.0.1 pulls the EOL 3.1.21 line -->
+		<PackageReference Update="Microsoft.Extensions.Options.DataAnnotations" Version="$(ExtensionsVersion)" />
+	</ItemGroup>
+
+	<ItemGroup Label="netstandard2.0 transitive pins (parents: Microsoft.AspNetCore.Hosting.Abstractions 2.3.x, Bet.Extensions.Options)">
+		<PackageReference Update="System.Text.Encodings.Web" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Threading.Channels" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.NETCore.Platforms" Version="7.0.4" />
+	</ItemGroup>
+
+	<ItemGroup Label="Transitive pins (sample app + tests); parent packages cap these below latest">
+		<PackageReference Update="Azure.Core" Version="1.64.0" />
+		<PackageReference Update="Azure.Identity" Version="1.21.0" />
+		<PackageReference Update="Humanizer.Core" Version="3.0.10" />
+		<PackageReference Update="Microsoft.Bcl.AsyncInterfaces" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.Build.Framework" Version="18.11.0" />
+		<PackageReference Update="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" />
+		<PackageReference Update="Microsoft.CodeAnalysis.Common" Version="5.9.0" />
+		<PackageReference Update="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
+		<PackageReference Update="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
+		<PackageReference Update="Microsoft.CodeAnalysis.Workspaces.Common" Version="5.9.0" />
+		<PackageReference Update="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.9.0" />
+		<PackageReference Update="Microsoft.Data.SqlClient" Version="7.1.1" />
+		<PackageReference Update="Microsoft.Data.SqlClient.SNI.runtime" Version="7.1.0" />
+		<PackageReference Update="Microsoft.Identity.Client" Version="4.92.0" />
+		<PackageReference Update="Microsoft.Identity.Client.Broker" Version="4.92.0" />
+		<PackageReference Update="Microsoft.Identity.Client.Extensions.Msal" Version="4.92.0" />
+		<PackageReference Update="Microsoft.Identity.Client.NativeInterop" Version="0.20.7" />
+		<PackageReference Update="Microsoft.IdentityModel.Abstractions" Version="8.23.0" />
+		<PackageReference Update="Microsoft.IdentityModel.JsonWebTokens" Version="8.23.0" />
+		<PackageReference Update="Microsoft.IdentityModel.Logging" Version="8.23.0" />
+		<PackageReference Update="Microsoft.IdentityModel.Protocols" Version="8.23.0" />
+		<PackageReference Update="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.23.0" />
+		<PackageReference Update="Microsoft.IdentityModel.Tokens" Version="8.23.0" />
+		<PackageReference Update="Newtonsoft.Json.Bson" Version="1.0.3" />
+		<PackageReference Update="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
+		<PackageReference Update="SQLitePCLRaw.core" Version="3.0.5" />
+		<PackageReference Update="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+		<PackageReference Update="SQLitePCLRaw.provider.e_sqlite3" Version="3.0.5" />
+		<PackageReference Update="System.ClientModel" Version="1.16.0" />
+		<PackageReference Update="System.CodeDom" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Composition" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Composition.AttributedModel" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Composition.Convention" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Composition.Hosting" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Composition.Runtime" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Composition.TypedParts" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Configuration.ConfigurationManager" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
+		<PackageReference Update="System.Memory.Data" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="System.Security.Cryptography.ProtectedData" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.ApplicationInsights" Version="3.2.0" />
+		<PackageReference Update="Microsoft.Testing.Extensions.Telemetry" Version="2.5.2" />
+		<PackageReference Update="Microsoft.Testing.Extensions.TrxReport.Abstractions" Version="2.5.2" />
+		<PackageReference Update="Microsoft.Testing.Platform" Version="2.5.2" />
+		<PackageReference Update="Microsoft.Testing.Platform.MSBuild" Version="2.5.2" />
+		<PackageReference Update="System.Diagnostics.EventLog" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.AspNetCore.Hosting.Server.Abstractions" Version="2.3.13" />
+		<PackageReference Update="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.13" />
+		<PackageReference Update="Microsoft.AspNetCore.Http.Features" Version="2.3.13" />
+		<PackageReference Update="Microsoft.Bcl.Cryptography" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="SQLite" Version="3.54.1" />
+		<PackageReference Update="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="Microsoft.Extensions.Logging.Configuration" Version="$(ExtensionsVersion)" />
+		<PackageReference Update="OpenTelemetry" Version="1.20.1" />
+		<PackageReference Update="OpenTelemetry.Api" Version="1.20.1" />
+		<PackageReference Update="OpenTelemetry.Api.ProviderBuilderExtensions" Version="1.20.1" />
+		<PackageReference Update="OpenTelemetry.Extensions.Hosting" Version="1.20.1" />
+		<PackageReference Update="OpenTelemetry.PersistentStorage.Abstractions" Version="1.1.3" />
+		<PackageReference Update="OpenTelemetry.PersistentStorage.FileSystem" Version="1.1.3" />
+		<PackageReference Update="Polly.Core" Version="8.9.0" />
+		<PackageReference Update="Polly.Extensions" Version="8.9.0" />
+		<PackageReference Update="Polly.RateLimiting" Version="8.9.0" />
 	</ItemGroup>
 
 	<ItemGroup Label="SourceLink">
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.403" PrivateAssets="All" />
 		<!-- <PackageReference Include="Bet.CodeAnalyzers" Version="1.0.12" PrivateAssets="All" /> -->
 	</ItemGroup>
 

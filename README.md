@@ -1,13 +1,19 @@
 # CronScheduler.AspNetCore
 
-![master workflow](https://github.com/github/docs/actions/workflows/master.yml/badge.svg)
-[![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
-![Nuget](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore)
-[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/shield/CronScheduler.AspNetCore/latest)](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/packages/CronScheduler.AspNetCore/latest/download)
+[![Publish](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/publish.yml/badge.svg?branch=master)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/publish.yml)
+[![PR CI](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/pr.yml/badge.svg)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/pr.yml)
+[![CodeQL](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/codeql.yml/badge.svg)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/codeql.yml)
+[![CronScheduler.Extensions](https://img.shields.io/nuget/v/CronScheduler.Extensions.svg?label=CronScheduler.Extensions)](https://www.nuget.org/packages/CronScheduler.Extensions)
+[![CronScheduler.Extensions preview](https://img.shields.io/nuget/vpre/CronScheduler.Extensions.svg?label=preview)](https://www.nuget.org/packages/CronScheduler.Extensions/absoluteLatest)
+[![Downloads](https://img.shields.io/nuget/dt/CronScheduler.Extensions.svg)](https://www.nuget.org/packages/CronScheduler.Extensions)
+[![CronScheduler.AspNetCore](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg?label=CronScheduler.AspNetCore)](https://www.nuget.org/packages/CronScheduler.AspNetCore)
+[![CronScheduler.AspNetCore preview](https://img.shields.io/nuget/vpre/CronScheduler.AspNetCore.svg?label=preview)](https://www.nuget.org/packages/CronScheduler.AspNetCore/absoluteLatest)
+[![Downloads](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages/CronScheduler.AspNetCore)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/LICENSE)
 
-*Note: Pre-release packages are distributed via [feedz.io](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json).*
+*Preview (prerelease) packages are published to nuget.org. Install the latest preview with `dotnet add package CronScheduler.Extensions --prerelease`.*
 
-![I Stand With Israel](./img/IStandWithIsrael.png)
+![I Stand With Israel](https://raw.githubusercontent.com/kdcllc/CronScheduler.AspNetCore/master/img/IStandWithIsrael.png)
 
 ## Summary
 
@@ -31,7 +37,7 @@ But that's not all! We've also introduced **IStartupJob**, allowing for async in
 **Join the CronScheduler community today and start simplifying your application's scheduling needs!**
 
 >
-> **Please refer to [Migration Guide](./Migration.md) for the upgrade.**
+> **Please refer to [Migration Guide](https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/Migration.md) for the upgrade.**
 >
 [![buymeacoffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/vyve0og)
 
@@ -41,16 +47,16 @@ If you like or are using this project to learn or start your solution, please gi
 
 ## Installation
 
-- Install package for `AspNetCore` hosting .NET CLI
-
-```bash
-    dotnet add package CronScheduler.AspNetCore
-```
-
-- Install package for `IHost` hosting .NET CLI
+- Install package for any .NET Generic Host (`IHost`) app, including ASP.NET Core `WebApplication` on .NET 10, with .NET CLI. `app.RunStartupJobsAsync()` comes from this package. Targets: `net10.0` and `netstandard2.0`.
 
 ```bash
     dotnet add package CronScheduler.Extensions
+```
+
+- Install `CronScheduler.AspNetCore` only if you need the legacy `IWebHost` extension on `netstandard2.0` (for example apps on .NET Framework via the netstandard2.0 build). It contains no API on `net10.0`; see the [Migration Guide](https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/Migration.md). Targets: `net10.0` and `netstandard2.0`.
+
+```bash
+    dotnet add package CronScheduler.AspNetCore
 ```
 
 ## Cron schedules
@@ -109,8 +115,8 @@ The calculation uses the job's configured time zone and does not change schedule
 
 ## Demo Applications
 
-- [CronSchedulerWorker](./src/CronSchedulerWorker/) - this example demonstrates how to use `CronScheduler` with new Microsoft .NET Core Workers Template
-- [CronSchedulerApp](./src/CronSchedulerApp) - this example demonstrates how to use `CronScheduler` with AspNetCore applications.
+- [CronSchedulerWorker](https://github.com/kdcllc/CronScheduler.AspNetCore/tree/master/src/CronSchedulerWorker) - this example demonstrates how to use `CronScheduler` with new Microsoft .NET Core Workers Template
+- [CronSchedulerApp](https://github.com/kdcllc/CronScheduler.AspNetCore/tree/master/src/CronSchedulerApp) - this example demonstrates how to use `CronScheduler` with AspNetCore applications.
 
 There are two ways that options and jobs can be registered within the Scheduler Jobs.
 
@@ -210,7 +216,7 @@ builder.Services.AddScheduler(builder =>
     builder.Services.AddSingleton<TorahVerses>();
     builder.Services
         .AddHttpClient<TorahService>()
-        .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+        .AddStandardResilienceHandler();
 
     builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
     builder.Services.AddScoped<UserService>();
@@ -320,4 +326,4 @@ Then add sample async task to be executed by the Queued Hosted Service.
 
 ## License
 
-[MIT License](./LICENSE)
+[MIT License](https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/LICENSE)

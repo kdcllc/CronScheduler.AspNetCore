@@ -26,7 +26,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
-		<PackageReference Include="Microsoft.Extensions.Http.Polly" />
+		<PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 		<PackageReference Include="System.Security.Cryptography.Pkcs" />
 	</ItemGroup>
 
@@ -35,7 +35,52 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.402" />
+		<!-- Direct pins lifting stale transitives; versions in build/dependencies.props -->
+		<PackageReference Include="Azure.Core" />
+		<PackageReference Include="Azure.Identity" />
+		<PackageReference Include="Humanizer.Core" />
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+		<PackageReference Include="Microsoft.Build.Framework" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Common" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+		<PackageReference Include="Microsoft.Data.SqlClient" />
+		<PackageReference Include="Microsoft.Data.SqlClient.SNI.runtime" />
+		<PackageReference Include="Microsoft.Identity.Client" />
+		<PackageReference Include="Microsoft.Identity.Client.Broker" />
+		<PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" />
+		<PackageReference Include="Microsoft.Identity.Client.NativeInterop" />
+		<PackageReference Include="Microsoft.IdentityModel.Abstractions" />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+		<PackageReference Include="Microsoft.IdentityModel.Logging" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" />
+		<PackageReference Include="Newtonsoft.Json.Bson" />
+		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
+		<PackageReference Include="SQLitePCLRaw.core" />
+		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" />
+		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" />
+		<PackageReference Include="System.ClientModel" />
+		<PackageReference Include="System.CodeDom" />
+		<PackageReference Include="System.Composition" />
+		<PackageReference Include="System.Composition.AttributedModel" />
+		<PackageReference Include="System.Composition.Convention" />
+		<PackageReference Include="System.Composition.Hosting" />
+		<PackageReference Include="System.Composition.Runtime" />
+		<PackageReference Include="System.Composition.TypedParts" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+		<PackageReference Include="System.Memory.Data" />
+		<PackageReference Include="System.Security.Cryptography.ProtectedData" />
+		<PackageReference Include="Microsoft.Bcl.Cryptography" />
+		<PackageReference Include="SQLite" />
+		<PackageReference Include="Polly.Core" />
+		<PackageReference Include="Polly.Extensions" />
+		<PackageReference Include="Polly.RateLimiting" />
 	</ItemGroup>
 
 </Project>

@@ -1,11 +1,13 @@
 # CronSchedulerApp
 
-![master workflow](https://github.com/github/docs/actions/workflows/master.yml/badge.svg)
-[![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
-![Nuget](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore)
-[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/shield/CronScheduler.AspNetCore/latest)](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/packages/CronScheduler.AspNetCore/latest/download)
+[![Publish](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/publish.yml/badge.svg?branch=master)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/publish.yml)
+[![PR CI](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/pr.yml/badge.svg)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/pr.yml)
+[![CodeQL](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/codeql.yml/badge.svg)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/codeql.yml)
+[![CronScheduler.AspNetCore](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg?label=CronScheduler.AspNetCore)](https://www.nuget.org/packages/CronScheduler.AspNetCore)
+[![CronScheduler.AspNetCore preview](https://img.shields.io/nuget/vpre/CronScheduler.AspNetCore.svg?label=preview)](https://www.nuget.org/packages/CronScheduler.AspNetCore/absoluteLatest)
+[![Downloads](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages/CronScheduler.AspNetCore)
 
-*Note: Pre-release packages are distributed via [feedz.io](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json).*
+*Preview (prerelease) packages are published to nuget.org. Install the latest preview with `dotnet add package CronScheduler.Extensions --prerelease`.*
 
 This ASP.NET Core web application demonstrates various scheduled jobs and how to use them. It includes examples of background tasks, startup jobs, and scheduled jobs using the CronScheduler library.
 

@@ -1,0 +1,26 @@
+name: "PR CI"
+
+on:
+  pull_request:
+    branches: [master, dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # to fetch all history for all tags and branches
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore dependencies
+        run: dotnet restore CronScheduler.sln
+
+      - name: Build
+        run: dotnet build CronScheduler.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test CronScheduler.sln -c Release --no-build

@@ -15,8 +15,4 @@
 	<ItemGroup>
 		<ProjectReference Include="..\CronScheduler.Extensions\CronScheduler.Extensions.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.402" />
-	</ItemGroup>
 </Project>

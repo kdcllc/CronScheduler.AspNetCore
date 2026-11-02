@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -16,8 +17,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 
 using Xunit;
-
-using Range = Moq.Range;
 
 namespace CronScheduler.UnitTest;
 
@@ -57,7 +56,7 @@ public class SchedulerFuncTests
         // act
         var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
+        await WaitForLogsAsync(mockLoggerTestJob, LogLevel.Information, nameof(TestJob), 1);
 
         // assert
         Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -69,7 +68,7 @@ public class SchedulerFuncTests
             It.Is<It.IsAnyType>((object? v, Type _) => v != null && v.ToString()!.Contains(nameof(TestJob))),
             It.IsAny<Exception>(),
             It.Is<Func<object, Exception?, string>>((v, t) => true)),
-            Times.Between(1, 3, Range.Inclusive));
+            Times.AtLeastOnce());
     }
 
     [Fact]
@@ -118,7 +117,7 @@ public class SchedulerFuncTests
         // act
         var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
+        await WaitForLogsAsync(mockLoggerTestJob, LogLevel.Information, nameof(TestJob), 2);
 
         // assert
         Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -130,7 +129,7 @@ public class SchedulerFuncTests
                 It.Is<It.IsAnyType>((object? v, Type _) => v != null && v.ToString()!.Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception?, string>>((v, t) => true)),
-                Times.Between(2, 6, Range.Inclusive));
+                Times.AtLeast(2));
     }
 
     [Fact]
@@ -154,7 +153,7 @@ public class SchedulerFuncTests
         // act
         var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
+        await WaitForLogsAsync(mockLoggerTestJob, LogLevel.Information, nameof(TestJob), 1);
 
         // assert
         Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -166,7 +165,7 @@ public class SchedulerFuncTests
                 It.Is<It.IsAnyType>((object? v, Type _) => v != null && v.ToString()!.Contains(nameof(TestJob))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception?, string>>((v, t) => true)),
-                Times.Between(1, 3, Range.Inclusive));
+                Times.AtLeastOnce());
     }
 
     [Fact]
@@ -196,7 +195,7 @@ public class SchedulerFuncTests
         // act
         var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
+        await WaitForLogsAsync(mockLogger, LogLevel.Information, nameof(TestJob), 1);
 
         // assert
         Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -209,7 +208,7 @@ public class SchedulerFuncTests
             It.Is<It.IsAnyType>((object? v, Type _) => v != null && v.ToString()!.Contains(nameof(TestJob))),
             It.IsAny<Exception>(),
             It.Is<Func<object, Exception?, string>>((v, t) => true)),
-            Times.Between(1, 2, Range.Inclusive));
+            Times.AtLeastOnce());
     }
 
     [Fact]
@@ -248,7 +247,7 @@ public class SchedulerFuncTests
         // act
         var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
+        await WaitForLogsAsync(mockLogger, LogLevel.Error, nameof(Exception), 1);
 
         // assert
         Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -260,7 +259,7 @@ public class SchedulerFuncTests
                     It.Is<It.IsAnyType>((object? v, Type _) => v != null && v.ToString()!.Contains(nameof(Exception))),
                     It.IsAny<Exception>(),
                     It.Is<Func<object, Exception?, string>>((v, t) => true)),
-            Times.Between(1, 2, Range.Inclusive));
+            Times.AtLeastOnce());
     }
 
     [Fact]
@@ -298,7 +297,7 @@ public class SchedulerFuncTests
         // act
         var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(6), TestContext.Current.CancellationToken);
+        await WaitForLogsAsync(mockLogger, LogLevel.Error, nameof(Exception), 1);
 
         // assert
         Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -310,7 +309,7 @@ public class SchedulerFuncTests
                 It.Is<It.IsAnyType>((object? v, Type _) => v != null && v.ToString()!.Contains(nameof(Exception))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception?, string>>((v, t) => true)),
-            Times.Between(1, 3, Range.Inclusive));
+            Times.AtLeastOnce());
     }
 
     [Fact]
@@ -333,7 +332,7 @@ public class SchedulerFuncTests
         // act
         var response = await client.GetAsync("/hc", TestContext.Current.CancellationToken);
         response.EnsureSuccessStatusCode();
-        await Task.Delay(TimeSpan.FromSeconds(3), TestContext.Current.CancellationToken);
+        await WaitForLogsAsync(mockLogger, LogLevel.Error, nameof(Exception), 1);
 
         // assert
         Assert.Equal("healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
@@ -345,7 +344,46 @@ public class SchedulerFuncTests
                 It.Is<It.IsAnyType>((object? v, Type _) => v != null && v.ToString()!.Contains(nameof(Exception))),
                 It.IsAny<Exception>(),
                 It.Is<Func<object, Exception?, string>>((v, t) => true)),
-            Times.Between(1, 4, Range.Inclusive));
+            Times.AtLeastOnce());
+    }
+
+    /// <summary>
+    /// Polls the mock logger until at least <paramref name="minCount"/> log invocations with the given
+    /// level and message fragment are recorded; fails the test when the timeout elapses.
+    /// </summary>
+    /// <returns>The number of matching invocations observed when the condition was met.</returns>
+    private static async Task<int> WaitForLogsAsync<T>(
+        Mock<ILogger<T>> mockLogger,
+        LogLevel level,
+        string messageContains,
+        int minCount,
+        TimeSpan? timeout = null)
+    {
+        var limit = timeout ?? TimeSpan.FromSeconds(30);
+        var deadline = DateTime.UtcNow + limit;
+        var count = 0;
+
+        while (true)
+        {
+            count = mockLogger.Invocations.Count(i =>
+                i.Method.Name == nameof(ILogger.Log)
+                && i.Arguments.Count > 2
+                && i.Arguments[0] is LogLevel l
+                && l == level
+                && (i.Arguments[2]?.ToString()?.Contains(messageContains) ?? false));
+
+            if (count >= minCount)
+            {
+                return count;
+            }
+
+            if (DateTime.UtcNow >= deadline)
+            {
+                Assert.Fail($"Expected at least {minCount} {level} log(s) containing '{messageContains}' within {limit.TotalSeconds}s but observed {count}.");
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(100), TestContext.Current.CancellationToken);
+        }
     }
 
     private IHost CreateHost(

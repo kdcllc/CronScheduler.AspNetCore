@@ -19,9 +19,9 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   cronscheduler.sql:
-    image: microsoft/mssql-server-linux:2017-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
      - "5467:1433"
     environment:
-     - SA_PASSWORD=Pass@word
+     - MSSQL_SA_PASSWORD=Pass@word
      - ACCEPT_EULA=Y

@@ -2,14 +2,23 @@
 Change Log
 ===============================================================================
 
-Version 3.3.0 (09/07/2026)
+Version 4.0.0 (Unreleased)
 
-- Added .NET 10 support while retaining .NET 8 and .NET Standard 2.0 compatibility for shared libraries.
+- Added .NET 10 support; libraries now target `net10.0` and `netstandard2.0`.
 - Upgraded Cronos from 0.8.x to 0.13.0.
 - Added deterministic schedule jitter through `SchedulerOptions.CronJitterSeed` and Cronos `H` expressions.
 - Added previous-occurrence lookup through `SchedulerTaskWrapper.GetPreviousOccurrence`.
-- Migrated tests to xUnit v3 and Microsoft Testing Platform; all 15 tests pass.
+- Migrated tests to xUnit v3 and Microsoft Testing Platform; all tests pass.
+- Added tests for `CronJitterSeed` binding/determinism, the missing-seed error path and `GetPreviousOccurrence`; made the scheduler timing tests condition-based instead of fixed sleeps.
 - Updated ASP.NET Core, Worker Service, package, sample, migration, and README documentation.
+- License expression changed to MIT (#56).
+- Added CodeQL code scanning (#52).
+- All package versions are centralized in `build/dependencies.props` and bumped to the latest stable.
+- Versioning is driven by GitVersion (GitHubFlow) with no hard-coded version.
+- Prerelease packages are now published to nuget.org; the separate prerelease feed is retired.
+- Breaking: `RunStartupJobsAsync(this IWebHost)` is unavailable on `net10.0`; use `IHost`/`WebApplication`.
+- Breaking: `net8.0` target removed (.NET 8 end of support); targets are `net10.0` and `netstandard2.0`.
+- All dependencies updated to current supported versions, transitive included; NuGet audit is on.
 
 Version 3.2.0 (07/26/2024)
 
