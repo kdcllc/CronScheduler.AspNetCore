@@ -1,0 +1,5 @@
+_memory/** text eol=lf
+*.cmd -text
+_memory/loop/LEARNINGS.md merge=union
+_memory/loop/ESCALATIONS.md merge=union
+*.sh text eol=lf
