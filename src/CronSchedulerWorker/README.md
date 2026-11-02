@@ -1,11 +1,13 @@
 # CronSchedulerWorker
 
-![master workflow](https://github.com/github/docs/actions/workflows/master.yml/badge.svg)
-[![NuGet](https://img.shields.io/nuget/v/CronScheduler.AspNetCore.svg)](https://www.nuget.org/packages?q=CronScheduler.AspNetCore)
-![Nuget](https://img.shields.io/nuget/dt/CronScheduler.AspNetCore)
-[![feedz.io](https://img.shields.io/badge/endpoint.svg?url=https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/shield/CronScheduler.AspNetCore/latest)](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/packages/CronScheduler.AspNetCore/latest/download)
+[![Publish](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/publish.yml/badge.svg?branch=master)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/publish.yml)
+[![PR CI](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/pr.yml/badge.svg)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/pr.yml)
+[![CodeQL](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/codeql.yml/badge.svg)](https://github.com/kdcllc/CronScheduler.AspNetCore/actions/workflows/codeql.yml)
+[![CronScheduler.Extensions](https://img.shields.io/nuget/v/CronScheduler.Extensions.svg?label=CronScheduler.Extensions)](https://www.nuget.org/packages/CronScheduler.Extensions)
+[![CronScheduler.Extensions preview](https://img.shields.io/nuget/vpre/CronScheduler.Extensions.svg?label=preview)](https://www.nuget.org/packages/CronScheduler.Extensions/absoluteLatest)
+[![Downloads](https://img.shields.io/nuget/dt/CronScheduler.Extensions.svg)](https://www.nuget.org/packages/CronScheduler.Extensions)
 
-*Note: Pre-release packages are distributed via [feedz.io](https://f.feedz.io/kdcllc/cronscheduler-aspnetcore/nuget/index.json).*
+*Preview (prerelease) packages are published to nuget.org. Install the latest preview with `dotnet add package CronScheduler.Extensions --prerelease`.*
 
 This .NET Core Worker application demonstrates various scheduled jobs and how to use them. It includes examples of background tasks, startup jobs, and scheduled jobs using the CronScheduler library.
 
@@ -107,11 +109,16 @@ Below are sample options for configuring the jobs in the `appsettings.json` file
   "SchedulerJobs": {
     "TestJob": {
       "RunImmediately": true,
-      "CronSchedule": "0/10 * * * * *"
+      "CronSchedule": "H/10 * * * * *",
+      "CronJitterSeed": 1207
     }
   }
 }
 ```
+
+Cronos 0.13.0 uses `CronJitterSeed` with the `H` character to choose deterministic offsets. The example distributes the worker's ten-second schedule while keeping the result stable across restarts. Existing five-field, six-field, macro, time-zone, and special-character expressions remain compatible.
+
+Registered schedules also support reverse lookup through `schedulerRegistration.Jobs[jobName].GetPreviousOccurrence(DateTimeOffset.UtcNow)`.
 
 ### Running the Application
 

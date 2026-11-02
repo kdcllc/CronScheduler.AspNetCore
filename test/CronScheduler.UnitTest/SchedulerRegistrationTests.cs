@@ -2,8 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using Bet.Extensions.Testing.Logging;
-
 using CronScheduler.Extensions.Internal;
 using CronScheduler.Extensions.Scheduler;
 
@@ -13,11 +11,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using Xunit;
-using Xunit.Abstractions;
 
 namespace CronScheduler.UnitTest;
 
-public class SchedulerRegistrationTests(ITestOutputHelper output)
+public class SchedulerRegistrationTests
 {
     [Fact]
     public async Task Successfully_Register_Two_Jobs_With_The_Same_Type()
@@ -31,7 +28,6 @@ public class SchedulerRegistrationTests(ITestOutputHelper output)
         services.AddLogging(builder =>
         {
             builder.AddDebug();
-            builder.AddXunit(output, LogLevel.Debug);
         });
 
         services.AddScheduler();
@@ -61,10 +57,10 @@ public class SchedulerRegistrationTests(ITestOutputHelper output)
         schedulerRegistration.AddOrUpdate(new CustomTestJob(options2, loggerFactory.CreateLogger<CustomTestJob>()), options2);
 
         var backgroundService = sp.GetService<IHostedService>() as SchedulerHostedService;
-        await backgroundService!.StartAsync(CancellationToken.None);
+        await backgroundService!.StartAsync(TestContext.Current.CancellationToken);
 
-        await Task.Delay(TimeSpan.FromSeconds(15));
+        await Task.Delay(TimeSpan.FromSeconds(15), TestContext.Current.CancellationToken);
 
-        await backgroundService.StopAsync(CancellationToken.None);
+        await backgroundService.StopAsync(TestContext.Current.CancellationToken);
     }
 }

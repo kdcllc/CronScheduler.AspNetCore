@@ -1,0 +1,103 @@
+name: "Publish CI/CD"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - master
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  configuration: Release
+  solution: CronScheduler.sln
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      Version: ${{ steps.gitversion.outputs.semVer }}
+      CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # to fetch all history for all tags and branches
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4
+        with:
+          versionSpec: '6.x'
+
+      - name: Use GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v4
+
+      - name: Display GitVersion outputs
+        run: |
+          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
+          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
+          echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}"
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.solution }}
+
+      - name: Build
+        run: dotnet build ${{ env.solution }} -c ${{ env.configuration }} --no-restore -p:Version=${{ steps.gitversion.outputs.semVer }}
+
+      - name: Test
+        run: dotnet test ${{ env.solution }} -c ${{ env.configuration }} --no-build
+
+      - name: Package
+        run: dotnet pack ${{ env.solution }} -c ${{ env.configuration }} --no-build -p:PackageVersion=${{ steps.gitversion.outputs.semVer }} -o packages
+
+      # One-time nuget.org setup for Trusted Publishing (no long-lived API key):
+      #   1. nuget.org -> account -> Trusted Publishing -> add a GitHub Actions policy with
+      #      owner "kdcllc", repository "CronScheduler.AspNetCore", workflow file "publish.yml"
+      #      (leave environment empty).
+      #   2. Set the repository secret NUGET_USER to the nuget.org account (profile) name.
+      #   3. Delete the old NUGET_API_KEY repository secret.
+      - name: NuGet login (OIDC Trusted Publishing)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish NuGet packages
+        run: |
+          dotnet nuget push "packages/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          if compgen -G "packages/*.snupkg" > /dev/null; then
+            dotnet nuget push "packages/*.snupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+          fi
+
+  tag:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Display GitVersion outputs
+        run: |
+          echo "Version: ${{ needs.build.outputs.Version }}"
+          echo "CommitsSinceVersionSource: ${{ needs.build.outputs.CommitsSinceVersionSource }}"
+
+      - name: Create Tag and Release
+        uses: softprops/action-gh-release@v3
+        if: needs.build.outputs.CommitsSinceVersionSource > 0 # only create a release if there has been a commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.build.outputs.Version }}
+          name: Release ${{ needs.build.outputs.Version }}
+          generate_release_notes: true

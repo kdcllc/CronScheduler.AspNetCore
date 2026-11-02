@@ -1,27 +1,23 @@
-mode: ContinuousDelivery
+workflow: GitHubFlow/v1
+mode: ContinuousDeployment
+next-version: 4.0.0
 branches:
-  main:
-    regex: ^master$
+  master:
+    mode: ManualDeployment
     label: ''
-    increment: Patch
-    is-release-branch: true
+    regex: ^master$|^main$
+  develop:
+    mode: ContinuousDelivery
+    label: preview
+    regex: ^dev(elop)?(ment)?$
   feature:
-    regex: ^(feature|feat)[/-]
-    label: alpha
-    increment: Minor
-  bugfix:
-    regex: ^bugfix[/-]
-    label: alpha
-    increment: Patch
-  chore:
-    regex: ^chore[/-]
-    label: beta
-    increment: None
-  pull-request:
-    regex: ^(pull|pr)[/-]
-    label: alpha
-    increment: Inherit
+    mode: ContinuousDelivery
+    label: '{BranchName}'
+    regex: ^(feature|feat)s?[/-](?<BranchName>.+)
 major-version-bump-message: '\+semver:\s?(breaking|major)'
 minor-version-bump-message: '\+semver:\s?(feature|minor)'
 patch-version-bump-message: '\+semver:\s?(fix|patch)'
 commit-message-incrementing: Enabled
+ignore:
+  sha: []
+merge-message-formats: {}

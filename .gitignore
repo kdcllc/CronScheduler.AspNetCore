@@ -334,3 +334,10 @@ ASALocalRun/
 src/CronSchedulerApp/app.db-shm
 src/CronSchedulerApp/app.db-wal
 .aider*
+_kit/
+_memory/.index/
+_memory/raw/
+_memory/work/
+_memory/loop/breaker-state.json
+_memory/loop/ledger.jsonl
+_memory/loop/attempts/

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Hosting;
 
+#if !NET10_0_OR_GREATER
 public static class StartupJobWebHostExtensions
 {
     /// <summary>
@@ -22,3 +23,4 @@ public static class StartupJobWebHostExtensions
         await jobInitializer.StartJobsAsync(cancellationToken);
     }
 }
+#endif

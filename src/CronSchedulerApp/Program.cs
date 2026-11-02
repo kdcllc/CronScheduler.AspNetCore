@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Polly;
 
 #pragma warning disable SA1516 // ElementsMustBeSeparatedByBlankLine
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +46,7 @@ builder.Services.AddScheduler(builder =>
     builder.Services.AddSingleton<TorahVerses>();
     builder.Services
         .AddHttpClient<TorahService>()
-        .AddTransientHttpErrorPolicy(p => p.RetryAsync());
+        .AddStandardResilienceHandler();
 
     builder.AddJob<TorahQuoteJob, TorahQuoteJobOptions>();
     builder.Services.AddScoped<UserService>();
