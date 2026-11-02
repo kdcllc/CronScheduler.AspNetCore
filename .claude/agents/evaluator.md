@@ -1,7 +1,7 @@
 ---
 name: evaluator
 description: Orchestration-kit agent — spawn only from the /feature, /research or /align-docs workflow, never for ordinary work. Skeptical, problem-finding reviewer for goals, task definitions, and completed implementation work in CronScheduler.AspNetCore. Launch after every goal creation, every task execution, and as the final audit. Never fixes anything — only evaluates.
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: high
 ---
 
@@ -235,7 +235,7 @@ Arbitration also runs when the **drift trigger** fires: the cycle 2–3 verdicts
 in the orchestration log together carry ≥ 2 `[new]` items.
 Demoted `[backlog] [late]` notes count toward this total.
 
-**Model** — `claude-opus-5-5`. Per the kit's Cursor silent-fallback
+**Model** — `claude-sonnet-5-5`. Per the kit's Cursor silent-fallback
 caveat, the arbiter states in its verdict which model actually produced it (the harness
 may silently substitute a fallback). When the model map marks the arbiter as
 same-family, the verdict header states `same-family arbiter` so the audit trail shows

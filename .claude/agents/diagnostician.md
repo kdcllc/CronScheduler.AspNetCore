@@ -1,7 +1,7 @@
 ---
 name: diagnostician
 description: Orchestration-kit agent — spawn only from the /feature, /research or /align-docs workflow, never for ordinary work. Root-cause diagnostician for CronScheduler.AspNetCore task failures. Spawn at ladder rung 4 after fix-cycle exhaustion (cycle 3, or earlier on early ladder entry) — reads the task file (including its Acceptance Criteria section), and every fix-cycle history that ran, may run targeted verification to observe failures, and returns a frozen diagnosis report. Diagnosis only; never edits code.
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: xhigh
 tools: Bash, Read, Grep, Glob
 ---
@@ -125,7 +125,7 @@ The orchestrator applies your report per the Continuation ladder (rung 4):
   Recommendation names subtasks; **otherwise escalate** to the human with the full
   ladder history.
 - **No signature match** — the orchestrator runs **one diagnosis-driven
-  implementation** attempt: a fresh implementer on `claude-opus-5-5` executes your
+  implementation** attempt: a fresh implementer on `claude-sonnet-5-5` executes your
   **Rewritten Required-Fixes** list directly, then mandatory re-evaluation. That
   attempt costs one of the three post-exhaustion implementation attempts budgeted across
   rungs 4 and 6.

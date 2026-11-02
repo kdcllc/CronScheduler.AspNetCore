@@ -33,7 +33,7 @@ through the end of the item) when present, otherwise with trailing
 `[line-patch]` / `[structural]` tags stripped and trailing provenance tags (`[carried]` /
 `[regression]` / `[new]`) stripped — tags stripped so a tag change across cycles does not
 make the same item count as different), spawn `evaluator` in
-**arbitration mode** on `claude-opus-5-5` with the task file
+**arbitration mode** on `claude-sonnet-5-5` with the task file
 (including its Acceptance Criteria), and the verdicts and implementer reports of
 every cycle that ran (three, fewer on early ladder entry). Outcomes:
 `criteria-defective` → escalate to the user carrying the named defective criterion
@@ -48,7 +48,7 @@ every cycle that ran (three, fewer on early ladder entry), and the targeted
 verification command. If its
 **Signature Declaration** matches a previously tried fix signature → skip to rung 6
 if it recommended a split, else escalate. Otherwise run **ONE** diagnosis-driven
-implementation attempt: fresh `implementer` on `claude-opus-5-5` using the
+implementation attempt: fresh `implementer` on `claude-sonnet-5-5` using the
 diagnostician's **Rewritten Required-Fixes** list; then mandatory re-evaluation.
 
 ## Rung 6 — decomposition + selective retry

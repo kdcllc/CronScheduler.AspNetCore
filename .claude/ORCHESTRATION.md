@@ -736,7 +736,7 @@ Apply the rungs in this order:
    tag-stripped of trailing `[line-patch]` / `[structural]` and trailing provenance tags,
    with the justification clause (from its start (` — missed earlier:` or
    ` — reverses cycle `) through the end of the item) removed when present), or when the **drift trigger** fires (≥ 2 `[new]` items across the cycle 2–3 verdicts recorded in the orchestration log. Demoted `[backlog] [late]` notes count toward this total.), spawn the
-   evaluator in **arbitration mode** on `claude-opus-5-5` before any
+   evaluator in **arbitration mode** on `claude-sonnet-5-5` before any
    further fixing. Outcomes: `criteria-defective` → escalate to the human carrying the
    specific defect; arbiter/primary **disagreement → escalate (never auto-resolve)**;
    `criteria-sound` → continue to rung 4.
@@ -745,7 +745,7 @@ Apply the rungs in this order:
    with the task file (including its Acceptance Criteria), and every fix-cycle history that ran. If its
    hypothesis matches a previously tried fix signature → skip to rung 6 if it recommended
    a split, else escalate. Otherwise run **ONE** diagnosis-driven implementation attempt
-   (fresh implementer on `claude-opus-5-5`, using the diagnostician's rewritten
+   (fresh implementer on `claude-sonnet-5-5`, using the diagnostician's rewritten
    required-fixes list) and re-evaluate.
 
 4. **Rung 6 — decomposition + selective retry.** Only on a diagnostician split

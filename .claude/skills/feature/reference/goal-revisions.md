@@ -8,7 +8,7 @@ After **NEEDS REVISION**, revise flagged items and re-evaluate (max 3 attempts).
 passage newly written or changed in the revision (label each *newly written — review
 adversarially*), not only a list of fixes. The evaluator reviews those quoted passages first.
 
-**Attempt 3:** Fresh `evaluator` spawn pinned to `claude-opus-5-5`, full goal
+**Attempt 3:** Fresh `evaluator` spawn pinned to `claude-sonnet-5-5`, full goal
 evaluation (not a delta). Attach as a review-first appendix the attempt-2 quoted passages plus every passage newly written or changed since attempt 2, quoted verbatim.
 Log the rotation; when the pin equals the frontier ID or the spawn uses `inherit`, log
 same-family / `unverified` per the model map. New attempt-3 findings with no attempt left

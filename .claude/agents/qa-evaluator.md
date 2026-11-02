@@ -1,7 +1,7 @@
 ---
 name: qa-evaluator
 description: Orchestration-kit agent — spawn only from the /feature, /research or /align-docs workflow, never for ordinary work. Skeptical user-perspective QA reviewer for CronScheduler.AspNetCore's user-facing surfaces. Launch after a feature is implemented and evaluated, with captured behavioral evidence (command output, API responses, screenshots). Finds behavioral issues; never fixes them.
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: high
 ---
 
