@@ -324,6 +324,15 @@ Then add sample async task to be executed by the Queued Hosted Service.
     }
 ```
 
+## Running tests and code coverage
+
+```bash
+dotnet test --project test/CronScheduler.UnitTest/CronScheduler.UnitTest.csproj -c Release --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
+python3 build/coverage-check.py "TestResults/coverage.cobertura.xml"
+```
+
+Pull request CI fails when line coverage of the library assemblies (`CronScheduler.Extensions`; `CronScheduler.AspNetCore` has no code on `net10.0`) drops below 80% and writes the coverage summary to the job page; pass `--min` to [`build/coverage-check.py`](https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/build/coverage-check.py) to override the threshold locally.
+
 ## License
 
 [MIT License](https://github.com/kdcllc/CronScheduler.AspNetCore/blob/master/LICENSE)
